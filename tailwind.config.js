@@ -1,3 +1,5 @@
+const { fontFamily } = require('tailwindcss/defaultTheme')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,12 +9,17 @@ module.exports = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      extend: {
+        fontFamily: {
+          sans: ['var(--font-family)', ...fontFamily.sans],
+        },
+        colors: {
+          brandGreen: '#536135',
+          brandOrange: '#FE5000',
+          textWhite: '#F4F5F0',
+        },
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms')],
 }
