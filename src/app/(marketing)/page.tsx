@@ -1,3 +1,5 @@
+import Logo from '@/ui/logo'
+
 import { CallToAction } from './components/home/call-to-action'
 import { Contact } from './components/home/contact'
 import { Faqs } from './components/home/faqs'
@@ -8,6 +10,7 @@ import { Services } from './components/home/services'
 export default function Home() {
   return (
     <main>
+      <Logo letters />
       <Hero />
       <Services />
       <CallToAction />

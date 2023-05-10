@@ -7,7 +7,7 @@ type Props = {
   className?: string
 }
 
-export default function Logo({ className, letters = true, variant = 'default' }: Props) {
+export default function Logo({ className, letters, variant = 'default' }: Props) {
   const height = letters ? 264 : 515
   const width = 834
 
