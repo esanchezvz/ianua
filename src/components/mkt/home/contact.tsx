@@ -2,6 +2,7 @@
 
 import { BuildingOffice2Icon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
 
+import { Button } from '@/components/ui/button'
 import { Container } from '@/components/ui/container'
 
 export default function Contact() {
@@ -162,12 +163,7 @@ export default function Contact() {
               </div>
             </div>
             <div className="mt-8 flex justify-end">
-              <button
-                type="submit"
-                className="rounded-md bg-blue px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue/75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
-              >
-                Enviar
-              </button>
+              <Button type="submit">Enviar</Button>
             </div>
           </div>
         </form>
