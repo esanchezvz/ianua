@@ -1,3 +1,6 @@
+import Link from 'next/link'
+
+import { buttonVariants } from '@/components/ui/button'
 import { CircleBackground } from '@/components/ui/circle-background'
 import { Container } from '@/components/ui/container'
 
@@ -15,6 +18,10 @@ export default function CallToAction() {
             explicabo atque id sint eum quaerat nisi hic? Maxime asperiores repellat incidunt suscipit quis
             ratione sequi quisquam ullam.
           </p>
+
+          <Link className={buttonVariants({ variant: 'secondary', className: 'mt-10' })} href="/perfilador">
+            Ir Al PERFILADOR
+          </Link>
         </div>
       </Container>
     </section>

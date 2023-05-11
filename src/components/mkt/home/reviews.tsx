@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import clsx from 'clsx'
 import { useInView } from 'framer-motion'
@@ -97,7 +97,22 @@ const reviews = [
   },
 ]
 
-function ReviewColumn({ className, reviews, reviewClassName = () => {}, msPerPixel = 0 }: any) {
+function ReviewColumn({
+  className,
+  reviews,
+  reviewClassName = () => '',
+  msPerPixel = 0,
+}: {
+  className?: string
+  reviews: {
+    title: string
+    body: string
+    author: string
+    rating: number
+  }[]
+  reviewClassName?: (reviewIndex: number) => string | undefined
+  msPerPixel: number
+}) {
   let columnRef = useRef<HTMLDivElement>(null)
   let [columnHeight, setColumnHeight] = useState(0)
   let duration = `${columnHeight * msPerPixel}ms`
@@ -120,14 +135,17 @@ function ReviewColumn({ className, reviews, reviewClassName = () => {}, msPerPix
       className={clsx('animate-marquee space-y-8 py-4', className)}
       style={{ '--marquee-duration': duration } as any}
     >
-      {reviews.concat(reviews).map((review: any, reviewIndex: number) => (
-        <Review
-          key={reviewIndex}
-          aria-hidden={reviewIndex >= reviews.length}
-          className={reviewClassName(reviewIndex % reviews.length)}
-          {...review}
-        />
-      ))}
+      {reviews.concat(reviews).map((review, reviewIndex: number) => {
+        const id = Math.random()
+        return (
+          <Review
+            key={id}
+            aria-hidden={reviewIndex >= reviews.length}
+            className={reviewClassName?.(reviewIndex % reviews.length)}
+            {...review}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -158,7 +176,9 @@ function ReviewGrid() {
           <ReviewColumn
             reviews={[...columns[1], ...columns[2][1]]}
             className="hidden md:block"
-            reviewClassName={(reviewIndex: number) => reviewIndex >= columns[1].length && 'lg:hidden'}
+            reviewClassName={(reviewIndex: number) =>
+              reviewIndex >= columns[1].length ? 'lg:hidden' : undefined
+            }
             msPerPixel={15}
           />
           <ReviewColumn reviews={columns[2].flat()} className="hidden lg:block" msPerPixel={10} />

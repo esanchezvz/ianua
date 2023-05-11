@@ -44,12 +44,15 @@ export default function Review({ title, body, author, rating, className, ...prop
 function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex">
-      {[1, 1, 1, 1, 1].map((index) => (
-        <StarIcon
-          key={index}
-          className={clsx('h-5 w-5', rating > index ? 'fill-cyan-500' : 'fill-gray-300')}
-        />
-      ))}
+      {[1, 1, 1, 1, 1].map((index) => {
+        const id = Math.random()
+        return (
+          <StarIcon
+            key={id}
+            className={clsx('h-5 w-5', rating > index ? 'fill-cyan-500' : 'fill-gray-300')}
+          />
+        )
+      })}
     </div>
   )
 }

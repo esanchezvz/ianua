@@ -41,6 +41,7 @@ export default function Home() {
         <Reviews />
         <Contact />
       </main>
+
       <Modal opened={searchModalOpen} onClose={closeProfilerModal} title="Buscar Propiedades" size="xl">
         <div className="mb-5">
           <p>¿En qué zona estás buscando?</p>
