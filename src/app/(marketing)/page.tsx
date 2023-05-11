@@ -8,18 +8,19 @@ import FeaturedListings from '@/components/mkt/home/featured-listings'
 import Hero from '@/components/mkt/home/hero'
 import Reviews from '@/components/mkt/home/reviews'
 import Services from '@/components/mkt/home/services'
+import { Button } from '@/components/ui/button'
 import Modal from '@/components/ui/modal'
 import { listings } from '@/utils/mock-data'
 
 export default function Home() {
-  const [profilerModalOpen, setProfilerModalOpen] = useState(false)
+  const [searchModalOpen, setSearchModalOpen] = useState(false)
 
   const openProfilerModal = () => {
-    setProfilerModalOpen(true)
+    setSearchModalOpen(true)
   }
 
   const closeProfilerModal = () => {
-    setProfilerModalOpen(false)
+    setSearchModalOpen(false)
   }
 
   return (
@@ -33,12 +34,14 @@ export default function Home() {
         <Reviews />
         <Contact />
       </main>
-      <Modal opened={profilerModalOpen} onClose={closeProfilerModal} title="Perfilador">
+      <Modal opened={searchModalOpen} onClose={closeProfilerModal} title="Buscar Propiedades" size="xl">
         <p>
           Lorem ipsum dolor, sit amet consectetur adipisicing elit. Non quos reiciendis facere inventore
           obcaecati alias perspiciatis. Tempore quaerat, labore reprehenderit architecto libero laudantium
           beatae aut, facere possimus impedit quis autem.
         </p>
+
+        <Button>Buscar</Button>
       </Modal>
     </>
   )

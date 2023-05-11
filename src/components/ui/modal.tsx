@@ -3,6 +3,8 @@ import { Fragment, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
+import { cn } from '@/utils'
+
 type ModalSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl'
 
 type ModalProps = {
@@ -16,6 +18,7 @@ type ModalProps = {
 
 export default function Modal({ onClose, opened, title, children, size = 'lg', initialFocus }: ModalProps) {
   const closeRef = useRef<HTMLButtonElement>(null)
+  const maxWith = `max-w-${size}`
 
   return (
     <>
@@ -51,7 +54,10 @@ export default function Modal({ onClose, opened, title, children, size = 'lg', i
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel
-                  className={`relative max-h-[85%] w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
+                  className={cn(
+                    'relative max-h-[85%] w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all',
+                    maxWith
+                  )}
                 >
                   <button
                     type="button"
