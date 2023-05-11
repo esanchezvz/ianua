@@ -1,11 +1,10 @@
-import Logo from '@/ui/logo'
-
-import { CallToAction } from './components/home/call-to-action'
-import { Contact } from './components/home/contact'
-import { Faqs } from './components/home/faqs'
-import { Hero } from './components/home/hero'
-import { Reviews } from './components/home/reviews'
-import { Services } from './components/home/services'
+import CallToAction from '@/components/mkt/home/call-to-action'
+import Contact from '@/components/mkt/home/contact'
+import Faqs from '@/components/mkt/home/faqs'
+import Hero from '@/components/mkt/home/hero'
+import Reviews from '@/components/mkt/home/reviews'
+import Services from '@/components/mkt/home/services'
+import Logo from '@/components/ui/logo'
 
 export default function Home() {
   return (

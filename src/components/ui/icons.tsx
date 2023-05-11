@@ -1,41 +1,6 @@
 import { useId } from 'react'
 
-import { Container } from '@/ui/container'
-
-const features = [
-  {
-    name: 'Invest any amount',
-    description: 'Whether it’s $1 or $1,000,000, we can put your money to work for you.',
-    icon: DeviceArrowIcon,
-  },
-  {
-    name: 'Build a balanced portfolio',
-    description: 'Invest in different industries to find the most opportunities to win huge.',
-    icon: DeviceCardsIcon,
-  },
-  {
-    name: 'Trade in real-time',
-    description: 'Get insider tips on big stock moves and act on them within seconds.',
-    icon: DeviceClockIcon,
-  },
-  {
-    name: 'Profit from your network',
-    description: 'Invite new insiders to get tips faster and beat even other Pocket users.',
-    icon: DeviceListIcon,
-  },
-  {
-    name: 'Encrypted and anonymized',
-    description: 'Cutting-edge security technology that even the NSA doesn’t know about keeps you hidden.',
-    icon: DeviceLockIcon,
-  },
-  {
-    name: 'Portfolio tracking',
-    description: 'Watch your investments grow exponentially, leaving other investors in the dust.',
-    icon: DeviceChartIcon,
-  },
-]
-
-function DeviceArrowIcon(props: any) {
+export function DeviceArrowIcon(props: React.HTMLAttributes<SVGElement>) {
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true" {...props}>
       <path
@@ -50,7 +15,7 @@ function DeviceArrowIcon(props: any) {
   )
 }
 
-function DeviceCardsIcon(props: any) {
+export function DeviceCardsIcon(props: React.HTMLAttributes<SVGElement>) {
   let id = useId()
 
   return (
@@ -79,7 +44,7 @@ function DeviceCardsIcon(props: any) {
   )
 }
 
-function DeviceClockIcon(props: any) {
+export function DeviceClockIcon(props: React.HTMLAttributes<SVGElement>) {
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true" {...props}>
       <circle cx={16} cy={16} r={16} fill="#A3A3A3" fillOpacity={0.2} />
@@ -99,7 +64,7 @@ function DeviceClockIcon(props: any) {
   )
 }
 
-function DeviceListIcon(props: any) {
+export function DeviceListIcon(props: React.HTMLAttributes<SVGElement>) {
   return (
     <svg viewBox="0 0 32 32" fill="none" aria-hidden="true" {...props}>
       <path
@@ -117,7 +82,7 @@ function DeviceListIcon(props: any) {
   )
 }
 
-function DeviceLockIcon(props: any) {
+export function DeviceLockIcon(props: React.HTMLAttributes<SVGElement>) {
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true" {...props}>
       <circle cx={16} cy={16} r={16} fill="#A3A3A3" fillOpacity={0.2} />
@@ -137,7 +102,7 @@ function DeviceLockIcon(props: any) {
   )
 }
 
-function DeviceChartIcon(props: any) {
+export function DeviceChartIcon(props: React.HTMLAttributes<SVGElement>) {
   return (
     <svg viewBox="0 0 32 32" fill="none" aria-hidden="true" {...props}>
       <path
@@ -158,30 +123,10 @@ function DeviceChartIcon(props: any) {
   )
 }
 
-export function Services() {
+export function StarIcon(props: React.HTMLAttributes<SVGElement>) {
   return (
-    <section aria-label="Servicios ofrecidos por Ianua" className="py-20 sm:py-32">
-      <Container>
-        <div className="mx-auto max-w-2xl sm:text-center">
-          <h2 className="text-3xl font-medium tracking-tight text-gray-900">Estos son nuestros servicios</h2>
-          <p className="mt-2 text-lg text-gray-600">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita repellat officiis, culpa harum
-            laudantium dolorem nesciunt necessitatibus, sequi unde quae.
-          </p>
-        </div>
-        <ul
-          role="list"
-          className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 text-sm sm:mt-20 sm:grid-cols-2 md:gap-y-10 lg:max-w-none lg:grid-cols-3"
-        >
-          {features.map((feature) => (
-            <li key={feature.name} className="rounded-2xl border border-gray-200 p-8">
-              <feature.icon className="h-8 w-8" />
-              <h3 className="mt-6 font-semibold text-gray-900">{feature.name}</h3>
-              <p className="mt-2 text-gray-700">{feature.description}</p>
-            </li>
-          ))}
-        </ul>
-      </Container>
-    </section>
+    <svg viewBox="0 0 20 20" aria-hidden="true" {...props}>
+      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+    </svg>
   )
 }

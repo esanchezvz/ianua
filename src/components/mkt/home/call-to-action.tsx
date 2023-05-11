@@ -1,7 +1,7 @@
-import { CircleBackground } from '@/ui/circle-background'
-import { Container } from '@/ui/container'
+import { CircleBackground } from '@/components/ui/circle-background'
+import { Container } from '@/components/ui/container'
 
-export function CallToAction() {
+export default function CallToAction() {
   return (
     <section id="get-free-shares-today" className="relative overflow-hidden bg-blue-500 py-20 sm:py-28">
       <div className="absolute left-20 top-1/2 -translate-y-1/2 sm:left-1/2 sm:-translate-x-1/2">

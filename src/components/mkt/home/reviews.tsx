@@ -5,7 +5,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useInView } from 'framer-motion'
 
-import { Container } from '@/ui/container'
+import { Container } from '@/components/ui/container'
+import { splitArray } from '@/utils'
+
+import Review from '../review'
 
 const reviews = [
   {
@@ -94,74 +97,6 @@ const reviews = [
   },
 ]
 
-function StarIcon(props: any) {
-  return (
-    <svg viewBox="0 0 20 20" aria-hidden="true" {...props}>
-      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-    </svg>
-  )
-}
-
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <div className="flex">
-      {[1, 1, 1, 1, 1].map((index) => (
-        <StarIcon
-          key={index}
-          className={clsx('h-5 w-5', rating > index ? 'fill-cyan-500' : 'fill-gray-300')}
-        />
-      ))}
-    </div>
-  )
-}
-
-type ReviewProps = {
-  title: string
-  body: string
-  author: string
-  rating: number
-  className?: string
-} & React.HTMLAttributes<HTMLElement>
-
-function Review({ title, body, author, rating, className, ...props }: ReviewProps) {
-  let animationDelay = useMemo(() => {
-    let possibleAnimationDelays = ['0s', '0.1s', '0.2s', '0.3s', '0.4s', '0.5s']
-    return possibleAnimationDelays[Math.floor(Math.random() * possibleAnimationDelays.length)]
-  }, [])
-
-  return (
-    <figure
-      className={clsx(
-        'animate-fade-in rounded-3xl bg-white p-6 opacity-0 shadow-md shadow-gray-900/5',
-        className
-      )}
-      style={{ animationDelay }}
-      {...props}
-    >
-      <blockquote className="text-gray-900">
-        <StarRating rating={rating} />
-        <p className="mt-4 text-lg font-semibold leading-6 before:content-['“'] after:content-['”']">
-          {title}
-        </p>
-        <p className="mt-3 text-base leading-7">{body}</p>
-      </blockquote>
-      <figcaption className="mt-3 text-sm text-gray-600 before:content-['–_']">{author}</figcaption>
-    </figure>
-  )
-}
-
-function splitArray(array: any[], numParts: number) {
-  let result: any[] = []
-  for (let i = 0; i < array.length; i++) {
-    let index = i % numParts
-    if (!result[index]) {
-      result[index] = []
-    }
-    result[index].push(array[i])
-  }
-  return result
-}
-
 function ReviewColumn({ className, reviews, reviewClassName = () => {}, msPerPixel = 0 }: any) {
   let columnRef = useRef<HTMLDivElement>(null)
   let [columnHeight, setColumnHeight] = useState(0)
@@ -198,10 +133,12 @@ function ReviewColumn({ className, reviews, reviewClassName = () => {}, msPerPix
 }
 
 function ReviewGrid() {
-  let containerRef = useRef<HTMLDivElement>(null)
-  let isInView = useInView(containerRef, { once: true, amount: 0.4 })
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(containerRef, { once: true, amount: 0.4 })
   let columns = splitArray(reviews, 3)
   columns = [columns[0], columns[1], splitArray(columns[2], 2)]
+
+  console.log({ columns })
 
   return (
     <div
@@ -235,15 +172,16 @@ function ReviewGrid() {
   )
 }
 
-export function Reviews() {
+export default function Reviews() {
   return (
     <section id="reviews" aria-labelledby="reviews-title" className="pb-16 pt-20 sm:pb-24 sm:pt-32">
       <Container>
         <h2 id="reviews-title" className="text-3xl font-medium tracking-tight text-gray-900 sm:text-center">
-          Everyone is changing their life with Pocket.
+          Nuestras Reseñas.
         </h2>
         <p className="mt-2 text-lg text-gray-600 sm:text-center">
-          Thousands of people have doubled their net-worth in the last 30 days.
+          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt necessitatibus illum ab facere
+          corporis mollitia non doloribus officiis rerum.
         </p>
         <ReviewGrid />
       </Container>

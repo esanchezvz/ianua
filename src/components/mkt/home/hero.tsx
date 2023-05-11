@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-export function Hero() {
+export default function Hero() {
   return (
     <section className="flex h-screen flex-col items-center justify-center bg-home-hero bg-cover">
       <div className="mx-auto  max-w-2xl text-center">

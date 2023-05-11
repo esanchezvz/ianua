@@ -2,9 +2,9 @@
 
 import { BuildingOffice2Icon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
 
-import { Container } from '@/ui/container'
+import { Container } from '@/components/ui/container'
 
-export function Contact() {
+export default function Contact() {
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault()
     alert('Enviar a un correo!')

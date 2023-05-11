@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { Container } from '@/ui/container'
+import { Container } from '@/components/ui/container'
 
 // TODO - fetch from backend or json file
 const faqs = [
@@ -56,7 +56,7 @@ const faqs = [
   ],
 ]
 
-export function Faqs() {
+export default function Faqs() {
   return (
     <section id="faqs" aria-labelledby="faqs-title" className="border-t border-gray-200 py-20 sm:py-32">
       <Container>
