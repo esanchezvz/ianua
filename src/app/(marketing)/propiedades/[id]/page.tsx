@@ -1,8 +1,7 @@
 import { Container } from '@/components/ui/container'
-import { listings, type Listing } from '@/utils/mock-data'
+import { listings } from '@/utils/mock-data'
 
 type ListingProps = {
-  listing: Listing[]
   params: {
     id: string
   }
