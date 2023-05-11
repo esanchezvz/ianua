@@ -1,3 +1,4 @@
+import AboutUs from '@/components/mkt/home/about'
 import CallToAction from '@/components/mkt/home/call-to-action'
 import Contact from '@/components/mkt/home/contact'
 import FeaturedListings from '@/components/mkt/home/featured-listings'
@@ -12,6 +13,7 @@ export default function Home() {
     <main>
       <Logo letters />
       <Hero />
+      <AboutUs />
       <Services />
       <CallToAction />
       <FeaturedListings listings={listings.slice(0, 6)} />
