@@ -113,6 +113,9 @@ module.exports = {
           },
         },
       },
+      zIndex: {
+        1: '1',
+      },
     },
   },
   plugins: [require('@tailwindcss/forms')],

@@ -43,7 +43,7 @@ export function Header() {
         ref={setHeaderRef}
         style={{ marginBottom: -headerHeight ?? undefined }}
       >
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-5 py-3 md:px-10 lg:px-20">
           <div className="flex">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">IANUA</span>

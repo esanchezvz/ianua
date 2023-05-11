@@ -1,5 +1,8 @@
 import { type SVGProps } from 'react'
 
+import { Container } from '@/components/ui/container'
+import Logo from '@/components/ui/logo'
+
 const navigation = {
   main: [
     { name: 'Aviso de Privacidad', href: '#' },
@@ -73,29 +76,38 @@ const navigation = {
 
 export default function Footer() {
   return (
-    <footer className="bg-light-blue">
-      <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
-        <nav className="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
-          {navigation.main.map((item) => (
-            <div key={item.name} className="pb-6">
-              <a href={item.href} className="text-sm leading-6 text-white hover:text-white-800">
-                {item.name}
-              </a>
+    <footer className="sticky bottom-0 bg-light-blue">
+      <Container className="overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
+        <div className="flex flex-wrap gap-8">
+          <Logo className="h-full" />
+
+          <div className="flex grow flex-col items-center justify-center">
+            <nav
+              className="-mb-6 flex columns-2 flex-wrap justify-center gap-5 sm:space-x-12"
+              aria-label="Footer"
+            >
+              {navigation.main.map((item) => (
+                <div key={item.name} className="text-center sm:pb-6">
+                  <a href={item.href} className="text-sm leading-6 text-white hover:text-white-800">
+                    {item.name}
+                  </a>
+                </div>
+              ))}
+            </nav>
+            <div className="mt-10 flex justify-center space-x-10">
+              {navigation.social.map((item) => (
+                <a key={item.name} href={item.href} className="text-white hover:text-white-800">
+                  <span className="sr-only">{item.name}</span>
+                  <item.icon className="h-6 w-6" aria-hidden="true" />
+                </a>
+              ))}
             </div>
-          ))}
-        </nav>
-        <div className="mt-10 flex justify-center space-x-10">
-          {navigation.social.map((item) => (
-            <a key={item.name} href={item.href} className="text-white hover:text-white-800">
-              <span className="sr-only">{item.name}</span>
-              <item.icon className="h-6 w-6" aria-hidden="true" />
-            </a>
-          ))}
+            <p className="mt-10 text-center text-xs leading-5 text-white">
+              &copy; {new Date().getFullYear()} IANUA. Todos los derechos reservados.
+            </p>
+          </div>
         </div>
-        <p className="mt-10 text-center text-xs leading-5 text-white">
-          &copy; {new Date().getFullYear()} IANUA. Todos los derechos reservados.
-        </p>
-      </div>
+      </Container>
     </footer>
   )
 }

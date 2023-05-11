@@ -1,6 +1,8 @@
 import clsx from 'clsx'
 import Image from 'next/image'
 
+import { cn } from '@/utils'
+
 type Props = {
   variant?: 'light' | 'default'
   letters?: boolean
@@ -18,7 +20,7 @@ export default function Logo({ className, letters, variant = 'default' }: Props)
       src={`/${name}`}
       width={width}
       height={height}
-      className={clsx('h-8 w-auto', className)}
+      className={cn('h-8 w-auto', className)}
       alt="Ianua"
     />
   )
