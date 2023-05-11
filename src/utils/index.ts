@@ -7,8 +7,8 @@ export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
 }
 
-export const splitArray = (array: any[], numParts: number) => {
-  let result: any[] = []
+export const splitArray = <T>(array: T[], numParts: number) => {
+  let result: Array<T[]> = []
   for (let i = 0; i < array.length; i++) {
     const index = i % numParts
 

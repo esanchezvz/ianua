@@ -135,10 +135,8 @@ function ReviewColumn({ className, reviews, reviewClassName = () => {}, msPerPix
 function ReviewGrid() {
   const containerRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(containerRef, { once: true, amount: 0.4 })
-  let columns = splitArray(reviews, 3)
-  columns = [columns[0], columns[1], splitArray(columns[2], 2)]
-
-  console.log({ columns })
+  const _columns = splitArray(reviews, 3)
+  const columns = [_columns[0], _columns[1], splitArray(_columns[2], 2)] as const
 
   return (
     <div
