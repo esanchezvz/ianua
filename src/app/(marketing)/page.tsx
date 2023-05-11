@@ -11,7 +11,6 @@ import { listings } from '@/utils/mock-data'
 export default function Home() {
   return (
     <main>
-      <Logo letters />
       <Hero />
       <AboutUs />
       <Services />
