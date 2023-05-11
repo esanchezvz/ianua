@@ -25,7 +25,7 @@ export default function Home() {
 
   return (
     <>
-      <main className="bg-white">
+      <main>
         <Hero openProfilerModal={openProfilerModal} />
         <AboutUs />
         <Services />
