@@ -57,7 +57,7 @@ export default function ListingCard({ listing, share = true }: ListingCardProps)
 
   return (
     <div
-      className="relative max-w-[330px] overflow-hidden rounded-lg"
+      className="relative overflow-hidden rounded-lg sm:max-w-[330px]"
       onMouseEnter={handleCardHover}
       onMouseLeave={handleCardHover}
     >
@@ -125,7 +125,13 @@ type SlideProps = {
 function Slide({ src }: SlideProps) {
   return (
     <div className="relative mr-4 h-56 flex-[0_0_100%] overflow-hidden rounded-t-lg">
-      <Image src={src} fill className="object-cover object-center" alt="" />
+      <Image
+        src={src}
+        fill
+        className="object-cover object-center"
+        alt=""
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
     </div>
   )
 }

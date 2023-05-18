@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 import { type SelectOption } from '@/components/ui/select'
+import { env } from '@/core/env'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -43,3 +44,7 @@ export const zoneOptions: SelectOption[] = [
   { id: 'venustiano_carranza', label: 'Venustiano Carranza' },
   { id: 'xochimilco', label: 'Xochimilco' },
 ]
+
+export const absoluteUrl = (path: string) => {
+  return `${env.NEXT_PUBLIC_APP_URL}${path}`
+}
