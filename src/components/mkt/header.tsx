@@ -23,6 +23,7 @@ export function Header() {
   const [headerRef, setHeaderRef] = useState<HTMLElement | null>(null)
   const { y } = useWindowScroll()
   const { height } = useWindowSize()
+  const isLightBg = y >= height / 2
 
   const headerHeight = headerRef?.clientHeight ?? 0
 
@@ -38,7 +39,7 @@ export function Header() {
     <>
       <header
         className={clsx('sticky top-0 z-10 backdrop-blur transition ease-linear', {
-          'bg-white/50': y >= height / 2,
+          'bg-white/50': isLightBg,
         })}
         ref={setHeaderRef}
         style={{ marginBottom: -headerHeight ?? undefined }}
@@ -47,7 +48,7 @@ export function Header() {
           <div className="flex">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">IANUA</span>
-              <Logo letters />
+              <Logo letters variant={isLightBg ? 'default' : 'light'} />
             </Link>
           </div>
 
