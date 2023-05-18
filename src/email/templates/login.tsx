@@ -65,7 +65,6 @@ export default function LoginEmail({ url }: LoginEmailProps) {
             <Link style={footerLink} href={baseUrl} target="_blank" rel="noopener noreferrer">
               Términos
             </Link>
-            &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
             <Text style={footerText}>
               ©{new Date().getFullYear()} IANUA. <br />
               <br />
