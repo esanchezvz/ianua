@@ -19,25 +19,71 @@ interface LoginEmailProps {
   url: string
 }
 
+export function LoginEmail({ url }: LoginEmailProps) {
+  return (
+    <AuthEmail
+      preview="Haz click en el link para iniciar sesión."
+      title="Inicia Sesión"
+      blocks={[
+        { type: 'text', text: 'Haz click en el siguiente link para iniciar sesión en IANUA', hero: true },
+        { type: 'link', text: url, href: url },
+        { type: 'text', text: 'Si no solicitaste este correo, no te preocupes - puedes ignorarlo.' },
+      ]}
+    />
+  )
+}
+
+export function WelcomeEmail({ url }: LoginEmailProps) {
+  return (
+    <AuthEmail
+      preview="Gracias por confiar en nosotros. ¡Inicia por crear tu cuenta!"
+      title="Inicia Sesión"
+      blocks={[
+        { type: 'text', text: 'Haz click en el siguiente link para iniciar sesión en IANUA', hero: true },
+        { type: 'link', text: url, href: url },
+        { type: 'text', text: 'Si no solicitaste este correo, no te preocupes - puedes ignorarlo.' },
+      ]}
+    />
+  )
+}
+
+type Block = { type: 'text'; text: string; hero?: boolean } | { type: 'link'; text: string; href: string }
+
+interface AuthEmailProps {
+  preview: string
+  blocks: Block[]
+  title: string
+}
+
 const baseUrl = env.NEXT_PUBLIC_APP_URL
 
-export default function LoginEmail({ url }: LoginEmailProps) {
+function AuthEmail({ blocks, preview, title }: AuthEmailProps) {
   return (
     <Html lang="es">
       <Head />
-      <Preview>Inica sesión</Preview>
+      <Preview>{preview}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
             <Img src={`${baseUrl}/logo_letters.png`} width="120" alt="IANUA" />
           </Section>
-          <Heading style={h1}>Inicia sesión</Heading>
-          <Text style={heroText}>Haz click en el siguiente link para iniciar sesión en IANUA</Text>
+          <Heading style={h1}>{title}</Heading>
 
-          <Link href={url}>{url}</Link>
+          {blocks.map((block, i) => {
+            if (block.type === 'link') {
+              return (
+                <Link href={block.href} key={`block-${block.type}-${i}`}>
+                  {block.text}
+                </Link>
+              )
+            }
 
-          <Text style={text}>Si no solicitaste este correo, no te preocupes - puedes ignorarlo.</Text>
-
+            return (
+              <Text style={block.hero ? heroText : text} key={`block-${block.type}-${i}`}>
+                {block.text}
+              </Text>
+            )
+          })}
           <Section>
             <Row style={footerLogos}>
               <Column style={{ width: '66%' }}>

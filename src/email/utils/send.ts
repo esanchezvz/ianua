@@ -1,32 +1,50 @@
 import { render } from '@react-email/components'
-import sendgrid from '@sendgrid/mail'
+import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend'
 
 import { env } from '@/core/env'
-import LoginEmail from '@/email/templates/login'
+import { LoginEmail, WelcomeEmail } from '@/email/templates/auth'
 
-sendgrid.setApiKey(env.SENDGRID_API_KEY)
+const client = new MailerSend({
+  apiKey: env.MAILERSEND_API_KEY,
+})
 
 type SendEmailOptions = {
-  from?: string
-  to: string
+  from?: { email: string; name?: string }
+  to: { email: string; name?: string }
   subject: string
   html: string
 }
 
-export const sendEmail = ({ from = env.NO_REPLY_EMAIL, ...rest }: SendEmailOptions) => {
-  return sendgrid.send({
-    from,
-    ...rest,
+const sendEmail = ({
+  from = { email: env.NO_REPLY_EMAIL, name: 'IANUA - No Reply' },
+  to,
+  html,
+  subject,
+}: SendEmailOptions) => {
+  const sentFrom = new Sender(from.email, from.name)
+  const recipients = [new Recipient(to.email)]
+
+  const params = new EmailParams().setFrom(sentFrom).setTo(recipients).setSubject(subject).setHtml(html)
+
+  return client.email.send(params)
+}
+
+export const sendLoginEmail = (to: { email: string; name?: string }, options: { url: string }) => {
+  const html = render(LoginEmail(options))
+
+  return sendEmail({
+    to,
+    html,
+    subject: 'Inicia Sesión',
   })
 }
 
-type SendLoginEmailOptions = {
-  loginUrl: string
-  to: string
-}
+export const sendWelcomeEmail = (to: { email: string; name?: string }, options: { url: string }) => {
+  const html = render(WelcomeEmail(options))
 
-export const sendLoginEmail = ({ loginUrl, to }: SendLoginEmailOptions) => {
-  const html = render(LoginEmail({ url: loginUrl }))
-
-  return sendEmail({ html, subject: 'Bienvenido (a)!', to })
+  return sendEmail({
+    to,
+    html,
+    subject: '¡Bienvenido! Ya puedes crear tu cuenta',
+  })
 }
