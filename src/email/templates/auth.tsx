@@ -33,11 +33,15 @@ export function LoginEmail({ url }: LoginEmailProps) {
   )
 }
 
-export function WelcomeEmail({ url }: LoginEmailProps) {
+interface WelcomeEmailProps {
+  url: string
+}
+
+export function WelcomeEmail({ url }: WelcomeEmailProps) {
   return (
     <AuthEmail
       preview="Gracias por confiar en nosotros. ¡Inicia por crear tu cuenta!"
-      title="Inicia Sesión"
+      title="¡Bienvenido!"
       blocks={[
         { type: 'text', text: 'Haz click en el siguiente link para iniciar sesión en IANUA', hero: true },
         { type: 'link', text: url, href: url },

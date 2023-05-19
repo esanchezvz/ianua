@@ -16,7 +16,7 @@ export type ListingData = Record<string, unknown>
 export type Listing = Override<
   PrismaListing,
   {
-    data: ListingData
     address: ListingAddress
+    data: ListingData
   }
 >
