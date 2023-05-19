@@ -40,6 +40,15 @@ model Session {
   @@map(name: "sessions")
 }
 
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map(name: "verification_tokens")
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -52,24 +61,135 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  broker   Broker?
 
   @@map(name: "users")
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
+model Broker {
+  id       String    @id @default(cuid())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   String    @unique @map("user")
+  listings Listing[]
+}
 
-  @@unique([identifier, token])
-  @@map(name: "verification_tokens")
+model Listing {
+  id                               String                   @id @default(cuid())
+  access_roads                     String[]
+  address                          Json
+  ammenities                       ListingAmmenities[]
+  bathrooms                        Float
+  building_event_policy_strictness Int // 1 to 5 scale // Events in the common room availble to entire development
+  climate                          ListingClimate
+  condition                        Int // 1 to 5 scale
+  createdAt                        DateTime                 @default(now()) @map(name: "created_at")
+  data                             Json?
+  description                      String                   @db.VarChar(1000)
+  development_buildings            Int?
+  development_name                 String?
+  development_stories              Int?
+  extra_sq_m                       Int? // m2 for private rooftop, backyard, balcony, etc.
+  featured                         Boolean?                 @default(false)
+  floor                            Int?
+  furnished                        Boolean
+  glass                            String
+  interior_bathroom_furniture      String?
+  interior_ceiling_lignts          String?
+  interior_electric_instalations   String?
+  interior_floors                  String?
+  interior_walls                   String?
+  last_renovation                  DateTime?
+  living_sq_m                      Int
+  location_references              String
+  locksmith                        String
+  main_feature                     String
+  maintenance_cost                 Int?
+  name                             String
+  natural_lighting                 Int // 1 to 5 scale
+  nearby_social_areas              String[]
+  orientation                      String
+  outside_finishes                 String?
+  parking_spots                    Int
+  parking_sq_m                     Int?
+  pet_firendly                     Boolean
+  price                            Int
+  private_event_policy_strictness  Int // 1 to 5 scale // Events in the actual property
+  private_services                 ListingPrivateServices[]
+  property_type                    PropertyType
+  public_services                  ListingPublicServices[]
+  rooms                            Int
+  security                         String
+  status                           ListingStatus
+  storage_sq_m                     Int?
+  stories                          Int
+  style                            String
+  total_sq_m                       Int
+  type                             ListingType
+  updatedAt                        DateTime                 @updatedAt @map(name: "updated_at")
+  urban_equipment                  String[]
+  views                            String
+  yearly_tax                       Int? // This is the "predio" tax in Mexico
+
+  broker   Broker @relation(fields: [borkerId], references: [id], onDelete: Cascade)
+  borkerId String @unique @map("broker")
+
+  @@map("listings")
 }
 
 // Enums
 
+enum ListingAmmenities {
+  EVENTS_ROOM
+  GYM
+  LIBRARY
+  SPA
+}
+
+enum ListingClimate {
+  COLD
+  WARM
+}
+
+enum ListingPrivateServices {
+  BANK
+  DAYCARE
+  FARMACY
+  HOSPITAL
+  SCHOOL
+  SUPERMARKET
+  UNEVERSITY
+  VETERINARY
+}
+
+enum ListingPublicServices {
+  DAYCARE
+  HOSPITAL
+  MARKET
+  SCHOOL
+  TRANSPORT
+  UNEVERSITY
+}
+
+enum ListingStatus {
+  DELETED
+  PENDING
+  PUBLISHED
+  UNAVAILABLE
+}
+
+enum PropertyType {
+  APPARTMENT
+  HOUSE
+}
+
+enum ListingType {
+  FOR_RENT
+  FOR_SALE
+}
+
 enum Role {
-  USER
   ADMIN
-  SUPER_ADMIN
   BROKER
+  SUPER_ADMIN
+  USER
 }
