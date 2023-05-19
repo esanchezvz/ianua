@@ -1,10 +1,11 @@
-import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { Role } from '@prisma/client'
-import { DefaultSession, NextAuthOptions } from 'next-auth'
+import { type DefaultSession, type NextAuthOptions, getServerSession } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
 
-import { db } from '@/core/db'
+import { db, dbAuthAdapter } from '@/core/db'
 import { sendLoginEmail, sendWelcomeEmail } from '@/email/utils/send'
+
+import { env } from './env'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -19,8 +20,9 @@ declare module 'next-auth' {
       role: Role
       name: string
       email: string
+      email_verified: boolean
       image: string
-    } & DefaultSession['user']
+    }
   }
 
   interface User {
@@ -33,15 +35,17 @@ declare module 'next-auth' {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
+  adapter: dbAuthAdapter,
   session: {
     strategy: 'jwt',
   },
   pages: {
     signIn: '/login',
   },
+  secret: env.NEXTAUTH_SECRET,
   providers: [
     EmailProvider({
+      from: '',
       sendVerificationRequest: async ({ identifier, url }) => {
         const user = await db.user.findUnique({
           where: {
@@ -54,29 +58,21 @@ export const authOptions: NextAuthOptions = {
 
         // TODO validate captcha
 
-        if (user?.emailVerified) {
-          const {
-            body: { errors, message },
-          } = await sendLoginEmail({ email: identifier }, { url })
-
-          if (!!errors) {
-            throw new Error(`[Mailersend:Login] - ${message}`)
-          }
-        }
-
-        if (!user?.emailVerified) {
-          const {
-            body: { errors, message },
-          } = await sendWelcomeEmail({ email: identifier }, { url })
-
-          if (!!errors) {
-            throw new Error(`[Mailersend:Welcome] - ${message}`)
-          }
+        try {
+          if (user?.emailVerified) await sendLoginEmail({ loginUrl: url, to: identifier })
+          if (!user?.emailVerified) await sendWelcomeEmail({ registerUrl: url, to: identifier })
+        } catch (error) {
+          console.error(error)
+          // throw new Error(body.message)
         }
       },
     }),
   ],
   callbacks: {
+    async signIn(params) {
+      console.log(params)
+      return true
+    },
     async session({ token, session }) {
       if (token) {
         session.user.id = token.id as string
@@ -84,6 +80,7 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email as string
         session.user.image = token.picture as string
         session.user.role = token.role as Role
+        session.user.email_verified = token.email_verified as boolean
       }
 
       return session
@@ -112,4 +109,12 @@ export const authOptions: NextAuthOptions = {
       }
     },
   },
+}
+
+export const getCurrentUser = async () => {
+  const session = await getServerSession(authOptions)
+
+  if (!session) return null
+
+  return session.user
 }

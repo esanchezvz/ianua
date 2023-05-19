@@ -1,3 +1,4 @@
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
 
 declare global {
@@ -15,3 +16,5 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 export const db = prisma
+
+export const dbAuthAdapter = PrismaAdapter(db)

@@ -1,50 +1,64 @@
 import { render } from '@react-email/components'
-import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend'
+import { type MailDataRequired } from '@sendgrid/mail'
 
 import { env } from '@/core/env'
 import { LoginEmail, WelcomeEmail } from '@/email/templates/auth'
 
-const client = new MailerSend({
-  apiKey: env.MAILERSEND_API_KEY,
-})
+import sendgrid from './sendgrid'
 
 type SendEmailOptions = {
-  from?: { email: string; name?: string }
-  to: { email: string; name?: string }
+  from?: { email: string; name: string }
+  to: string
   subject: string
   html: string
-}
+} & Omit<MailDataRequired, 'from'>
 
-const sendEmail = ({
-  from = { email: env.NO_REPLY_EMAIL, name: 'IANUA - No Reply' },
-  to,
-  html,
-  subject,
+export const sendEmail = ({
+  from = { name: 'Ianua', email: env.NO_REPLY_EMAIL },
+  ...rest
 }: SendEmailOptions) => {
-  const sentFrom = new Sender(from.email, from.name)
-  const recipients = [new Recipient(to.email)]
-
-  const params = new EmailParams().setFrom(sentFrom).setTo(recipients).setSubject(subject).setHtml(html)
-
-  return client.email.send(params)
-}
-
-export const sendLoginEmail = (to: { email: string; name?: string }, options: { url: string }) => {
-  const html = render(LoginEmail(options))
-
-  return sendEmail({
-    to,
-    html,
-    subject: 'Inicia Sesión',
+  return sendgrid.send({
+    from,
+    ...rest,
   })
 }
 
-export const sendWelcomeEmail = (to: { email: string; name?: string }, options: { url: string }) => {
-  const html = render(WelcomeEmail(options))
+type SendLoginEmailOptions = {
+  loginUrl: string
+  to: string
+}
+
+export const sendLoginEmail = ({ loginUrl, to }: SendLoginEmailOptions) => {
+  const html = render(LoginEmail({ url: loginUrl }))
 
   return sendEmail({
+    html,
+    subject: 'Inicia Sesión',
     to,
+    headers: {
+      // Set this to prevent Gmail from threading emails.
+      // See https://stackoverflow.com/questions/23434110/force-emails-not-to-be-grouped-into-conversations/25435722.
+      'X-Entity-Ref-ID': new Date().getTime() + '',
+    },
+  })
+}
+
+type SendWelcomeEmailOptions = {
+  registerUrl: string
+  to: string
+}
+
+export const sendWelcomeEmail = ({ registerUrl, to }: SendWelcomeEmailOptions) => {
+  const html = render(WelcomeEmail({ url: registerUrl }))
+
+  return sendEmail({
     html,
     subject: '¡Bienvenido! Ya puedes crear tu cuenta',
+    to,
+    headers: {
+      // Set this to prevent Gmail from threading emails.
+      // See https://stackoverflow.com/questions/23434110/force-emails-not-to-be-grouped-into-conversations/25435722.
+      'X-Entity-Ref-ID': new Date().getTime() + '',
+    },
   })
 }

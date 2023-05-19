@@ -33,15 +33,23 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
   const onSubmit = async (data: FormData) => {
     setIsLoading(true)
 
-    const signInResult = await signIn('email', {
-      email: data.email.toLowerCase(),
-      redirect: false,
-      callbackUrl: searchParams?.get('from') || '/perfil',
-    })
+    const signInResult = await signIn(
+      'email',
+      {
+        email: data.email.toLowerCase(),
+        redirect: false,
+        callbackUrl: searchParams?.get('from') || '/admin/listings',
+        name: 'Esteban',
+      },
+      {
+        capthcha: 'captchaToken',
+        role: 'role',
+      }
+    )
 
     setIsLoading(false)
 
-    if (!signInResult?.ok) {
+    if (signInResult?.error) {
       return toast({
         title: 'Oooops!',
         description: 'Ocurrió un error. Intenta nuevamente.',
@@ -57,7 +65,7 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="grid gap-2">
           <div className="grid gap-1">
             <TextField
@@ -71,6 +79,7 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
               disabled={isLoading}
               {...register('email')}
             />
+            <input type="hidden" value="thiswouldbe the captcha string" name="captcha" />
           </div>
           <button className={cn(buttonVariants())} disabled={isLoading}>
             {isLoading && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
