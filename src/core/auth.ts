@@ -1,38 +1,10 @@
-import { Role } from '@prisma/client'
-import { type DefaultSession, type NextAuthOptions, getServerSession } from 'next-auth'
+import { type NextAuthOptions, getServerSession } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
 
 import { db, dbAuthAdapter } from '@/core/db'
 import { sendLoginEmail, sendWelcomeEmail } from '@/email/utils/send'
 
 import { env } from './env'
-
-/**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- *
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
- */
-declare module 'next-auth' {
-  interface Session extends DefaultSession {
-    user: {
-      id: string
-      role: Role
-      name: string
-      email: string
-      email_verified: boolean
-      image: string
-    }
-  }
-
-  interface User {
-    role: Role
-    email_verified: boolean
-    name: string
-    email: string
-    image: string
-  }
-}
 
 export const authOptions: NextAuthOptions = {
   adapter: dbAuthAdapter,
@@ -58,29 +30,20 @@ export const authOptions: NextAuthOptions = {
 
         // TODO validate captcha
 
-        try {
-          if (user?.emailVerified) await sendLoginEmail({ loginUrl: url, to: identifier })
-          if (!user?.emailVerified) await sendWelcomeEmail({ registerUrl: url, to: identifier })
-        } catch (error) {
-          console.error(error)
-          // throw new Error(body.message)
-        }
+        if (user?.emailVerified) await sendLoginEmail({ loginUrl: url, to: identifier })
+        if (!user?.emailVerified) await sendWelcomeEmail({ registerUrl: url, to: identifier })
       },
     }),
   ],
   callbacks: {
-    async signIn(params) {
-      console.log(params)
-      return true
-    },
     async session({ token, session }) {
       if (token) {
-        session.user.id = token.id as string
-        session.user.name = token.name as string
-        session.user.email = token.email as string
-        session.user.image = token.picture as string
-        session.user.role = token.role as Role
-        session.user.email_verified = token.email_verified as boolean
+        session.user.id = token.id
+        session.user.name = token.name
+        session.user.email = token.email
+        session.user.image = token.picture
+        session.user.role = token.role
+        session.user.email_verified = token.email_verified
       }
 
       return session
