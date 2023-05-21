@@ -34,8 +34,6 @@ export function AuthForm({ className, register: isRegister, ...props }: UserAuth
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const searchParams = useSearchParams()
 
-  console.log(captchaToken)
-
   const onSubmit = async (data: FormData) => {
     setIsLoading(true)
 
