@@ -8,8 +8,8 @@ import Logo from '@/components/ui/logo'
 import { cn } from '@/utils'
 
 export const metadata: Metadata = {
-  title: 'Inicia Sesión',
-  description: 'Ingresa a tu cuenta.',
+  title: 'Registrate',
+  description: 'Crea tu cuenta en Ianua y encuentra tu hogar ideal.',
 }
 
 export default function LoginPage() {
@@ -28,13 +28,14 @@ export default function LoginPage() {
         <div className="flex flex-col space-y-2 text-center">
           <Logo className="mb-10 h-full w-full" />
           <h1 className="text-2xl font-semibold tracking-tight">¡Bienvenido!</h1>
+          <p className="text-sm ">Ingresa tu información para poder crear tu cuenta</p>
         </div>
 
-        <AuthForm />
+        <AuthForm register />
 
         <p className="px-8 text-center text-sm ">
-          <Link href="/registro" className="hover:text-brand underline underline-offset-4">
-            ¿No tienes cuenta todavía? Crea una
+          <Link href="/login" className="hover:text-brand underline underline-offset-4">
+            ¿Ya tienes cuenta? Inicia sesión
           </Link>
         </p>
       </div>
