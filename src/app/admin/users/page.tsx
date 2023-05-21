@@ -14,6 +14,7 @@ import {
   PlusIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 type Field = keyof typeof profile.fields
 
@@ -261,6 +262,9 @@ function classNames(...classes: string[]) {
 export default function AdminUsers() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  const { data } = useSession()
+
+  console.log(data)
   return (
     <>
       <div className="flex h-screen overflow-hidden">

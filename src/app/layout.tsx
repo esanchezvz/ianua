@@ -6,6 +6,8 @@ import localFont from 'next/font/local'
 
 import { Toaster } from '@/components/shared/toaster'
 import { CapthaProvider } from '@/context/captcha'
+import { SessionProvider } from '@/context/session'
+import { getSession } from '@/core/auth'
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -23,14 +25,18 @@ export const metadata = {
   description: 'Descripción para SEO',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await getSession()
+
   return (
     <html lang="es" className={`${roboto.variable} ${larisAlte.variable} h-min-screen antialiased`}>
       <body className="flex h-full flex-col">
-        <CapthaProvider>
-          {children}
-          <Toaster />
-        </CapthaProvider>
+        <SessionProvider session={session}>
+          <CapthaProvider>
+            {children}
+            <Toaster />
+          </CapthaProvider>
+        </SessionProvider>
       </body>
     </html>
   )

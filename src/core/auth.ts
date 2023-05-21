@@ -1,3 +1,4 @@
+import { NextApiRequest } from 'next'
 import { type NextAuthOptions, getServerSession } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
 
@@ -6,7 +7,7 @@ import { sendLoginEmail, sendWelcomeEmail } from '@/email/utils/send'
 
 import { env } from './env'
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: (req?: NextApiRequest) => NextAuthOptions = (req) => ({
   adapter: dbAuthAdapter,
   session: {
     strategy: 'jwt',
@@ -19,6 +20,9 @@ export const authOptions: NextAuthOptions = {
     EmailProvider({
       from: '',
       sendVerificationRequest: async ({ identifier, url }) => {
+        console.log('sendVerificationRequest CALLED')
+        if (!req?.body.captcha) throw new Error('Validar Captcha')
+
         const user = await db.user.findUnique({
           where: {
             email: identifier,
@@ -72,12 +76,10 @@ export const authOptions: NextAuthOptions = {
       }
     },
   },
-}
+})
 
-export const getCurrentUser = async () => {
-  const session = await getServerSession(authOptions)
+export const getSession = async () => {
+  const session = await getServerSession(authOptions())
 
-  if (!session) return null
-
-  return session.user
+  return session
 }

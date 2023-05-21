@@ -1,12 +1,12 @@
 import { Role } from '@prisma/client'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 
-import { getCurrentUser } from '@/core/auth'
+import { getSession } from '@/core/auth'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentUser()
+  const session = await getSession()
 
-  if (!user || user.role === Role.USER) return notFound()
+  if (!session || session.user.role === Role.USER) return redirect('/login')
 
   return <>{children}</>
 }

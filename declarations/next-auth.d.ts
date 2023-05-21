@@ -38,3 +38,16 @@ declare module 'next-auth/jwt' {
     role: Role | null
   }
 }
+
+declare module 'next-auth/react' {
+  interface Session extends DefaultSession {
+    user: {
+      email_verified: Date | null
+      email: string | null
+      id: string | null
+      image: string | null
+      name: string | null
+      role: Role | null
+    }
+  }
+}
