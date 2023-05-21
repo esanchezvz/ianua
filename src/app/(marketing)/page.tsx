@@ -5,6 +5,7 @@ import FeaturedListings from '@/components/mkt/home/featured-listings'
 import Hero from '@/components/mkt/home/hero'
 import Reviews from '@/components/mkt/home/reviews'
 import Services from '@/components/mkt/home/services'
+import { useCaptcha } from '@/context/captcha'
 import { listings } from '@/utils/mock-data'
 
 export default function Home() {

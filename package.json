@@ -40,6 +40,8 @@
     "embla-carousel": "8.0.0-rc03",
     "embla-carousel-class-names": "8.0.0-rc03",
     "embla-carousel-react": "8.0.0-rc03",
+    "firebase": "^9.22.0",
+    "firebase-admin": "^11.8.0",
     "focus-visible": "^5.2.0",
     "framer-motion": "^10.12.9",
     "mailersend": "^2.1.1",

@@ -11,6 +11,7 @@ import * as z from 'zod'
 
 import { buttonVariants } from '@/components/ui/button'
 import { TextField } from '@/components/ui/text-field'
+import { useCaptcha } from '@/context/captcha'
 import { loginSchema, registerSchema } from '@/core/validations/auth'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/utils'
@@ -22,6 +23,7 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
 type FormData = Merge<z.infer<typeof loginSchema> | z.infer<typeof registerSchema>>
 
 export function AuthForm({ className, register: isRegister, ...props }: UserAuthFormProps) {
+  const { captchaToken } = useCaptcha()
   const {
     register,
     handleSubmit,
@@ -31,6 +33,8 @@ export function AuthForm({ className, register: isRegister, ...props }: UserAuth
   })
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const searchParams = useSearchParams()
+
+  console.log(captchaToken)
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true)
@@ -42,7 +46,7 @@ export function AuthForm({ className, register: isRegister, ...props }: UserAuth
       redirect: false,
       callbackUrl: searchParams?.get('from') || '/admin/listings',
       name: data.name?.trim(),
-      capthcha: 'captchaToken',
+      captcha: captchaToken,
     })
 
     setIsLoading(false)
