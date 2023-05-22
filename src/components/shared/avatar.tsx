@@ -7,12 +7,10 @@ import { useSession } from 'next-auth/react'
 export default function Avatar() {
   const { data } = useSession()
 
-  console.log(data)
-
   return (
     <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-light-blue">
       {data?.user.image ? (
-        <Image className="object-cover" src={data.user.image} alt={data?.user.name || ''} />
+        <Image className="object-cover" fill src={data.user.image} alt={data?.user.name || ''} />
       ) : data?.user.name ? (
         <span className="capitalize text-white">{data.user.name.substring(0, 2)}</span>
       ) : (
