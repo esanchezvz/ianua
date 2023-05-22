@@ -51,12 +51,16 @@ model VerificationToken {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
+  createdAt     DateTime  @default(now()) @map(name: "created_at")
+  date_of_birth DateTime?
   email         String?   @unique
   emailVerified DateTime? @map("email_verified")
+  gender        Gender?
   image         String?
+  name          String?
   role          Role      @default(USER)
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
+  surname_1     String?
+  surname_2     String?
   updatedAt     DateTime  @updatedAt @map(name: "updated_at")
 
   accounts Account[]
@@ -137,6 +141,12 @@ model Listing {
 }
 
 // Enums
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
 
 enum ListingAmmenities {
   EVENTS_ROOM
