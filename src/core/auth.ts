@@ -7,7 +7,7 @@ import { sendLoginEmail, sendWelcomeEmail } from '@/email/utils/send'
 
 import { env } from './env'
 
-export const authOptions: (req?: NextApiRequest) => NextAuthOptions = (req) => ({
+export const authOptions: NextAuthOptions = {
   adapter: dbAuthAdapter,
   session: {
     strategy: 'jwt',
@@ -20,9 +20,6 @@ export const authOptions: (req?: NextApiRequest) => NextAuthOptions = (req) => (
     EmailProvider({
       from: '',
       sendVerificationRequest: async ({ identifier, url }) => {
-        console.log('sendVerificationRequest CALLED')
-        if (!req?.body.captcha) throw new Error('Validar Captcha')
-
         const user = await db.user.findUnique({
           where: {
             email: identifier,
@@ -31,8 +28,6 @@ export const authOptions: (req?: NextApiRequest) => NextAuthOptions = (req) => (
             emailVerified: true,
           },
         })
-
-        // TODO validate captcha
 
         if (user?.emailVerified) await sendLoginEmail({ loginUrl: url, to: identifier })
         if (!user?.emailVerified) await sendWelcomeEmail({ registerUrl: url, to: identifier })
@@ -76,10 +71,10 @@ export const authOptions: (req?: NextApiRequest) => NextAuthOptions = (req) => (
       }
     },
   },
-})
+}
 
 export const getSession = async () => {
-  const session = await getServerSession(authOptions())
+  const session = await getServerSession(authOptions)
 
   return session
 }

@@ -1,6 +1,7 @@
 import { Role } from '@prisma/client'
 import { redirect } from 'next/navigation'
 
+import MainLayout from '@/components/admin/main-layout'
 import { getSession } from '@/core/auth'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -8,5 +9,5 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   if (!session || session.user.role === Role.USER) return redirect('/login')
 
-  return <>{children}</>
+  return <MainLayout>{children}</MainLayout>
 }
