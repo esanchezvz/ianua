@@ -70,7 +70,7 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
                   <Menu.Item>
                     {({ active }) => (
                       <Link
-                        href="/admin/perfil"
+                        href="/admin/profile"
                         className={cn(
                           active ? 'bg-gray-50' : '',
                           'block px-3 py-1 text-sm leading-6 text-gray-900'

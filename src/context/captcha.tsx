@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 
 import { AppCheck, getToken } from 'firebase/app-check'
 import { ReCaptchaV3Provider, initializeAppCheck } from 'firebase/app-check'
+import { useCookies } from 'react-cookie'
 
 import { env } from '@/core/env'
 import { firebaseApp } from '@/lib/firebase'
@@ -20,6 +21,7 @@ type CaptchaProviderProps = {
 }
 
 export function CapthaProvider({ children }: CaptchaProviderProps) {
+  const [_, setCookie] = useCookies(['captcha'])
   const [captchaToken, setCaptchaToken] = useState<string>('')
   const [appCheck, setAppCheck] = useState<AppCheck | null>(null)
 
@@ -28,9 +30,11 @@ export function CapthaProvider({ children }: CaptchaProviderProps) {
 
     const { token } = await getToken(appCheck)
 
+    setCookie('captcha', token)
+
     setCaptchaToken(token)
     return token
-  }, [appCheck])
+  }, [appCheck, setCookie])
 
   useEffect(() => {
     const firebaseAppCheck = initializeAppCheck(firebaseApp, {

@@ -52,6 +52,7 @@ specifiers:
   prettier-plugin-tailwindcss: ^0.2.8
   prisma: ^4.13.0
   react: 18.2.0
+  react-cookie: ^4.1.1
   react-dom: 18.2.0
   react-email: ^1.9.3
   react-hook-form: ^7.43.9
@@ -97,6 +98,7 @@ dependencies:
   postcss: 8.4.23
   postcss-focus-visible: 8.0.2_postcss@8.4.23
   react: 18.2.0
+  react-cookie: 4.1.1_react@18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-email: 1.9.3
   react-hook-form: 7.43.9_react@18.2.0
@@ -2900,6 +2902,13 @@ packages:
       '@types/node': 20.1.0
     dev: false
 
+  /@types/cookie/0.3.3:
+    resolution:
+      {
+        integrity: sha512-LKVP3cgXBT9RYj+t+9FDKwS5tdI+rPBXaNSkma7hvqy35lc7mAokC2zsqWJH0LaqIt3B962nuYI77hsJoT1gow==,
+      }
+    dev: false
+
   /@types/express-serve-static-core/4.17.35:
     resolution:
       {
@@ -2934,6 +2943,16 @@ packages:
       '@types/node': 20.1.0
     dev: false
     optional: true
+
+  /@types/hoist-non-react-statics/3.3.1:
+    resolution:
+      {
+        integrity: sha512-iMIqiko6ooLrTh1joXodJK5X9xeEALT1kM5G3ZLhD3hszxBdIEd5C75U834D9mLcINgD4OyZf5uQXjkuYydWvA==,
+      }
+    dependencies:
+      '@types/react': 18.2.6
+      hoist-non-react-statics: 3.3.2
+    dev: false
 
   /@types/js-cookie/2.2.7:
     resolution:
@@ -3045,7 +3064,6 @@ packages:
       {
         integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==,
       }
-    dev: true
 
   /@types/qs/6.9.7:
     resolution:
@@ -3079,7 +3097,6 @@ packages:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.3
       csstype: 3.1.2
-    dev: true
 
   /@types/rimraf/3.0.2:
     resolution:
@@ -3097,7 +3114,6 @@ packages:
       {
         integrity: sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==,
       }
-    dev: true
 
   /@types/send/0.17.1:
     resolution:
@@ -4184,6 +4200,14 @@ packages:
       split2: 3.2.2
       through2: 4.0.2
     dev: true
+
+  /cookie/0.4.2:
+    resolution:
+      {
+        integrity: sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==,
+      }
+    engines: { node: '>= 0.6' }
+    dev: false
 
   /cookie/0.5.0:
     resolution:
@@ -6358,6 +6382,15 @@ packages:
         integrity: sha512-Ox1pJVrDCyGHMG9CFg1tmrRUMRPRsAWYc/PinY0XzJU4K7y7vjNoLKIQ7BR5UJMCxNN8EM1MNDmHWA/B3aZUuw==,
       }
     engines: { node: '>=6' }
+    dev: false
+
+  /hoist-non-react-statics/3.3.2:
+    resolution:
+      {
+        integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==,
+      }
+    dependencies:
+      react-is: 16.13.1
     dev: false
 
   /homedir-polyfill/1.0.3:
@@ -9090,6 +9123,20 @@ packages:
     engines: { node: '>=10' }
     dev: false
 
+  /react-cookie/4.1.1_react@18.2.0:
+    resolution:
+      {
+        integrity: sha512-ffn7Y7G4bXiFbnE+dKhHhbP+b8I34mH9jqnm8Llhj89zF4nPxPutxHT1suUqMeCEhLDBI7InYwf1tpaSoK5w8A==,
+      }
+    peerDependencies:
+      react: '>= 16.3.0'
+    dependencies:
+      '@types/hoist-non-react-statics': 3.3.1
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      universal-cookie: 4.0.4
+    dev: false
+
   /react-dom/18.2.0_react@18.2.0:
     resolution:
       {
@@ -10616,6 +10663,16 @@ packages:
     dependencies:
       pako: 0.2.9
       tiny-inflate: 1.0.3
+    dev: false
+
+  /universal-cookie/4.0.4:
+    resolution:
+      {
+        integrity: sha512-lbRVHoOMtItjWbM7TwDLdl8wug7izB0tq3/YVKhT/ahB4VDvWMyvnADfnJI8y6fSvsjh51Ix7lTGC6Tn4rMPhw==,
+      }
+    dependencies:
+      '@types/cookie': 0.3.3
+      cookie: 0.4.2
     dev: false
 
   /universal-user-agent/6.0.0:

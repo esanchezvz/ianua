@@ -37,14 +37,11 @@ export function AuthForm({ className, register: isRegister, ...props }: UserAuth
   const onSubmit = async (data: FormData) => {
     setIsLoading(true)
 
-    // TODO - generate capthca string here
-
     const signInResult = await signIn('email', {
       email: data.email.toLowerCase().trim(),
       redirect: false,
       callbackUrl: searchParams?.get('from') || '/admin/listings',
       name: data.name?.trim(),
-      captcha: captchaToken,
     })
 
     setIsLoading(false)

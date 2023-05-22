@@ -6,6 +6,7 @@ import localFont from 'next/font/local'
 
 import { Toaster } from '@/components/shared/toaster'
 import { CapthaProvider } from '@/context/captcha'
+import { CookiesProvider } from '@/context/cookies'
 import { SessionProvider } from '@/context/session'
 import { getSession } from '@/core/auth'
 
@@ -32,10 +33,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="es" className={`${roboto.variable} ${larisAlte.variable} h-min-screen antialiased`}>
       <body className="flex h-full flex-col">
         <SessionProvider session={session}>
-          <CapthaProvider>
-            {children}
-            <Toaster />
-          </CapthaProvider>
+          <CookiesProvider>
+            <CapthaProvider>
+              {children}
+              <Toaster />
+            </CapthaProvider>
+          </CookiesProvider>
         </SessionProvider>
       </body>
     </html>
