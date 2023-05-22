@@ -6,8 +6,9 @@ import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, ChevronDownIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
+import Avatar from '@/components/shared/avatar'
 import { cn } from '@/utils'
 
 type HeaderProps = {
@@ -15,9 +16,11 @@ type HeaderProps = {
 }
 
 export default function Header({ setSidebarOpen }: HeaderProps) {
+  const session = useSession()
   const handleSignOut = async () => {
     await signOut()
   }
+
   return (
     <header className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
       <div className="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
@@ -46,14 +49,10 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
             <Menu as="div" className="relative">
               <Menu.Button className="-m-1.5 flex items-center p-1.5">
                 <span className="sr-only">Abrir menú de usuario</span>
-                <img
-                  className="h-8 w-8 rounded-full bg-gray-50"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt=""
-                />
+                <Avatar />
                 <span className="hidden lg:flex lg:items-center">
                   <span className="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
-                    Tom Cook
+                    {session.data?.user.name}
                   </span>
                   <ChevronDownIcon className="ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
                 </span>
