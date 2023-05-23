@@ -69,7 +69,7 @@ export function CreateUserForm() {
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col items-center justify-between gap-5">
-        <div className="flex flex-1 items-center justify-between gap-5">
+        <div className="flex w-full flex-1 items-center justify-between gap-5">
           <TextField
             id="name"
             placeholder="María de los Angeles"
@@ -82,7 +82,7 @@ export function CreateUserForm() {
             {...register('name')}
           />
         </div>
-        <div className="flex items-center justify-between gap-5">
+        <div className="flex w-full items-center justify-between gap-5">
           <TextField
             id="surname_1"
             placeholder="Gutierrez"
@@ -106,7 +106,7 @@ export function CreateUserForm() {
             {...register('surname_2')}
           />
         </div>
-        <div className="flex items-center justify-between gap-5">
+        <div className="flex w-full items-center justify-between gap-5">
           <TextField
             id="email"
             label="Correo Electrónico"
@@ -121,9 +121,9 @@ export function CreateUserForm() {
         </div>
       </div>
 
-      <Button type="submit" disabled={isLoading} className="mt-5">
+      <Button type="submit" disabled={isLoading} className="mt-5 w-full">
         {isLoading && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
-        Iniciar sesión
+        Crear Cuenta
       </Button>
     </form>
   )

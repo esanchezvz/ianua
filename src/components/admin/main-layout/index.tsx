@@ -18,7 +18,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
       <div className="lg:pl-72">
         <Header setSidebarOpen={setSidebarOpen} />
-        <main className="py-10">
+        <main className="min-h-[calc(100vh-65px)] bg-[#fff] py-10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
