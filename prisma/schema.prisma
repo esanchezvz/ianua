@@ -75,6 +75,8 @@ model Broker {
   user     User      @relation(fields: [userId], references: [id])
   userId   String    @unique @map("user")
   listings Listing[]
+
+  @@map("brokers")
 }
 
 model Listing {

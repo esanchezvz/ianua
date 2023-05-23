@@ -16,16 +16,33 @@ export async function POST(req: NextRequest) {
     const session = await getSession()
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' })
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     if (!allowedRoles.includes(session.user.role)) {
-      return NextResponse.json({ error: 'Forbidden' })
+      return new NextResponse(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     const createdUser = await db.user.create({ data })
 
-    return NextResponse.json({ message: 'User created successfully.', data: createdUser })
+    if (createdUser.role === Role.BROKER) {
+      await db.broker.create({
+        data: {
+          userId: createdUser.id,
+        },
+      })
+    }
+
+    return new NextResponse(JSON.stringify({ message: 'User created successfully.', data: createdUser }), {
+      status: 203,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error(error)
     return NextResponse.json({ error: (error as any).message || 'Unknown Error' })

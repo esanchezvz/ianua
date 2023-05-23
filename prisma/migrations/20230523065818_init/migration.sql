@@ -81,11 +81,11 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
-CREATE TABLE "Broker" (
+CREATE TABLE "brokers" (
     "id" TEXT NOT NULL,
     "user" TEXT NOT NULL,
 
-    CONSTRAINT "Broker_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "brokers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -165,7 +165,7 @@ CREATE UNIQUE INDEX "verification_tokens_identifier_token_key" ON "verification_
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Broker_user_key" ON "Broker"("user");
+CREATE UNIQUE INDEX "brokers_user_key" ON "brokers"("user");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "listings_broker_key" ON "listings"("broker");
@@ -177,7 +177,7 @@ ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Broker" ADD CONSTRAINT "Broker_user_fkey" FOREIGN KEY ("user") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "brokers" ADD CONSTRAINT "brokers_user_fkey" FOREIGN KEY ("user") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "listings" ADD CONSTRAINT "listings_broker_fkey" FOREIGN KEY ("broker") REFERENCES "Broker"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "listings" ADD CONSTRAINT "listings_broker_fkey" FOREIGN KEY ("broker") REFERENCES "brokers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
