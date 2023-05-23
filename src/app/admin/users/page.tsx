@@ -15,7 +15,12 @@ export default function UsersPage() {
         Crear Usuario
       </Button>
 
-      <Modal opened={modalOpen} onClose={() => setModalOpen(false)} title="Crear Usuario" size="md">
+      <Modal
+        opened={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Crear Usuario"
+        className="max-w-md"
+      >
         <CreateUserForm />
       </Modal>
     </div>

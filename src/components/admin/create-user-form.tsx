@@ -15,8 +15,6 @@ import { TextField } from '@/components/ui/text-field'
 import { createUserSchema } from '@/core/validations/user'
 import { toast } from '@/hooks/use-toast'
 
-type CreateUserFormProps = React.HTMLAttributes<HTMLDivElement>
-
 type FormData = z.infer<typeof createUserSchema>
 
 export function CreateUserForm() {
