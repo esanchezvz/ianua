@@ -11,19 +11,17 @@ import * as z from 'zod'
 
 import { buttonVariants } from '@/components/ui/button'
 import { TextField } from '@/components/ui/text-field'
-import { useCaptcha } from '@/context/captcha'
 import { loginSchema, registerSchema } from '@/core/validations/auth'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/utils'
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+interface AuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   register?: boolean
 }
 
 type FormData = Merge<z.infer<typeof loginSchema> | z.infer<typeof registerSchema>>
 
-export function AuthForm({ className, register: isRegister, ...props }: UserAuthFormProps) {
-  const { captchaToken } = useCaptcha()
+export function AuthForm({ className, register: isRegister, ...props }: AuthFormProps) {
   const {
     register,
     handleSubmit,
