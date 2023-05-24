@@ -125,7 +125,7 @@ CREATE TABLE "listings" (
     "orientation" TEXT,
     "outside_finishes" TEXT,
     "parking_spots" INTEGER NOT NULL,
-    "pet_firendly" BOOLEAN NOT NULL,
+    "pet_friendly" BOOLEAN NOT NULL,
     "price" INTEGER NOT NULL,
     "private_services" "ListingPrivateServices"[],
     "property_type" "PropertyType" NOT NULL,

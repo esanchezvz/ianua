@@ -115,7 +115,7 @@ model Listing {
   orientation                    String?
   outside_finishes               String?
   parking_spots                  Int
-  pet_firendly                   Boolean
+  pet_friendly                   Boolean
   price                          Int
   private_services               ListingPrivateServices[]
   property_type                  PropertyType
@@ -135,8 +135,8 @@ model Listing {
   views                          String
   yearly_tax                     Int? // This is the "predio" tax in Mexico
 
-  broker   Broker @relation(fields: [borkerId], references: [id], onDelete: Cascade)
-  borkerId String @unique @map("broker")
+  broker   Broker @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  brokerId String @unique @map("broker")
 
   @@map("listings")
 }

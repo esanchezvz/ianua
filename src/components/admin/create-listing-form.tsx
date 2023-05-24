@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,11 +19,15 @@ import { createListingSchema } from '@/core/validations/listing'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/utils'
 
+import { Input } from '../ui/input'
+
 type CreateUserFormProps = React.HTMLAttributes<HTMLDivElement>
 
-type FormData = z.infer<typeof createListingSchema>
+type Form = z.infer<typeof createListingSchema>
 
 export function CreateListingForm() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const [formData, setFormData] = useState<FormData>()
   const searchParams = useSearchParams()
   const {
     register,
@@ -31,16 +35,37 @@ export function CreateListingForm() {
     formState: { errors },
     control,
     reset,
-  } = useForm<FormData>({
-    resolver: zodResolver(createListingSchema),
-  })
+  } = useForm<Record<string, any>>()
   const [isLoading, setIsLoading] = useState(false)
 
-  const onSubmit = async (data: FormData) => {
-    console.log(data)
+  const onSubmit = async (data: Record<string, any>) => {
+    if (!formData) return
+
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value)
+    })
+
+    const res = await fetch('/api/listings', {
+      method: 'post',
+      body: formData,
+    })
+
+    console.log(res)
   }
 
-  console.log(errors)
+  const onFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files?.length) {
+      return
+    }
+
+    const formData = new FormData()
+
+    Array.from(event.target.files).forEach((file) => {
+      formData.append(event.target.name, file)
+    })
+
+    setFormData(formData)
+  }
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -50,30 +75,44 @@ export function CreateListingForm() {
             id="name"
             placeholder="Ej. Citta San Jeronimo"
             label="Nombre"
-            error={errors?.name?.message}
+            // error={errors?.name?.message}
             type="text"
             disabled={isLoading}
             className="grow"
             {...register('name')}
           />
-          <SelectField
+          {/* <SelectField
             control={control}
             name="ammenities"
             options={[]}
             label="Amenidades"
             multiple
             fullWidth
-          />
+          /> */}
         </div>
         <div className="flex w-full flex-1 items-center justify-between gap-5">
           <TextareaField
             id="description"
             placeholder="Ej. Citta San Jeronimo"
             label="Descripción"
-            error={errors?.description?.message}
+            // error={errors?.description?.message}
             disabled={isLoading}
             className="grow"
             {...register('description')}
+          />
+        </div>
+        <div className="flex w-full flex-1 items-center justify-between gap-5">
+          <Input
+            id="gallery"
+            type="file"
+            name="gallery"
+            accept="image/*"
+            multiple
+            ref={fileInputRef}
+            placeholder="Galeria"
+            disabled={isLoading}
+            className="grow"
+            onChange={onFileInputChange}
           />
         </div>
       </div>
@@ -87,8 +126,8 @@ export function CreateListingForm() {
 }
 
 type SelectFieldProps = {
-  control: Control<FormData>
-  name: keyof FormData
+  control: Control<Form>
+  name: keyof Form
   hint?: string
 } & React.ComponentProps<typeof Select>
 
