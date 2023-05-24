@@ -19,8 +19,14 @@ export default withAuth(
     const isAdminPage = req.nextUrl.pathname.startsWith('/admin')
     const token = await getToken({ req })
     const isAuth = !!token
-    const isAuthPage =
-      req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/registro')
+    const isLogin = req.nextUrl.pathname.startsWith('/login')
+    const isRegister = req.nextUrl.pathname.startsWith('/registro')
+    const isAuthPage = isLogin || isRegister
+
+    // Temporary page block
+    if (!isDevelopment && (!isAdminPage || !isLogin)) {
+      return NextResponse.redirect('/login')
+    }
 
     if (!isDevelopment && req.nextUrl.pathname.startsWith('/api')) {
       res.headers.append('Access-Control-Allow-Origin', env.NEXT_PUBLIC_APP_URL)

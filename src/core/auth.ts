@@ -30,7 +30,10 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (user?.emailVerified) await sendLoginEmail({ loginUrl: url, to: identifier })
-        if (!user?.emailVerified) await sendWelcomeEmail({ registerUrl: url, to: identifier })
+        if (!user?.emailVerified) {
+          throw new Error('No registrations allowed yet...')
+          //  await sendWelcomeEmail({ registerUrl: url, to: identifier })
+        }
       },
     }),
   ],
