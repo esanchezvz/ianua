@@ -184,7 +184,7 @@ enum ListingPrivateServices {
   HOSPITAL
   SCHOOL
   SUPERMARKET
-  UNEVERSITY
+  UNIVERSITY
   VETERINARY
 }
 
@@ -194,7 +194,7 @@ enum ListingPublicServices {
   MARKET
   SCHOOL
   TRANSPORT
-  UNEVERSITY
+  UNIVERSITY
 }
 
 enum ListingStatus {
