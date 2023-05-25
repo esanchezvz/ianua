@@ -8,8 +8,9 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { useWindowScroll, useWindowSize } from 'react-use'
 
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import Logo from '@/components/ui/logo'
+import { cn } from '@/utils'
 
 const navigation = [
   { name: 'Product', href: '/admin/users' },
@@ -120,9 +121,10 @@ export function Header() {
                         {item.name}
                       </Link>
                     ))}
-                    <Button onClick={closeMobileMenu} type="button">
-                      Iniciar Sesión
-                    </Button>
+
+                    <Link href="/login" className={cn(buttonVariants())} onClick={closeMobileMenu}>
+                      Iniciar sesión
+                    </Link>
                   </div>
                 </div>
               </div>

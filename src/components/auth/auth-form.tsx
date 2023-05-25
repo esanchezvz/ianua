@@ -9,7 +9,7 @@ import { signIn } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
-import { buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { TextField } from '@/components/ui/text-field'
 import { loginSchema, registerSchema } from '@/core/validations/auth'
 import { toast } from '@/hooks/use-toast'
@@ -88,10 +88,10 @@ export function AuthForm({ className, register: isRegister, ...props }: AuthForm
               {...register('email')}
             />
           </div>
-          <button className={cn(buttonVariants())} disabled={isLoading}>
+          <Button disabled={isLoading}>
             {isLoading && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
             Iniciar sesión
-          </button>
+          </Button>
         </div>
       </form>
       <div className="relative">
@@ -102,16 +102,15 @@ export function AuthForm({ className, register: isRegister, ...props }: AuthForm
           <span className="bg-background text-muted-foreground px-2">O iniciar sesión con</span>
         </div>
       </div>
-      <button
-        type="button"
-        className={cn(buttonVariants({ variant: 'outline' }))}
+      <Button
+        variant="outline"
         onClick={() => {
           signIn('google')
         }}
         disabled={isLoading}
       >
         Google
-      </button>
+      </Button>
     </div>
   )
 }
