@@ -7,6 +7,12 @@ import Modal from '@/components/ui/modal'
 
 export default function ListingsPage() {
   const [modalOpen, setModalOpen] = useState(false)
+
+  const onCreate = () => {
+    console.log('TODO: Fetch listings')
+    setModalOpen(false)
+  }
+
   return (
     <div className="flex items-center justify-between">
       <h1 className="font-body text-2xl font-bold">Propiedades</h1>
@@ -22,7 +28,7 @@ export default function ListingsPage() {
         className="max-w-5xl"
         closeOnEscape={false}
       >
-        <CreateListingForm />
+        <CreateListingForm onSuccess={onCreate} />
       </Modal>
     </div>
   )

@@ -21,21 +21,37 @@ export const createListingSchema = z.object({
     state: z.string().min(1, 'Campo requerido'),
     zip_code: z.string().min(1, 'Campo requerido'),
   }),
-  age: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number).optional(),
+  age: z
+    .string()
+    .regex(/^\d+$/, 'Debe ser número')
+    .or(z.number())
+    .transform(Number)
+    .optional()
+    .or(z.number()),
   ammenities: z.array(z.nativeEnum(ListingAmmenities), { required_error: 'Campo requerido' }),
-  bathrooms: z.string().min(1, 'Campo requerido').regex(/^\d+$/, 'Debe ser número').transform(Number),
+  bathrooms: z.string().min(1, 'Campo requerido').or(z.number()).transform(Number),
   broker: z.string().min(1, 'Campo requerido'),
   climate: z.nativeEnum(ListingClimate, { required_error: 'Campo requerido' }),
   condition: z.number().lte(5, 'Debe ser del 1 al 5').gte(1, 'Debe ser del 1 al 5'),
   construction_style: z.string().optional(),
   description: z.string().min(1, 'Campo requerido').max(1000, 'Máximo 1,000 caracteres'),
-  development_buildings: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number).optional(),
+  development_buildings: z
+    .string()
+    .regex(/^\d+$/, 'Debe ser número')
+    .or(z.number())
+    .transform(Number)
+    .optional(),
   development_name: z.string().optional(),
-  development_stories: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number).optional(),
+  development_stories: z
+    .string()
+    .regex(/^\d+$/, 'Debe ser número')
+    .or(z.number())
+    .transform(Number)
+    .optional(),
   event_policy_strictness: z.number().lte(5, 'Debe ser del 1 al 5').gte(1, 'Debe ser del 1 al 5'),
-  featured: z.string().optional().transform(Number).transform(Boolean),
-  floor: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number).optional(),
-  furnished: z.string().optional().transform(Number).transform(Boolean),
+  featured: z.string().optional().or(z.number()).transform(Number).transform(Boolean).or(z.boolean()),
+  floor: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number).optional(),
+  furnished: z.string().optional().or(z.number()).transform(Number).transform(Boolean).or(z.boolean()),
   interior_bathroom_furniture: z.string().optional(),
   interior_ceiling_lignts: z.string().optional(),
   interior_electric_instalations: z.string().optional(),
@@ -45,32 +61,42 @@ export const createListingSchema = z.object({
   location_references: z.string().optional(),
   map: z.string({ required_error: 'Campo requerido' }).optional(),
   main_feature: z.string().optional(),
-  maintenance_cost: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number).optional(),
+  maintenance_cost: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number).optional(),
   name: z.string().min(1, 'Campo requerido'),
   natural_lighting: z.number().lte(5, 'Debe ser del 1 al 5').gte(1, 'Debe ser del 1 al 5'),
   nearby_social_areas: z
     .string()
     .transform((val) => val.split(','))
-    .optional(),
+    .optional()
+    .or(z.string().array()),
   orientation: z.string().optional(),
   outside_finishes: z.string().optional(),
-  parking_spots: z.string().min(1, 'Campo requerido').regex(/^\d+$/, 'Debe ser número').transform(Number),
-  pet_friendly: z.boolean({ required_error: 'Campo requerido' }),
-  price: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number).optional(),
+  parking_spots: z
+    .string()
+    .min(1, 'Campo requerido')
+    .regex(/^\d+$/, 'Debe ser número')
+    .or(z.number())
+    .transform(Number),
+  pet_friendly: z.string().optional().or(z.number()).transform(Number).transform(Boolean).or(z.boolean()),
+  price: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number),
   private_services: z.array(z.nativeEnum(ListingPrivateServices)).optional(),
   property_type: z.nativeEnum(PropertyType, { required_error: 'Campo requerido' }),
   public_services: z.array(z.nativeEnum(ListingPublicServices)).optional(),
-  rooms: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number),
+  rooms: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number),
   security: z.string().optional(),
-  sq_m: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number),
-  sq_m_extra: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number).optional(),
-  sq_m_total: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number),
+  sq_m: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number),
+  sq_m_extra: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number).optional(),
+  sq_m_total: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number),
   status: z.nativeEnum(ListingStatus, { required_error: 'Campo requerido' }).default(ListingStatus.PENDING),
-  storage: z.boolean().optional(),
-  stories: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number).optional(),
+  storage: z.string().optional().or(z.number()).transform(Number).transform(Boolean).or(z.boolean()),
+  stories: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number).optional(),
   style: z.string().optional(),
   type: z.nativeEnum(ListingType, { required_error: 'Campo requerido' }),
-  urban_equipment: z.string().array().optional(),
+  urban_equipment: z
+    .string()
+    .transform((val) => val.split(','))
+    .optional()
+    .or(z.string().array()),
   views: z.string().min(1, 'Campo requerido'),
-  yearly_tax: z.string().regex(/^\d+$/, 'Debe ser número').transform(Number).optional(),
+  yearly_tax: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number).optional(),
 })

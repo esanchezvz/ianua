@@ -22,12 +22,13 @@ type SelectProps = {
   multiple?: boolean
   fullWidth?: boolean
   name?: string
+  disabled?: boolean
 } & (
   | { multiple?: true; onChange?: (value: string[]) => void }
   | { multiple?: false; onChange?: (value: string) => void }
 )
 export const Select = forwardRef<HTMLElement, SelectProps>(
-  ({ options, defaultSelected, label, multiple, fullWidth, onChange, name }, ref) => {
+  ({ options, defaultSelected, label, multiple, fullWidth, onChange, name, disabled }, ref) => {
     const defaultValue = useMemo<SelectOption | SelectOption[]>(() => {
       return multiple
         ? [{ value: '', label: 'Selecciona una o más opciones' }]
@@ -66,14 +67,21 @@ export const Select = forwardRef<HTMLElement, SelectProps>(
     }, [selected, onChange, multiple, defaultValue])
 
     return (
-      <Listbox ref={ref} value={selected} onChange={setSelected} multiple={multiple} name={name}>
+      <Listbox
+        ref={ref}
+        value={selected}
+        onChange={setSelected}
+        multiple={multiple}
+        name={name}
+        disabled={disabled}
+      >
         {({ open }) => (
           <>
             {label ? <Label>{label}</Label> : null}
             <div className="relative">
               <Listbox.Button
                 className={cn(
-                  'relative h-[36px] w-full cursor-default rounded-md bg-[#fff] py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset  ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue sm:text-sm sm:leading-6',
+                  'relative h-[36px] w-full cursor-default rounded-md bg-[#fff] py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset  ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200 sm:text-sm sm:leading-6',
                   fullWidth ? 'max-w-full' : 'max-w-md'
                 )}
               >

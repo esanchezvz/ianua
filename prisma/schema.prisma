@@ -106,7 +106,7 @@ model Listing {
   interior_walls                 String?
   last_renovation                DateTime?
   location_references            String?
-  map                            String                   @db.VarChar(2500)
+  map                            String?                  @db.VarChar(2500)
   main_feature                   String?
   maintenance_cost               Int?
   name                           String

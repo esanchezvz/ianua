@@ -10,24 +10,24 @@ import { uploadListingImage } from '@/lib/supabase'
 const allowedRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN]
 
 export async function POST(req: NextRequest) {
-  const body = await req.formData()
-  const galleryBlobs = body.getAll('gallery')
+  // TODO - validate captcha
+  const session = await getSession()
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const formData = await req.formData()
+  const data = (formData.get('data') as string) || ''
+  const parsedData = JSON.parse(data)
+  const galleryBlobs = formData.getAll('gallery')
   const galleryKeys = galleryBlobs.map((blob: any) => {
     const extension = '.' + blob.name.split('.')[1]
     return uuidv4() + extension
   })
-  body.delete('gallery')
 
-  const listingData = createListingSchema.parse(Object.fromEntries(body))
+  const listingData = createListingSchema.parse(parsedData)
 
   try {
-    // TODO - validate captcha
-    const session = await getSession()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     if (!allowedRoles.includes(session.user.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }

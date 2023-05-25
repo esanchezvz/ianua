@@ -14,7 +14,14 @@ import { TextareaField } from '@/components/ui/textarea-field'
 import { createListingSchema } from '@/core/validations/listing'
 import { toast } from '@/hooks/use-toast'
 import { cn, zoneOptions } from '@/utils'
-import { ammenitiesOptions, climateOptions, lsitingTypeOptions, propertyTypeOptions } from '@/utils/listing'
+import {
+  ammenitiesOptions,
+  climateOptions,
+  listingPrivateServicesOptions,
+  listingPublicServicesOptions,
+  lsitingTypeOptions,
+  propertyTypeOptions,
+} from '@/utils/listing'
 
 import { Label } from '../ui/label'
 import { RadioGroup } from '../ui/radio-group'
@@ -39,7 +46,7 @@ const booleanOptions = [
   { value: '1', label: 'Sí' },
 ]
 
-export function CreateListingForm() {
+export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
   const [brokers, setBrokers] = useState<SelectOption[]>([])
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [formData, setFormData] = useState<FormData>()
@@ -48,16 +55,14 @@ export function CreateListingForm() {
     handleSubmit,
     formState: { errors },
     control,
-    reset,
   } = useForm<Form>({
     resolver: zodResolver(createListingSchema),
   })
   const [isLoading, setIsLoading] = useState(false)
 
   const onSubmit = async (data: Form) => {
-    setIsLoading(true)
     const galleryItems = formData?.getAll('gallery')
-    if (galleryItems?.length || !formData) {
+    if (!galleryItems?.length || !formData) {
       return toast({
         title: 'Oooops!',
         description: 'No olvides agregar las imagenes de la galería.',
@@ -65,22 +70,25 @@ export function CreateListingForm() {
       })
     }
 
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, JSON.stringify(value))
-    })
+    setIsLoading(true)
+
+    formData.append('data', JSON.stringify(data))
 
     try {
-      await fetch('/api/listings', {
+      const res = await fetch('/api/listings', {
         method: 'post',
         body: formData,
       })
+      await res.json()
+
+      onSuccess()
 
       toast({
         title: 'Pripedad Creada',
         description: 'La propiedad creaada exitosamente. Puedes seguir creando propiedades.',
       })
 
-      reset()
+      // reset()
     } catch (error) {
       toast({
         title: 'Oooops!',
@@ -144,6 +152,7 @@ export function CreateListingForm() {
             {...register('name')}
           />
           <SelectField
+            disabled={isLoading}
             control={control}
             name="ammenities"
             options={ammenitiesOptions}
@@ -152,14 +161,68 @@ export function CreateListingForm() {
           />
         </div>
         <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <SelectField control={control} name="broker" options={brokers} label="Broker" />
           <SelectField
+            disabled={isLoading}
+            control={control}
+            name="broker"
+            options={brokers}
+            label="Broker"
+          />
+          <SelectField
+            disabled={isLoading}
             control={control}
             name="property_type"
             options={propertyTypeOptions}
             label="¿Casa o Depa?"
           />
-          <SelectField control={control} name="type" options={lsitingTypeOptions} label="Tipo" />
+          <SelectField
+            disabled={isLoading}
+            control={control}
+            name="type"
+            options={lsitingTypeOptions}
+            label="Tipo"
+          />
+        </div>
+        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+          <TextField
+            id="price"
+            label="Precio"
+            error={errors?.price?.message}
+            type="number"
+            disabled={isLoading}
+            className="flex-1"
+            {...register('price')}
+          />
+
+          <TextField
+            id="sq_m"
+            label="Metros Cuadrados Habitables"
+            error={errors?.sq_m?.message}
+            type="number"
+            disabled={isLoading}
+            className="flex-1"
+            {...register('sq_m')}
+          />
+
+          <TextField
+            id="sq_m_extra"
+            label="Metros Cuadrados Extra"
+            error={errors?.sq_m_extra?.message}
+            type="number"
+            disabled={isLoading}
+            hint="Terraza o Jardín"
+            className="flex-1"
+            {...register('sq_m_extra')}
+          />
+          <TextField
+            id="sq_m_total"
+            label="Metros Cuadrados Terreno"
+            error={errors?.sq_m_total?.message}
+            type="number"
+            disabled={isLoading}
+            className="flex-1"
+            {...register('sq_m_total')}
+          />
         </div>
         <div className="flex w-full flex-1 items-start justify-between gap-5">
           <TextareaField
@@ -211,7 +274,13 @@ export function CreateListingForm() {
           />
         </div>
         <div className="flex w-full flex-1 items-start justify-between gap-5">
-          <SelectField control={control} name="address.neighborhood" options={zoneOptions} label="Alcaldía" />
+          <SelectField
+            disabled={isLoading}
+            control={control}
+            name="address.neighborhood"
+            options={zoneOptions}
+            label="Alcaldía"
+          />
           <TextField
             id="state"
             label="Estado"
@@ -251,17 +320,31 @@ export function CreateListingForm() {
             {...register('bathrooms')}
           />
 
-          <SelectField control={control} name="climate" options={climateOptions} label="Clima" />
+          <SelectField
+            disabled={isLoading}
+            control={control}
+            name="climate"
+            options={climateOptions}
+            label="Clima"
+          />
         </div>
 
         <div className="flex w-full flex-1 items-start justify-between gap-5">
           <RadioGroupField
+            disabled={isLoading}
             control={control}
             options={rangeOptions}
             name="condition"
             label="Condición Inmueble"
           />
-          <SelectField control={control} name="climate" options={climateOptions} label="Clima" />
+
+          <RadioGroupField
+            disabled={isLoading}
+            control={control}
+            options={rangeOptions}
+            name="event_policy_strictness"
+            label="¿Qué tan estrictos son para eventos?"
+          />
         </div>
 
         <div className="flex w-full flex-1 items-start justify-between gap-5">
@@ -306,6 +389,7 @@ export function CreateListingForm() {
 
         <div className="flex w-full flex-1 items-start justify-between gap-5">
           <RadioGroupField
+            disabled={isLoading}
             control={control}
             options={rangeOptions}
             name="natural_lighting"
@@ -313,7 +397,7 @@ export function CreateListingForm() {
           />
           <TextField
             id="social-areas"
-            type="string"
+            type="text"
             label="Áreas Sociales Cercanas"
             error={errors?.nearby_social_areas?.message}
             disabled={isLoading}
@@ -324,13 +408,6 @@ export function CreateListingForm() {
         </div>
 
         <div className="flex w-full flex-1 items-start justify-between gap-5">
-          <RadioGroupField
-            control={control}
-            options={rangeOptions}
-            name="event_policy_strictness"
-            label="¿Qué tan estrictos son para eventos?"
-          />
-
           <TextField
             id="floor"
             type="number"
@@ -341,7 +418,56 @@ export function CreateListingForm() {
             {...register('floor')}
           />
 
-          <SelectField control={control} options={booleanOptions} name="furnished" label="Amueblado" />
+          <SelectField
+            disabled={isLoading}
+            control={control}
+            options={booleanOptions}
+            name="furnished"
+            label="Amueblado"
+          />
+        </div>
+
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <SelectField
+            disabled={isLoading}
+            control={control}
+            options={listingPublicServicesOptions}
+            name="public_services"
+            label="Servicios Públicos"
+            multiple
+          />
+          <SelectField
+            disabled={isLoading}
+            control={control}
+            options={listingPrivateServicesOptions}
+            name="private_services"
+            label="Servicios Privados"
+            multiple
+          />
+        </div>
+
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <TextField
+            id="views"
+            type="text"
+            label="Vistas"
+            error={errors?.views?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('views')}
+          />
+
+          <TextField
+            id="urban-equipment"
+            type="text"
+            label="Equipamento Urbano"
+            placeholder="Tipoe de alubrado, pavimento, recolección de basura, etc..."
+            error={errors?.urban_equipment?.message}
+            disabled={isLoading}
+            className="flex-1"
+            hint="Separados por comas. Ej. Bares, Restaurantes, etc..."
+            {...register('urban_equipment')}
+          />
         </div>
 
         <div className="flex w-full flex-1 items-start justify-between gap-5">
@@ -365,7 +491,13 @@ export function CreateListingForm() {
             {...register('parking_spots')}
           />
 
-          <SelectField control={control} options={booleanOptions} name="pet_friendly" label="Pet Friendly" />
+          <SelectField
+            disabled={isLoading}
+            control={control}
+            options={booleanOptions}
+            name="pet_friendly"
+            label="Pet Friendly"
+          />
         </div>
 
         <div className="flex w-full flex-1 items-start justify-between gap-5">
@@ -443,12 +575,9 @@ const RadioGroupField = ({ control, name, label, hint, options, ...props }: Radi
             onValueChange={(val) => {
               isNaN(Number(val)) ? field.onChange(val) : field.onChange(Number(val))
             }}
-            onChange={(event) => {
-              console.log(event)
-            }}
             value={String(field.value)}
           >
-            <div className="mt-2 flex items-center justify-between gap-5">
+            <div className="mt-2 flex items-center gap-5">
               {options.map((o) => {
                 const id = `radio-${name ? name : ''}-${o.value}`
                 return (
