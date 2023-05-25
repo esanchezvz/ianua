@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client'
 import { NextApiRequest } from 'next'
 import { type NextAuthOptions, getServerSession } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
@@ -26,14 +27,21 @@ export const authOptions: NextAuthOptions = {
           },
           select: {
             emailVerified: true,
+            role: true,
           },
         })
 
         if (user?.emailVerified) await sendLoginEmail({ loginUrl: url, to: identifier })
+
         if (!user?.emailVerified) {
+          if (user?.role !== Role.USER) {
+            await sendWelcomeEmail({ registerUrl: url, to: identifier })
+          }
+
           if (process.env.NODE_ENV !== 'development') {
             throw new Error('No registrations allowed yet...')
           }
+
           await sendWelcomeEmail({ registerUrl: url, to: identifier })
         }
       },
