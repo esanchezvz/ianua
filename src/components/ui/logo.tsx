@@ -22,6 +22,7 @@ export default function Logo({ className, letters, variant = 'default' }: Props)
       height={height}
       className={cn('h-8 w-auto', className)}
       alt="Ianua"
+      priority
     />
   )
 }

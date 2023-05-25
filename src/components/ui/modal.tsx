@@ -5,20 +5,26 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 
 import { cn } from '@/utils'
 
-type ModalSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl'
-
 type ModalProps = {
   opened: boolean
   onClose: () => void
   title: string
   children?: React.ReactNode
-  size?: ModalSize
+  className?: string
   initialFocus?: React.MutableRefObject<HTMLElement | null>
+  closeOnEscape?: boolean
 }
 
-export default function Modal({ onClose, opened, title, children, size = 'lg', initialFocus }: ModalProps) {
+export default function Modal({
+  onClose,
+  opened,
+  title,
+  children,
+  className,
+  initialFocus,
+  closeOnEscape = true,
+}: ModalProps) {
   const closeRef = useRef<HTMLButtonElement>(null)
-  const maxWith = `max-w-${size}`
 
   return (
     <>
@@ -27,7 +33,7 @@ export default function Modal({ onClose, opened, title, children, size = 'lg', i
           static
           as="div"
           className="relative z-50"
-          onClose={onClose}
+          onClose={closeOnEscape ? onClose : () => {}}
           initialFocus={initialFocus || closeRef}
         >
           <Transition.Child
@@ -39,7 +45,7 @@ export default function Modal({ onClose, opened, title, children, size = 'lg', i
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 z-50 bg-blue/25 backdrop-blur-sm" aria-hidden="true" />
+            <div className={cn('fixed inset-0 z-50 bg-blue/25 backdrop-blur-sm')} aria-hidden="true" />
           </Transition.Child>
 
           <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -55,8 +61,8 @@ export default function Modal({ onClose, opened, title, children, size = 'lg', i
               >
                 <Dialog.Panel
                   className={cn(
-                    'relative max-h-[85%] w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all',
-                    maxWith
+                    'relative max-h-[85%] w-full overflow-auto rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all',
+                    className
                   )}
                 >
                   <button

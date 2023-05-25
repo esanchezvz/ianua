@@ -1,9 +1,11 @@
+import './env.mjs'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['images.pexels.com'],
+    domains: ['images.pexels.com', '*.supabase.co'],
   },
 }
 
-module.exports = nextConfig
+export default nextConfig
