@@ -15,17 +15,17 @@ export default withAuth(
         headers,
       },
     })
-
-    const isAdminPage = req.nextUrl.pathname.startsWith('/admin')
     const token = await getToken({ req })
     const isAuth = !!token
+
+    const isAdminPage = req.nextUrl.pathname.startsWith('/admin')
     const isLogin = req.nextUrl.pathname.startsWith('/login')
     const isRegister = req.nextUrl.pathname.startsWith('/registro')
     const isAuthPage = isLogin || isRegister
 
     // Temporary page block
     if (!isDevelopment && (!isAdminPage || !isLogin)) {
-      return NextResponse.redirect('/login')
+      return NextResponse.redirect(new URL('/login', req.url))
     }
 
     // CORS
@@ -73,5 +73,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ['/admin/:path*', '/login', '/registro', '/api/:path*'],
+  matcher: ['/admin/:path*', '/login', '/registro', '/api/:path*', '/:path*'],
 }
