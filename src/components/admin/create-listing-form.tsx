@@ -1,56 +1,95 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Role } from '@prisma/client'
-import { error } from 'console'
-import { useSearchParams } from 'next/navigation'
-import { signIn } from 'next-auth/react'
 import { useForm, Control, Controller } from 'react-hook-form'
 import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
-import { type SelectOption, Select } from '@/components/ui/select'
+import { Select, SelectOption } from '@/components/ui/select'
 import { TextField } from '@/components/ui/text-field'
 import { TextareaField } from '@/components/ui/textarea-field'
 import { createListingSchema } from '@/core/validations/listing'
 import { toast } from '@/hooks/use-toast'
-import { cn } from '@/utils'
+import { cn, zoneOptions } from '@/utils'
+import { ammenitiesOptions, climateOptions, lsitingTypeOptions, propertyTypeOptions } from '@/utils/listing'
 
-import { Input } from '../ui/input'
-
-type CreateUserFormProps = React.HTMLAttributes<HTMLDivElement>
+import { Label } from '../ui/label'
+import { RadioGroup } from '../ui/radio-group'
+import { RadioGroupItem } from '../ui/radio-group'
 
 type Form = z.infer<typeof createListingSchema>
+const _Address = createListingSchema.pick({ address: true })
+type _AddressFields = z.infer<typeof _Address>['address']
+
+type AddressFields = `address.${keyof _AddressFields}`
+
+const rangeOptions = [
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+  { value: '5', label: '5' },
+]
+
+const booleanOptions = [
+  { value: '0', label: 'No' },
+  { value: '1', label: 'Sí' },
+]
 
 export function CreateListingForm() {
+  const [brokers, setBrokers] = useState<SelectOption[]>([])
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [formData, setFormData] = useState<FormData>()
-  const searchParams = useSearchParams()
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
     reset,
-  } = useForm<Record<string, any>>()
+  } = useForm<Form>({
+    resolver: zodResolver(createListingSchema),
+  })
   const [isLoading, setIsLoading] = useState(false)
 
-  const onSubmit = async (data: Record<string, any>) => {
-    if (!formData) return
+  const onSubmit = async (data: Form) => {
+    setIsLoading(true)
+    const galleryItems = formData?.getAll('gallery')
+    if (galleryItems?.length || !formData) {
+      return toast({
+        title: 'Oooops!',
+        description: 'No olvides agregar las imagenes de la galería.',
+        variant: 'destructive',
+      })
+    }
 
     Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value)
+      formData.append(key, JSON.stringify(value))
     })
 
-    const res = await fetch('/api/listings', {
-      method: 'post',
-      body: formData,
-    })
+    try {
+      await fetch('/api/listings', {
+        method: 'post',
+        body: formData,
+      })
 
-    console.log(res)
+      toast({
+        title: 'Pripedad Creada',
+        description: 'La propiedad creaada exitosamente. Puedes seguir creando propiedades.',
+      })
+
+      reset()
+    } catch (error) {
+      toast({
+        title: 'Oooops!',
+        description: 'Ocurrió un error. Intenta nuevamente.',
+        variant: 'destructive',
+      })
+    }
+
+    setIsLoading(false)
   }
 
   const onFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,51 +106,280 @@ export function CreateListingForm() {
     setFormData(formData)
   }
 
+  useEffect(() => {
+    const fetchBrokers = async () => {
+      const res = await fetch('/api/brokers', {
+        method: 'get',
+      })
+
+      const { data } = (await res.json()) as {
+        data: {
+          id: string
+          user: { name: string; surname_1: string; surname_2: string }
+        }[]
+      }
+
+      const _brokers = data.map((r) => ({
+        value: r.id,
+        label: `${r.user.name} ${r.user.surname_1} ${r.user.surname_2}`,
+      }))
+
+      setBrokers(_brokers)
+    }
+
+    fetchBrokers()
+  }, [])
+
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col items-center justify-between gap-5">
-        <div className="flex w-full flex-1 flex-wrap items-center justify-between gap-5">
+        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
           <TextField
             id="name"
-            placeholder="Ej. Citta San Jeronimo"
             label="Nombre"
-            // error={errors?.name?.message}
+            error={errors?.name?.message}
             type="text"
             disabled={isLoading}
-            className="grow"
+            className="flex-1"
             {...register('name')}
           />
-          {/* <SelectField
+          <SelectField
             control={control}
             name="ammenities"
-            options={[]}
+            options={ammenitiesOptions}
             label="Amenidades"
             multiple
-            fullWidth
-          /> */}
+          />
         </div>
-        <div className="flex w-full flex-1 items-center justify-between gap-5">
+        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+          <SelectField control={control} name="broker" options={brokers} label="Broker" />
+          <SelectField
+            control={control}
+            name="property_type"
+            options={propertyTypeOptions}
+            label="¿Casa o Depa?"
+          />
+          <SelectField control={control} name="type" options={lsitingTypeOptions} label="Tipo" />
+        </div>
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
           <TextareaField
             id="description"
-            placeholder="Ej. Citta San Jeronimo"
             label="Descripción"
-            // error={errors?.description?.message}
+            error={errors?.description?.message}
             disabled={isLoading}
-            className="grow"
+            className="flex-1"
             {...register('description')}
           />
         </div>
-        <div className="flex w-full flex-1 items-center justify-between gap-5">
-          <Input
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <TextField
+            id="street_1"
+            label="Calle"
+            error={errors?.address?.street_1?.message}
+            type="text"
+            disabled={isLoading}
+            className="flex-1"
+            {...register('address.street_1')}
+          />
+          <TextField
+            id="number"
+            label="Número"
+            error={errors?.address?.number?.message}
+            type="number"
+            disabled={isLoading}
+            className="flex-1"
+            {...register('address.number')}
+          />
+          <TextField
+            id="int_number"
+            label="Número Interior"
+            error={errors?.address?.int_number?.message}
+            type="number"
+            disabled={isLoading}
+            className="flex-1"
+            {...register('address.int_number')}
+          />
+
+          <TextField
+            id="city"
+            label="Ciudad"
+            error={errors?.address?.city?.message}
+            type="text"
+            disabled={isLoading}
+            className="flex-1"
+            {...register('address.city', { value: 'CDMX' })}
+          />
+        </div>
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <SelectField control={control} name="address.neighborhood" options={zoneOptions} label="Alcaldía" />
+          <TextField
+            id="state"
+            label="Estado"
+            error={errors?.address?.state?.message}
+            type="text"
+            disabled={isLoading}
+            className="flex-1"
+            {...register('address.state', { value: 'CDMX' })}
+          />
+          <TextField
+            id="zipCode"
+            label="Código Postal"
+            error={errors?.address?.zip_code?.message}
+            type="text"
+            disabled={isLoading}
+            className="flex-1"
+            {...register('address.zip_code')}
+          />
+        </div>
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <TextField
+            id="age"
+            type="number"
+            label="Edad Inmueble (Años)"
+            error={errors?.age?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('age')}
+          />
+          <TextField
+            id="bathrooms"
+            type="number"
+            label="Baños"
+            error={errors?.age?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('bathrooms')}
+          />
+
+          <SelectField control={control} name="climate" options={climateOptions} label="Clima" />
+        </div>
+
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <RadioGroupField
+            control={control}
+            options={rangeOptions}
+            name="condition"
+            label="Condición Inmueble"
+          />
+          <SelectField control={control} name="climate" options={climateOptions} label="Clima" />
+        </div>
+
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <TextField
+            id="constuction-style"
+            type="text"
+            label="Estilo de Constucción"
+            error={errors?.construction_style?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('construction_style')}
+          />
+          <TextField
+            id="development-name"
+            type="text"
+            label="Nombre de Desarrollo"
+            error={errors?.development_name?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('development_name')}
+          />
+          <TextField
+            id="development-buildings"
+            type="number"
+            label="Edificios / Torres"
+            error={errors?.development_buildings?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('development_buildings')}
+          />
+
+          <TextField
+            id="development-stories"
+            type="number"
+            label="Número de Pisos"
+            error={errors?.development_stories?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('development_stories')}
+          />
+        </div>
+
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <RadioGroupField
+            control={control}
+            options={rangeOptions}
+            name="natural_lighting"
+            label="Iluminación Natural"
+          />
+          <TextField
+            id="social-areas"
+            type="string"
+            label="Áreas Sociales Cercanas"
+            error={errors?.nearby_social_areas?.message}
+            disabled={isLoading}
+            className="flex-1"
+            hint="Separados por comas. Ej. Bares, Restaurantes, etc..."
+            {...register('nearby_social_areas')}
+          />
+        </div>
+
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <RadioGroupField
+            control={control}
+            options={rangeOptions}
+            name="event_policy_strictness"
+            label="¿Qué tan estrictos son para eventos?"
+          />
+
+          <TextField
+            id="floor"
+            type="number"
+            label="¿En qué piso está?"
+            error={errors?.floor?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('floor')}
+          />
+
+          <SelectField control={control} options={booleanOptions} name="furnished" label="Amueblado" />
+        </div>
+
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <TextField
+            id="rooms"
+            type="number"
+            label="Habitaciones"
+            error={errors?.rooms?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('rooms')}
+          />
+
+          <TextField
+            id="parking"
+            type="number"
+            label="Lugares de Estacionamiento"
+            error={errors?.parking_spots?.message}
+            disabled={isLoading}
+            className="flex-1"
+            {...register('parking_spots')}
+          />
+
+          <SelectField control={control} options={booleanOptions} name="pet_friendly" label="Pet Friendly" />
+        </div>
+
+        <div className="flex w-full flex-1 items-start justify-between gap-5">
+          <TextField
             id="gallery"
             type="file"
+            label="Galería"
             name="gallery"
             accept="image/*"
             multiple
             ref={fileInputRef}
             placeholder="Galeria"
             disabled={isLoading}
-            className="grow"
+            className="flex-1"
             onChange={onFileInputChange}
           />
         </div>
@@ -127,7 +395,7 @@ export function CreateListingForm() {
 
 type SelectFieldProps = {
   control: Control<Form>
-  name: keyof Form
+  name: keyof Form | AddressFields
   hint?: string
 } & React.ComponentProps<typeof Select>
 
@@ -137,8 +405,61 @@ const SelectField = ({ control, name, hint, ...props }: SelectFieldProps) => {
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <div className={cn('grid grow items-center gap-1.5')}>
+        <div className={cn('grid flex-1  items-center gap-1.5')}>
           <Select {...props} {...field} />
+
+          {hint && !error ? <small className="text-sm text-gray-500/50">{hint}</small> : null}
+          {error?.message ? <small className="text-sm text-red-400">{error.message}</small> : null}
+        </div>
+      )}
+    />
+  )
+}
+
+type RadioGroupfieldProps = {
+  control: Control<Form>
+  name: keyof Form | AddressFields
+  options: SelectOption[]
+  label?: string
+  hint?: string
+} & React.ComponentProps<typeof RadioGroup>
+
+const RadioGroupField = ({ control, name, label, hint, options, ...props }: RadioGroupfieldProps) => {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) => (
+        <div className={cn('grid flex-1 items-center gap-1.5')}>
+          {label ? <Label htmlFor={field.name}>{label}</Label> : null}
+
+          <RadioGroup
+            {...props}
+            ref={field.ref}
+            id={field.name}
+            name={field.name}
+            onBlur={field.onBlur}
+            className="w-full"
+            onValueChange={(val) => {
+              isNaN(Number(val)) ? field.onChange(val) : field.onChange(Number(val))
+            }}
+            onChange={(event) => {
+              console.log(event)
+            }}
+            value={String(field.value)}
+          >
+            <div className="mt-2 flex items-center justify-between gap-5">
+              {options.map((o) => {
+                const id = `radio-${name ? name : ''}-${o.value}`
+                return (
+                  <div key={o.value} className="flex items-center gap-3">
+                    <RadioGroupItem id={id} value={o.value} />
+                    <Label htmlFor={id}>{o.label}</Label>
+                  </div>
+                )
+              })}
+            </div>
+          </RadioGroup>
 
           {hint && !error ? <small className="text-sm text-gray-500/50">{hint}</small> : null}
           {error?.message ? <small className="text-sm text-red-400">{error.message}</small> : null}

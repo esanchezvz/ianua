@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, forwardRef, useEffect, useRef, useState } from 'react'
+import { Fragment, forwardRef, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Listbox, Transition } from '@headlessui/react'
 import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/20/solid'
@@ -13,35 +13,57 @@ export type SelectOption = {
   label: string
 }
 
+// TODO - create a better select. this one kinde sucks but works
+
 type SelectProps = {
   options: SelectOption[]
   defaultSelected?: SelectOption
   label?: string
   multiple?: boolean
   fullWidth?: boolean
-  onChange?: (value: SelectOption[]) => void | ((value: SelectOption) => void)
   name?: string
-}
+} & (
+  | { multiple?: true; onChange?: (value: string[]) => void }
+  | { multiple?: false; onChange?: (value: string) => void }
+)
 export const Select = forwardRef<HTMLElement, SelectProps>(
   ({ options, defaultSelected, label, multiple, fullWidth, onChange, name }, ref) => {
-    const [selected, setSelected] = useState<SelectOption | SelectOption[] | null>(
-      defaultSelected ?? multiple
+    const defaultValue = useMemo<SelectOption | SelectOption[]>(() => {
+      return multiple
         ? [{ value: '', label: 'Selecciona una o más opciones' }]
         : { value: '', label: 'Selecciona una opción' }
-    )
+    }, [multiple])
+    const [selected, setSelected] = useState<SelectOption | SelectOption[]>(defaultSelected ?? defaultValue)
     const selectedRef = useRef(selected)
 
     useEffect(() => {
       if (multiple && !arrayEquals(selected as SelectOption[], selectedRef.current as SelectOption[])) {
-        onChange?.(selected as SelectOption[])
+        const includesDefault = Array.isArray(selected) && !!selected.find((s) => s.value === '')
+        let copy: SelectOption[] = []
+        copy = copy.concat(selected)
+
+        if (Array.isArray(selected) && (includesDefault || !selected.length)) {
+          if (includesDefault && copy.length > 1) {
+            copy.splice(0, 1)
+          }
+          if (!copy.length) copy = defaultValue as SelectOption[]
+
+          setSelected(copy)
+        }
+
+        onChange?.(copy.map((c) => c.value))
         selectedRef.current = selected
       }
 
-      if (!multiple && (selectedRef.current as SelectOption).value !== (selected as SelectOption).value) {
-        onChange?.(selected as SelectOption[])
+      if (
+        !multiple &&
+        !Array.isArray(selected) &&
+        (selectedRef.current as SelectOption).value !== (selected as SelectOption).value
+      ) {
+        onChange?.((selected as SelectOption).value as any)
         selectedRef.current = selected
       }
-    }, [selected, onChange, multiple])
+    }, [selected, onChange, multiple, defaultValue])
 
     return (
       <Listbox ref={ref} value={selected} onChange={setSelected} multiple={multiple} name={name}>
@@ -81,7 +103,7 @@ export const Select = forwardRef<HTMLElement, SelectProps>(
                       key={o.value}
                       className={({ active }) =>
                         cn(
-                          active ? 'bg-brandGreen text-white' : 'text-gray-900',
+                          active ? 'bg-light-blue/30 text-blue' : 'text-gray-900',
                           'relative cursor-default select-none py-2 pl-3 pr-9'
                         )
                       }
@@ -96,7 +118,7 @@ export const Select = forwardRef<HTMLElement, SelectProps>(
                           {selected ? (
                             <span
                               className={cn(
-                                active ? 'text-white' : 'text-brandGreen',
+                                active ? 'text-blue' : 'text-light-blue',
                                 'absolute inset-y-0 right-0 flex items-center pr-4'
                               )}
                             >

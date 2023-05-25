@@ -16,17 +16,11 @@ export async function POST(req: NextRequest) {
     const session = await getSession()
 
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (!allowedRoles.includes(session.user.role)) {
-      return new NextResponse(JSON.stringify({ error: 'Forbidden' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const createdUser = await db.user.create({ data })
@@ -39,12 +33,9 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    return new NextResponse(JSON.stringify({ message: 'User created successfully.', data: createdUser }), {
-      status: 203,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return NextResponse.json({ message: 'User created successfully.', data: createdUser }, { status: 203 })
   } catch (error) {
     console.error(error)
-    return new NextResponse(JSON.stringify({ error: 'Unexpected error' }), { status: 500 })
+    return NextResponse.json({ error: 'Unexpected error' }, { status: 500 })
   }
 }

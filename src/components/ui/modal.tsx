@@ -12,9 +12,18 @@ type ModalProps = {
   children?: React.ReactNode
   className?: string
   initialFocus?: React.MutableRefObject<HTMLElement | null>
+  closeOnEscape?: boolean
 }
 
-export default function Modal({ onClose, opened, title, children, className, initialFocus }: ModalProps) {
+export default function Modal({
+  onClose,
+  opened,
+  title,
+  children,
+  className,
+  initialFocus,
+  closeOnEscape = true,
+}: ModalProps) {
   const closeRef = useRef<HTMLButtonElement>(null)
 
   return (
@@ -24,7 +33,7 @@ export default function Modal({ onClose, opened, title, children, className, ini
           static
           as="div"
           className="relative z-50"
-          onClose={onClose}
+          onClose={closeOnEscape ? onClose : () => {}}
           initialFocus={initialFocus || closeRef}
         >
           <Transition.Child
@@ -36,7 +45,7 @@ export default function Modal({ onClose, opened, title, children, className, ini
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 z-50 bg-blue/25 backdrop-blur-sm" aria-hidden="true" />
+            <div className={cn('fixed inset-0 z-50 bg-blue/25 backdrop-blur-sm')} aria-hidden="true" />
           </Transition.Child>
 
           <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -52,7 +61,7 @@ export default function Modal({ onClose, opened, title, children, className, ini
               >
                 <Dialog.Panel
                   className={cn(
-                    'relative max-h-[85%] w-full overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all',
+                    'relative max-h-[85%] w-full overflow-auto rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all',
                     className
                   )}
                 >

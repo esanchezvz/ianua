@@ -20,6 +20,7 @@ export default function ListingsPage() {
         onClose={() => setModalOpen(false)}
         title="Crear Propiedad"
         className="max-w-5xl"
+        closeOnEscape={false}
       >
         <CreateListingForm />
       </Modal>

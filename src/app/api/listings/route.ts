@@ -1,4 +1,4 @@
-import { Listing, Role } from '@prisma/client'
+import { Role } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -25,17 +25,11 @@ export async function POST(req: NextRequest) {
     const session = await getSession()
 
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (!allowedRoles.includes(session.user.role)) {
-      return new NextResponse(JSON.stringify({ error: 'Forbidden' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const createdListing = await db.listing.create({
@@ -59,20 +53,23 @@ export async function POST(req: NextRequest) {
 
     await Promise.all(galleryUploads)
 
-    return new NextResponse(
-      JSON.stringify({ message: 'Listing created successfully.', data: createdListing }),
-      {
-        status: 203,
-        headers: { 'Content-Type': 'application/json' },
-      }
+    return NextResponse.json(
+      { message: 'Listing created successfully.', data: createdListing },
+      { status: 203 }
     )
   } catch (error) {
     console.error(error)
-    return new NextResponse(JSON.stringify({ error: 'Unexpected error' }), { status: 500 })
+    return NextResponse.json({ error: 'Unexpected error' }, { status: 500 })
   }
 }
 
 export async function GET() {
-  // TODO - add filters and fetch
-  return await db.listing.count()
+  const listings = await db.listing.findMany({
+    select: {
+      name: true,
+      data: true,
+    },
+  })
+
+  return NextResponse.json({ message: 'Listings fetched successfuly', data: listings }, { status: 200 })
 }

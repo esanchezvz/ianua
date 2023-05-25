@@ -28,6 +28,7 @@ export default withAuth(
       return NextResponse.redirect('/login')
     }
 
+    // CORS
     if (!isDevelopment && req.nextUrl.pathname.startsWith('/api')) {
       res.headers.append('Access-Control-Allow-Origin', env.NEXT_PUBLIC_APP_URL)
     }
