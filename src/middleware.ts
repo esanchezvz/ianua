@@ -23,11 +23,6 @@ export default withAuth(
     const isRegister = req.nextUrl.pathname.startsWith('/registro')
     const isAuthPage = isLogin || isRegister
 
-    // Temporary page block
-    if (!isDevelopment && (!isAdminPage || !isLogin)) {
-      return NextResponse.redirect(new URL('/login', req.url))
-    }
-
     // CORS
     if (!isDevelopment && req.nextUrl.pathname.startsWith('/api')) {
       res.headers.append('Access-Control-Allow-Origin', env.NEXT_PUBLIC_APP_URL)
@@ -73,5 +68,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ['/admin/:path*', '/login', '/registro', '/api/:path*', '/:path*'],
+  matcher: ['/admin/:path*', '/login', '/registro', '/api/:path*'],
 }
