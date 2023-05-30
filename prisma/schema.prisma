@@ -80,60 +80,52 @@ model Broker {
 }
 
 model Listing {
-  id                             String                   @id @default(cuid())
-  access_roads                   String[]
-  address                        Json
-  age                            Int?
-  ammenities                     ListingAmmenities[]
-  bathrooms                      Float
-  climate                        ListingClimate
-  condition                      Int // 1 to 5 scale
-  construction_style             String?
-  createdAt                      DateTime                 @default(now()) @map(name: "created_at")
-  data                           Json?
-  description                    String                   @db.VarChar(1000)
-  development_buildings          Int?
-  development_name               String?
-  development_stories            Int?
-  event_policy_strictness        Int // 1 to 5 scale 
-  featured                       Boolean?                 @default(false)
-  floor                          Int?
-  furnished                      Boolean
-  interior_bathroom_furniture    String?
-  interior_ceiling_lignts        String?
-  interior_electric_instalations String?
-  interior_floors                String?
-  interior_walls                 String?
-  last_renovation                DateTime?
-  location_references            String?
-  map                            String?                  @db.VarChar(2500)
-  main_feature                   String?
-  maintenance_cost               Int?
-  name                           String
-  natural_lighting               Int // 1 to 5 scale
-  nearby_social_areas            String[]
-  orientation                    String?
-  outside_finishes               String?
-  parking_spots                  Int
-  pet_friendly                   Boolean
-  price                          Int
-  private_services               ListingPrivateServices[]
-  property_type                  PropertyType
-  public_services                ListingPublicServices[]
-  rooms                          Int
-  security                       String?
-  sq_m                           Int
-  sq_m_extra                     Int? // m2 for private rooftop, backyard, balcony, etc.
-  sq_m_total                     Int
-  status                         ListingStatus
-  storage                        Boolean?
-  stories                        Int?
-  style                          String?
-  type                           ListingType
-  updatedAt                      DateTime                 @updatedAt @map(name: "updated_at")
-  urban_equipment                String[]
-  views                          String
-  yearly_tax                     Int? // This is the "predio" tax in Mexico
+  id                      String                   @id @default(cuid())
+  address                 Json
+  age                     Int?
+  ammenities              ListingAmmenities[]
+  bathrooms               Float
+  climate                 ListingClimate
+  condition               String
+  construction_style      String?
+  createdAt               DateTime                 @default(now()) @map(name: "created_at")
+  data                    Json?
+  description             String                   @db.VarChar(2000)
+  development_buildings   Int?
+  development_name        String?
+  development_stories     Int?
+  development_units       Int?
+  event_policy_strictness Int // 1 to 5 scale 
+  featured                Boolean?                 @default(false)
+  floor                   Int?
+  furnished               Boolean
+  maintenance_cost        Int?
+  map                     String?                  @db.VarChar(2500)
+  natural_lighting        Int // 1 to 5 scale
+  orientation             String?
+  parking_spots           Int
+  parking_spots_style     ListingParkingSpotSTyle?
+  pet_friendly            Boolean
+  price                   Int
+  price_currency          ListingPriceCurrency?
+  private_services        ListingPrivateServices[]
+  property_type           PropertyType
+  public_services         ListingPublicServices[]
+  rooms                   Int
+  sq_m_back               Int?
+  sq_m_constuction        Int?
+  sq_m_extra              Int?
+  sq_m_front              Int?
+  sq_m_living             Int?
+  sq_m_total              Int?
+  status                  ListingStatus
+  storage_units           Int?
+  stories                 Int?
+  type                    ListingType
+  updatedAt               DateTime                 @updatedAt @map(name: "updated_at")
+  urban_equipment         String[]
+  views                   String
+  yearly_tax              Int? // This is the "predio" tax in Mexico
 
   broker   Broker @relation(fields: [brokerId], references: [id], onDelete: Cascade)
   brokerId String @unique @map("broker")
@@ -175,6 +167,7 @@ enum ListingAmmenities {
 enum ListingClimate {
   COLD
   WARM
+  HOT
 }
 
 enum ListingPrivateServices {
@@ -207,6 +200,8 @@ enum ListingStatus {
 enum PropertyType {
   APPARTMENT
   HOUSE
+  HOUSE_HORIZONTAL_CONDOMINIUM
+  HOUSE_CLOSED_CONDOMINUIM
 }
 
 enum ListingType {
@@ -219,4 +214,25 @@ enum Role {
   BROKER
   SUPER_ADMIN
   USER
+}
+
+enum ListingParkingSpotSTyle {
+  LINEAL
+  INDEPENDENT
+  OUTDOOR
+  WITH_ROOF
+}
+
+enum ListingCondition {
+  NEW
+  EXCELENT
+  GOOD
+  REGULAR
+  NEEDS_WORK
+  BAD
+}
+
+enum ListingPriceCurrency {
+  MXN
+  USD
 }

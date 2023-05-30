@@ -10,14 +10,12 @@ import {
 import * as z from 'zod'
 
 export const createListingSchema = z.object({
-  acces_roads: z.string().array().optional(),
   address: z.object({
     street_1: z.string().min(1, 'Campo requerido'),
-    street_2: z.string().optional(),
     number: z.string().min(1, 'Campo requerido'),
     int_number: z.string().optional(),
+    locality: z.string().min(1, 'Campo requerido'),
     city: z.string().min(1, 'Campo requerido').default('CDMX'),
-    neighborhood: z.string().min(1, 'Campo requerido'),
     state: z.string().min(1, 'Campo requerido'),
     zip_code: z.string().min(1, 'Campo requerido'),
   }),
@@ -100,3 +98,45 @@ export const createListingSchema = z.object({
   views: z.string().min(1, 'Campo requerido'),
   yearly_tax: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number).optional(),
 })
+
+/* 
+type 
+description
+property_type
+furnished
+price
+price_currency
+sq_m_total
+sq_m_front
+sq_m_back
+sq_m_constuction
+sq_m_living
+sq_m_extra
+rooms
+bathroms
+parking_spots
+parking_spots_style
+storage_units
+maintenance_cost
+age
+condition
+construction_style
+climate
+orientation
+views
+natural_lighting
+event_policy_strictness
+pet_friendly
+address 
+development_name
+stories
+floor
+development_stories
+development_buildings
+development_units
+ammenities
+private_services
+public_services
+urban_equipment
+yearly_tax // predio
+*/
