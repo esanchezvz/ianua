@@ -86,7 +86,7 @@ model Listing {
   ammenities              ListingAmmenities[]
   bathrooms               Float
   climate                 ListingClimate
-  condition               String
+  condition               ListingCondition
   construction_style      String?
   createdAt               DateTime                 @default(now()) @map(name: "created_at")
   data                    Json?
@@ -95,6 +95,8 @@ model Listing {
   development_name        String?
   development_stories     Int?
   development_units       Int?
+  dimension_depth         Int?
+  dimension_front         Int?
   event_policy_strictness Int // 1 to 5 scale 
   featured                Boolean?                 @default(false)
   floor                   Int?
@@ -104,7 +106,7 @@ model Listing {
   natural_lighting        Int // 1 to 5 scale
   orientation             String?
   parking_spots           Int
-  parking_spots_style     ListingParkingSpotSTyle?
+  parking_spots_style     ListingParkingSpotStyle?
   pet_friendly            Boolean
   price                   Int
   price_currency          ListingPriceCurrency?
@@ -112,11 +114,11 @@ model Listing {
   property_type           PropertyType
   public_services         ListingPublicServices[]
   rooms                   Int
-  sq_m_back               Int?
-  sq_m_constuction        Int?
-  sq_m_extra              Int?
-  sq_m_front              Int?
+  sq_m_balcony            Int?
+  sq_m_construction        Int?
+  sq_m_garden             Int?
   sq_m_living             Int?
+  sq_m_terrace            Int?
   sq_m_total              Int?
   status                  ListingStatus
   storage_units           Int?
@@ -216,7 +218,7 @@ enum Role {
   USER
 }
 
-enum ListingParkingSpotSTyle {
+enum ListingParkingSpotStyle {
   LINEAL
   INDEPENDENT
   OUTDOOR

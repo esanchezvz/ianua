@@ -6,6 +6,9 @@ import {
   ListingPublicServices,
   PropertyType,
   ListingStatus,
+  ListingPriceCurrency,
+  ListingParkingSpotStyle,
+  ListingCondition,
 } from '@prisma/client'
 
 import { getOptionsFromMap } from '.'
@@ -37,7 +40,8 @@ export const ammenitiesOptions = getOptionsFromMap(ammenitiesMap)
 
 export const climateMap: Record<ListingClimate, string> = {
   [ListingClimate.COLD]: 'Frío',
-  [ListingClimate.WARM]: 'Caliente',
+  [ListingClimate.WARM]: 'Templado',
+  [ListingClimate.HOT]: 'Caliente',
 }
 
 export const climateOptions = getOptionsFromMap(climateMap)
@@ -84,7 +88,32 @@ export const listingStatusOptions = getOptionsFromMap(listingStatusMap)
 
 export const propertyTypeMap: Record<PropertyType, string> = {
   [PropertyType.APPARTMENT]: 'Departamento',
-  [PropertyType.HOUSE]: 'Casa',
+  [PropertyType.HOUSE]: 'Casa Sola',
+  [PropertyType.HOUSE_CLOSED_CONDOMINUIM]: 'Casa Fracccionamiento Cerrado',
+  [PropertyType.HOUSE_HORIZONTAL_CONDOMINIUM]: 'Casa Condominio Horizontal',
 }
 
 export const propertyTypeOptions = getOptionsFromMap(propertyTypeMap)
+
+export const currencyMap: Record<ListingPriceCurrency, string> = {
+  [ListingPriceCurrency.MXN]: 'MXN',
+  [ListingPriceCurrency.USD]: 'USD',
+}
+
+export const parkingSpotStyleMap: Record<ListingParkingSpotStyle, string> = {
+  [ListingParkingSpotStyle.INDEPENDENT]: 'Independientes',
+  [ListingParkingSpotStyle.LINEAL]: 'Lineales',
+  [ListingParkingSpotStyle.OUTDOOR]: 'Aire Libre',
+  [ListingParkingSpotStyle.WITH_ROOF]: 'Techado',
+}
+
+export const parkingSpotStyleOptions = getOptionsFromMap(parkingSpotStyleMap)
+
+export const listingConditions: Record<ListingCondition, string> = {
+  [ListingCondition.BAD]: 'Para Tirar',
+  [ListingCondition.EXCELENT]: 'Excelente',
+  [ListingCondition.GOOD]: 'Bueno',
+  [ListingCondition.NEEDS_WORK]: 'Para Remodelar',
+  [ListingCondition.NEW]: 'Nuevo',
+  [ListingCondition.REGULAR]: 'Regular',
+}
