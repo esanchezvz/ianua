@@ -8,7 +8,7 @@ import Modal from '@/components/ui/modal'
 type TempListing = { name: string; data: { gallery_keys: string[] }; id: string }
 
 export default function ListingsPage() {
-  const [listings, setLisitings] = useState<TempListing[]>([])
+  const [listings, setLisitings] = useState<number>(0)
   const [modalOpen, setModalOpen] = useState(false)
 
   const onCreate = async () => {
@@ -16,7 +16,7 @@ export default function ListingsPage() {
       method: 'get',
     })
 
-    const result: { data: TempListing[] } = await res.json()
+    const result: { data: number } = await res.json()
 
     setLisitings(result.data)
 
@@ -29,7 +29,7 @@ export default function ListingsPage() {
         method: 'get',
       })
 
-      const result: { data: TempListing[] } = await res.json()
+      const result: { data: number } = await res.json()
 
       setLisitings(result.data)
     }
@@ -47,13 +47,7 @@ export default function ListingsPage() {
         </Button>
       </div>
 
-      <ul className="mt-10">
-        {listings.map((l) => (
-          <li key={l.id}>
-            <b>{l.name}</b> - {l.data.gallery_keys.length} Images
-          </li>
-        ))}
-      </ul>
+      <h1 className="mt-10">{listings} Propiedades</h1>
 
       <Modal
         opened={modalOpen}

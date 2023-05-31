@@ -64,12 +64,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const listings = await db.listing.findMany({
-    select: {
-      id: true,
-      data: true,
-    },
-  })
+  const count = await db.listing.count()
 
-  return NextResponse.json({ message: 'Listings fetched successfuly', data: listings }, { status: 200 })
+  return NextResponse.json({ message: 'Listings fetched successfuly', data: count }, { status: 200 })
 }
