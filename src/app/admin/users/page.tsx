@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 
 import { Role } from '@prisma/client'
+import { useSession } from 'next-auth/react'
 
 import { CreateUserForm } from '@/components/admin/create-user-form'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ type TempUser = {
 }
 
 export default function UsersPage() {
+  const session = useSession()
   const [users, setUsers] = useState<TempUser[]>([])
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -44,14 +46,16 @@ export default function UsersPage() {
         </Button>
       </div>
 
-      <ul className="mt-10">
-        {users.map((l) => (
-          <li key={l.id}>
-            <b>{`${l.name} ${l.surname_1} ${l.surname_2}`}</b> -{' '}
-            {roleOptions.find((ro) => ro.value === l.role)?.label ?? null}
-          </li>
-        ))}
-      </ul>
+      {session.data?.user.role === 'SUPER_ADMIN' ? (
+        <ul className="mt-10">
+          {users.map((l) => (
+            <li key={l.id}>
+              <b>{`${l.name} ${l.surname_1} ${l.surname_2}`}</b> -{' '}
+              {roleOptions.find((ro) => ro.value === l.role)?.label ?? null}
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       <Modal
         opened={modalOpen}

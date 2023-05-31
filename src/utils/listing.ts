@@ -100,6 +100,8 @@ export const currencyMap: Record<ListingPriceCurrency, string> = {
   [ListingPriceCurrency.USD]: 'USD',
 }
 
+export const listingCurrencyOptions = getOptionsFromMap(currencyMap)
+
 export const parkingSpotStyleMap: Record<ListingParkingSpotStyle, string> = {
   [ListingParkingSpotStyle.INDEPENDENT]: 'Independientes',
   [ListingParkingSpotStyle.LINEAL]: 'Lineales',
@@ -109,7 +111,7 @@ export const parkingSpotStyleMap: Record<ListingParkingSpotStyle, string> = {
 
 export const parkingSpotStyleOptions = getOptionsFromMap(parkingSpotStyleMap)
 
-export const listingConditions: Record<ListingCondition, string> = {
+export const listingConditionsMap: Record<ListingCondition, string> = {
   [ListingCondition.BAD]: 'Para Tirar',
   [ListingCondition.EXCELENT]: 'Excelente',
   [ListingCondition.GOOD]: 'Bueno',
@@ -117,3 +119,5 @@ export const listingConditions: Record<ListingCondition, string> = {
   [ListingCondition.NEW]: 'Nuevo',
   [ListingCondition.REGULAR]: 'Regular',
 }
+
+export const listingConditionOptions = getOptionsFromMap(listingConditionsMap)

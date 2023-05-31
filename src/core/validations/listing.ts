@@ -19,7 +19,9 @@ export const createListingSchema = z.object({
   description: z.string().min(1, 'Campo requerido').max(1000, 'Máximo 2,000 caracteres'),
   furnished: z.string().optional().or(z.number()).transform(Number).transform(Boolean).or(z.boolean()),
   price: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number),
-  price_currency: z.nativeEnum(ListingPriceCurrency, { required_error: 'Campo requerido' }),
+  price_currency: z
+    .nativeEnum(ListingPriceCurrency, { required_error: 'Campo requerido' })
+    .default(ListingPriceCurrency.MXN),
   sq_m_balcony: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number).optional(),
   sq_m_construction: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number),
   sq_m_garden: z.string().regex(/^\d+$/, 'Debe ser número').or(z.number()).transform(Number).optional(),

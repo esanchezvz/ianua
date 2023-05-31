@@ -67,7 +67,6 @@ export async function GET() {
   const listings = await db.listing.findMany({
     select: {
       id: true,
-      name: true,
       data: true,
     },
   })
