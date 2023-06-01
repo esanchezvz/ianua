@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server'
 import { db } from '@/core/db'
 
 export async function GET() {
-  console.log('HIT')
   const brokers = await db.broker.findMany({
     include: {
       user: {

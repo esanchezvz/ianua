@@ -35,8 +35,11 @@ import { RadioGroupItem } from '../ui/radio-group'
 type Form = z.infer<typeof createListingSchema>
 const _Address = createListingSchema.pick({ address: true })
 type _AddressFields = z.infer<typeof _Address>['address']
+const _Data = createListingSchema.pick({ data: true })
+type _DataFields = z.infer<typeof _Data>['data']
 
 type AddressFields = `address.${keyof _AddressFields}`
+type DataFields = `data.${keyof _DataFields}`
 
 type Broker = {
   id: string
@@ -312,7 +315,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
             id="bathrooms"
             type="number"
             label="Baños"
-            error={errors?.age?.message}
+            error={errors?.bathrooms?.message}
             disabled={isLoading}
             className="flex-1"
             {...register('bathrooms')}
@@ -393,16 +396,6 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
             options={climateOptions}
             label="Clima"
           />
-
-          <TextField
-            id="orientation"
-            type="text"
-            label="Estilo de Construcción"
-            error={errors?.orientation?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('orientation')}
-          />
           <TextField
             id="views"
             type="text"
@@ -452,7 +445,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
             id="number"
             label="Número"
             error={errors?.address?.number?.message}
-            type="number"
+            type="test"
             disabled={isLoading}
             className="flex-1"
             {...register('address.number')}
@@ -461,7 +454,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
             id="int_number"
             label="Número Interior"
             error={errors?.address?.int_number?.message}
-            type="number"
+            type="test"
             disabled={isLoading}
             className="flex-1"
             {...register('address.int_number')}
@@ -606,7 +599,6 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
             hint="Separados por comas. Ej. Bares, Restaurantes, etc..."
             {...register('urban_equipment')}
           />
-
           <TextField
             id="yearly_tax"
             type="number"
@@ -615,6 +607,16 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
             disabled={isLoading}
             className="flex-1"
             {...register('yearly_tax')}
+          />
+          <SelectField
+            disabled={isLoading}
+            control={control}
+            name="data.yearly_tax_period"
+            options={[
+              { label: 'Anual', value: 'yearly' },
+              { label: 'Bimestral', value: 'bimonthly' },
+            ]}
+            label="Recurrencia Predial"
           />
         </div>
 
@@ -645,7 +647,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
 
 type SelectFieldProps = {
   control: Control<Form>
-  name: keyof Form | AddressFields
+  name: keyof Omit<Form, 'address' | 'data'> | AddressFields | DataFields
   hint?: string
 } & React.ComponentProps<typeof Select>
 
