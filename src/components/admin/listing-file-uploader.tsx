@@ -44,10 +44,11 @@ export default function ListingFileUploader({
 
   const handleSave = async () => {
     const formData = new FormData()
-    const gallery = {
+    const data = {
       gallery_keys: images.map((i) => i.key),
     }
-    formData.append('data', JSON.stringify(gallery))
+    formData.append('data', JSON.stringify(data))
+    setLoading(true)
 
     try {
       await Promise.all(images.map((i) => uploadListingImage(i.file, { path: `${listingId}/${i.key}` })))
@@ -56,7 +57,6 @@ export default function ListingFileUploader({
         body: formData,
       })
       await res.json()
-      setLoading(true)
       onCreate?.()
     } catch (err) {
       toast({
