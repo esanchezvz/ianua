@@ -49,6 +49,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         id: params.id,
       },
       data: {
+        ...listingData,
         address: {
           ...((listing?.address as Record<string, string>) ?? {}),
           ...((listingData?.address as Record<string, string>) ?? {}),
