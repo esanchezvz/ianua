@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Role } from '@prisma/client'
+import { Listing, Role } from '@prisma/client'
 import { useSession } from 'next-auth/react'
 import { useForm, Control, Controller } from 'react-hook-form'
 import * as z from 'zod'
@@ -28,6 +28,7 @@ import {
   propertyTypeOptions,
 } from '@/utils/listing'
 
+import ListingFileUploader from './listing-file-uploader'
 import { Label } from '../ui/label'
 import { RadioGroup } from '../ui/radio-group'
 import { RadioGroupItem } from '../ui/radio-group'
@@ -61,9 +62,9 @@ const booleanOptions = [
 
 export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
   const session = useSession()
+  const [step, setStep] = useState<'data' | 'media'>('data')
+  const [listingId, setListingId] = useState('')
   const [brokers, setBrokers] = useState<Broker[]>([])
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const [formData, setFormData] = useState<FormData>()
   const {
     register,
     handleSubmit,
@@ -76,14 +77,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
   const [isLoading, setIsLoading] = useState(false)
 
   const onSubmit = async (data: Form) => {
-    const galleryItems = formData?.getAll('gallery')
-    if (!galleryItems?.length || !formData) {
-      return toast({
-        title: 'Oooops!',
-        description: 'No olvides agregar las imagenes de la galería.',
-        variant: 'destructive',
-      })
-    }
+    const formData = new FormData()
 
     setIsLoading(true)
 
@@ -94,16 +88,15 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
         method: 'post',
         body: formData,
       })
-      await res.json()
+      const response = (await res.json()) as { data: Listing }
 
-      onSuccess()
+      setListingId(response.data.id)
+      setStep('media')
 
       toast({
         title: 'Pripedad Creada',
         description: 'La propiedad creaada exitosamente. Puedes seguir creando propiedades.',
       })
-
-      // reset()
     } catch (error) {
       toast({
         title: 'Oooops!',
@@ -113,20 +106,6 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
     }
 
     setIsLoading(false)
-  }
-
-  const onFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files?.length) {
-      return
-    }
-
-    const formData = new FormData()
-
-    Array.from(event.target.files).forEach((file) => {
-      formData.append(event.target.name, file)
-    })
-
-    setFormData(formData)
   }
 
   useEffect(() => {
@@ -158,490 +137,481 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
   }, [session, brokers, setValue])
 
   return (
-    <form noValidate onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col items-center justify-between gap-5">
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          {session.data?.user.role !== Role.BROKER ? (
-            <SelectField
-              disabled={isLoading}
-              control={control}
-              name="broker"
-              options={brokers.map((r) => ({
-                value: r.id,
-                label: `${r.user.name} ${r.user.surname_1} ${r.user.surname_2}`,
-              }))}
-              label="Broker"
-            />
-          ) : null}
-        </div>
+    <>
+      {step === 'data' ? (
+        <form noValidate onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col items-center justify-between gap-5">
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              {session.data?.user.role !== Role.BROKER ? (
+                <SelectField
+                  disabled={isLoading}
+                  control={control}
+                  name="broker"
+                  options={brokers.map((r) => ({
+                    value: r.id,
+                    label: `${r.user.name} ${r.user.surname_1} ${r.user.surname_2}`,
+                  }))}
+                  label="Broker"
+                />
+              ) : null}
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            name="type"
-            options={lsitingTypeOptions}
-            label="Tipo"
-          />
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                name="type"
+                options={lsitingTypeOptions}
+                label="Tipo"
+              />
 
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            name="property_type"
-            options={propertyTypeOptions}
-            label="¿Casa o Depa?"
-          />
-        </div>
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                name="property_type"
+                options={propertyTypeOptions}
+                label="¿Casa o Depa?"
+              />
+            </div>
 
-        <div className="flex w-full flex-1 items-start justify-between gap-5">
-          <TextareaField
-            id="description"
-            label="Descripción"
-            error={errors?.description?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('description')}
-          />
-        </div>
+            <div className="flex w-full flex-1 items-start justify-between gap-5">
+              <TextareaField
+                id="description"
+                label="Descripción"
+                error={errors?.description?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('description')}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 items-start justify-between gap-5">
-          <TextField
-            id="price"
-            label="Precio"
-            error={errors?.price?.message}
-            type="number"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('price')}
-          />
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            options={listingCurrencyOptions}
-            name="price_currency"
-            label="Moneda"
-          />
-        </div>
+            <div className="flex w-full flex-1 items-start justify-between gap-5">
+              <TextField
+                id="price"
+                label="Precio"
+                error={errors?.price?.message}
+                type="number"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('price')}
+              />
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                options={listingCurrencyOptions}
+                name="price_currency"
+                label="Moneda"
+              />
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <TextField
-            id="sq_m_total"
-            label="Terreno Total (m2)"
-            error={errors?.sq_m_total?.message}
-            type="number"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('sq_m_total')}
-          />
-          <TextField
-            id="sq_m_construction"
-            label="Contrucción (m2)"
-            error={errors?.sq_m_construction?.message}
-            type="number"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('sq_m_construction')}
-          />
-          <TextField
-            id="sq_m_living"
-            label="Habitable (m2)"
-            error={errors?.sq_m_living?.message}
-            type="number"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('sq_m_living')}
-          />
-          <TextField
-            id="sq_m_terrace"
-            label="Terraza (m2)"
-            error={errors?.sq_m_terrace?.message}
-            type="number"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('sq_m_terrace')}
-          />
-          <TextField
-            id="sq_m_balcony"
-            label="Balcón (m2)"
-            error={errors?.sq_m_balcony?.message}
-            type="number"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('sq_m_balcony')}
-          />
-          <TextField
-            id="sq_m_garden"
-            label="Jardín (m2)"
-            error={errors?.sq_m_garden?.message}
-            type="number"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('sq_m_garden')}
-          />
-        </div>
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <TextField
+                id="sq_m_total"
+                label="Terreno Total (m2)"
+                error={errors?.sq_m_total?.message}
+                type="number"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('sq_m_total')}
+              />
+              <TextField
+                id="sq_m_construction"
+                label="Contrucción (m2)"
+                error={errors?.sq_m_construction?.message}
+                type="number"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('sq_m_construction')}
+              />
+              <TextField
+                id="sq_m_living"
+                label="Habitable (m2)"
+                error={errors?.sq_m_living?.message}
+                type="number"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('sq_m_living')}
+              />
+              <TextField
+                id="sq_m_terrace"
+                label="Terraza (m2)"
+                error={errors?.sq_m_terrace?.message}
+                type="number"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('sq_m_terrace')}
+              />
+              <TextField
+                id="sq_m_balcony"
+                label="Balcón (m2)"
+                error={errors?.sq_m_balcony?.message}
+                type="number"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('sq_m_balcony')}
+              />
+              <TextField
+                id="sq_m_garden"
+                label="Jardín (m2)"
+                error={errors?.sq_m_garden?.message}
+                type="number"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('sq_m_garden')}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <TextField
-            id="dimension_front"
-            type="number"
-            label="Frente"
-            error={errors?.dimension_front?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('dimension_front')}
-          />
-          <TextField
-            id="dimension_depth"
-            type="number"
-            label="Fondo"
-            error={errors?.dimension_depth?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('dimension_depth')}
-          />
-        </div>
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <TextField
+                id="dimension_front"
+                type="number"
+                label="Frente"
+                error={errors?.dimension_front?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('dimension_front')}
+              />
+              <TextField
+                id="dimension_depth"
+                type="number"
+                label="Fondo"
+                error={errors?.dimension_depth?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('dimension_depth')}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 items-start justify-between gap-5">
-          <TextField
-            id="rooms"
-            type="number"
-            label="Habitaciones"
-            error={errors?.rooms?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('rooms')}
-          />
-          <TextField
-            id="bathrooms"
-            type="number"
-            label="Baños"
-            error={errors?.bathrooms?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('bathrooms')}
-          />
-          <TextField
-            id="parking"
-            type="number"
-            label="Lugares de Estacionamiento"
-            error={errors?.parking_spots?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('parking_spots')}
-          />
+            <div className="flex w-full flex-1 items-start justify-between gap-5">
+              <TextField
+                id="rooms"
+                type="number"
+                label="Habitaciones"
+                error={errors?.rooms?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('rooms')}
+              />
+              <TextField
+                id="bathrooms"
+                type="number"
+                label="Baños"
+                error={errors?.bathrooms?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('bathrooms')}
+              />
+              <TextField
+                id="parking"
+                type="number"
+                label="Lugares de Estacionamiento"
+                error={errors?.parking_spots?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('parking_spots')}
+              />
 
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            name="parking_spots_style"
-            options={parkingSpotStyleOptions}
-            label="Tipo de Estacionamiento"
-          />
-        </div>
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                name="parking_spots_style"
+                options={parkingSpotStyleOptions}
+                label="Tipo de Estacionamiento"
+              />
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <TextField
-            id="storage_units"
-            type="number"
-            label="No. de Bodegas"
-            error={errors?.storage_units?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('storage_units')}
-          />
-          <TextField
-            id="maintenance_cost"
-            type="number"
-            label="Costo de Mantenimiento"
-            error={errors?.maintenance_cost?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('maintenance_cost')}
-          />
-        </div>
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <TextField
+                id="storage_units"
+                type="number"
+                label="No. de Bodegas"
+                error={errors?.storage_units?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('storage_units')}
+              />
+              <TextField
+                id="maintenance_cost"
+                type="number"
+                label="Costo de Mantenimiento"
+                error={errors?.maintenance_cost?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('maintenance_cost')}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <TextField
-            id="age"
-            type="number"
-            label="Edad Inmueble (Años)"
-            error={errors?.age?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('age')}
-          />
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            name="condition"
-            options={listingConditionOptions}
-            label="Condición Física Inmueble"
-          />
-          <TextField
-            id="construction_style"
-            type="text"
-            label="Estilo de Construcción"
-            error={errors?.construction_style?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('construction_style')}
-          />
-        </div>
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <TextField
+                id="age"
+                type="number"
+                label="Edad Inmueble (Años)"
+                error={errors?.age?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('age')}
+              />
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                name="condition"
+                options={listingConditionOptions}
+                label="Condición Física Inmueble"
+              />
+              <TextField
+                id="construction_style"
+                type="text"
+                label="Estilo de Construcción"
+                error={errors?.construction_style?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('construction_style')}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            name="climate"
-            options={climateOptions}
-            label="Clima"
-          />
-          <TextField
-            id="views"
-            type="text"
-            label="Vistas"
-            error={errors?.views?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('views')}
-          />
-        </div>
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                name="climate"
+                options={climateOptions}
+                label="Clima"
+              />
+              <TextField
+                id="views"
+                type="text"
+                label="Vistas"
+                error={errors?.views?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('views')}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <RadioGroupField
-            disabled={isLoading}
-            control={control}
-            options={rangeOptions}
-            name="natural_lighting"
-            label="Iluminación Natural"
-          />
-          <RadioGroupField
-            disabled={isLoading}
-            control={control}
-            options={rangeOptions}
-            name="event_policy_strictness"
-            label="¿Qué tan estrictos son para eventos?"
-          />
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            options={booleanOptions}
-            name="pet_friendly"
-            label="Pet Friendly"
-          />
-        </div>
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <RadioGroupField
+                disabled={isLoading}
+                control={control}
+                options={rangeOptions}
+                name="natural_lighting"
+                label="Iluminación Natural"
+              />
+              <RadioGroupField
+                disabled={isLoading}
+                control={control}
+                options={rangeOptions}
+                name="event_policy_strictness"
+                label="¿Qué tan estrictos son para eventos?"
+              />
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                options={booleanOptions}
+                name="pet_friendly"
+                label="Pet Friendly"
+              />
+            </div>
 
-        <div className="flex w-full flex-1 items-start justify-between gap-5">
-          <TextField
-            id="street_1"
-            label="Calle"
-            error={errors?.address?.street_1?.message}
-            type="text"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('address.street_1')}
-          />
-          <TextField
-            id="number"
-            label="Número"
-            error={errors?.address?.number?.message}
-            type="test"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('address.number')}
-          />
-          <TextField
-            id="int_number"
-            label="Número Interior"
-            error={errors?.address?.int_number?.message}
-            type="test"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('address.int_number')}
-          />
+            <div className="flex w-full flex-1 items-start justify-between gap-5">
+              <TextField
+                id="street_1"
+                label="Calle"
+                error={errors?.address?.street_1?.message}
+                type="text"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('address.street_1')}
+              />
+              <TextField
+                id="number"
+                label="Número"
+                error={errors?.address?.number?.message}
+                type="text"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('address.number')}
+              />
+              <TextField
+                id="int_number"
+                label="Número Interior"
+                error={errors?.address?.int_number?.message}
+                type="text"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('address.int_number')}
+              />
 
-          <TextField
-            id="city"
-            label="Ciudad"
-            error={errors?.address?.city?.message}
-            type="text"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('address.city', { value: 'CDMX' })}
-          />
-        </div>
+              <TextField
+                id="city"
+                label="Ciudad"
+                error={errors?.address?.city?.message}
+                type="text"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('address.city', { value: 'CDMX' })}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 items-start justify-between gap-5">
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            name="address.locality"
-            options={zoneOptions}
-            label="Alcaldía"
-          />
-          <TextField
-            id="state"
-            label="Estado"
-            error={errors?.address?.state?.message}
-            type="text"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('address.state', { value: 'CDMX' })}
-          />
-          <TextField
-            id="zipCode"
-            label="Código Postal"
-            error={errors?.address?.zip_code?.message}
-            type="text"
-            disabled={isLoading}
-            className="flex-1"
-            {...register('address.zip_code')}
-          />
-        </div>
+            <div className="flex w-full flex-1 items-start justify-between gap-5">
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                name="address.locality"
+                options={zoneOptions}
+                label="Alcaldía"
+              />
+              <TextField
+                id="state"
+                label="Estado"
+                error={errors?.address?.state?.message}
+                type="text"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('address.state', { value: 'CDMX' })}
+              />
+              <TextField
+                id="zipCode"
+                label="Código Postal"
+                error={errors?.address?.zip_code?.message}
+                type="text"
+                disabled={isLoading}
+                className="flex-1"
+                {...register('address.zip_code')}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <TextField
-            id="development_name"
-            type="text"
-            label="Nombre de Desarrollo"
-            error={errors?.development_name?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('development_name')}
-          />
-          <TextField
-            id="stories"
-            type="number"
-            label="Niveles en la Propiedad"
-            error={errors?.stories?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('stories')}
-          />
-          <TextField
-            id="floor"
-            type="number"
-            label="¿En qué piso está?"
-            error={errors?.floor?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('floor')}
-          />
-        </div>
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <TextField
+                id="development_name"
+                type="text"
+                label="Nombre de Desarrollo"
+                error={errors?.development_name?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('development_name')}
+              />
+              <TextField
+                id="stories"
+                type="number"
+                label="Niveles en la Propiedad"
+                error={errors?.stories?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('stories')}
+              />
+              <TextField
+                id="floor"
+                type="number"
+                label="¿En qué piso está?"
+                error={errors?.floor?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('floor')}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <TextField
-            id="development_stories"
-            type="number"
-            label="Total de pisos en el desarrollo"
-            error={errors?.development_stories?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('development_stories')}
-          />
-          <TextField
-            id="development_buildings"
-            type="number"
-            label="No. Torres"
-            error={errors?.development_buildings?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('development_buildings')}
-          />
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <TextField
+                id="development_stories"
+                type="number"
+                label="Total de pisos en el desarrollo"
+                error={errors?.development_stories?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('development_stories')}
+              />
+              <TextField
+                id="development_buildings"
+                type="number"
+                label="No. Torres"
+                error={errors?.development_buildings?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('development_buildings')}
+              />
 
-          <TextField
-            id="development_units"
-            type="number"
-            label="Total de Unidades en el desarrollo"
-            error={errors?.development_units?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('development_units')}
-          />
-        </div>
+              <TextField
+                id="development_units"
+                type="number"
+                label="Total de Unidades en el desarrollo"
+                error={errors?.development_units?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('development_units')}
+              />
+            </div>
 
-        <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            name="ammenities"
-            options={ammenitiesOptions}
-            label="Amenidades"
-            multiple
-          />
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            options={listingPublicServicesOptions}
-            name="public_services"
-            label="Servicios Públicos"
-            multiple
-          />
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            options={listingPrivateServicesOptions}
-            name="private_services"
-            label="Servicios Privados"
-            multiple
-          />
-        </div>
+            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                name="ammenities"
+                options={ammenitiesOptions}
+                label="Amenidades"
+                multiple
+              />
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                options={listingPublicServicesOptions}
+                name="public_services"
+                label="Servicios Públicos"
+                multiple
+              />
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                options={listingPrivateServicesOptions}
+                name="private_services"
+                label="Servicios Privados"
+                multiple
+              />
+            </div>
 
-        <div className="flex w-full flex-1 items-start justify-between gap-5">
-          <TextField
-            id="urban-equipment"
-            type="text"
-            label="Equipamento Urbano"
-            placeholder="Tipoe de alubrado, pavimento, recolección de basura, etc..."
-            error={errors?.urban_equipment?.message}
-            disabled={isLoading}
-            className="flex-1"
-            hint="Separados por comas. Ej. Bares, Restaurantes, etc..."
-            {...register('urban_equipment')}
-          />
-          <TextField
-            id="yearly_tax"
-            type="number"
-            label="Predial"
-            error={errors?.yearly_tax?.message}
-            disabled={isLoading}
-            className="flex-1"
-            {...register('yearly_tax')}
-          />
-          <SelectField
-            disabled={isLoading}
-            control={control}
-            name="data.yearly_tax_period"
-            options={[
-              { label: 'Anual', value: 'yearly' },
-              { label: 'Bimestral', value: 'bimonthly' },
-            ]}
-            label="Recurrencia Predial"
-          />
-        </div>
+            <div className="flex w-full flex-1 items-start justify-between gap-5">
+              <TextField
+                id="urban-equipment"
+                type="text"
+                label="Equipamento Urbano"
+                placeholder="Tipoe de alubrado, pavimento, recolección de basura, etc..."
+                error={errors?.urban_equipment?.message}
+                disabled={isLoading}
+                className="flex-1"
+                hint="Separados por comas. Ej. Bares, Restaurantes, etc..."
+                {...register('urban_equipment')}
+              />
+              <TextField
+                id="yearly_tax"
+                type="number"
+                label="Predial"
+                error={errors?.yearly_tax?.message}
+                disabled={isLoading}
+                className="flex-1"
+                {...register('yearly_tax')}
+              />
+              <SelectField
+                disabled={isLoading}
+                control={control}
+                name="data.yearly_tax_period"
+                options={[
+                  { label: 'Anual', value: 'yearly' },
+                  { label: 'Bimestral', value: 'bimonthly' },
+                ]}
+                defaultSelected={{ label: 'Anual', value: 'yearly' }}
+                label="Recurrencia Predial"
+              />
+            </div>
+          </div>
 
-        <div className="flex w-full flex-1 items-start justify-between gap-5">
-          <TextField
-            id="gallery"
-            type="file"
-            label="Galería"
-            name="gallery"
-            accept="image/*"
-            multiple
-            ref={fileInputRef}
-            placeholder="Galeria"
-            disabled={isLoading}
-            className="flex-1"
-            onChange={onFileInputChange}
-          />
-        </div>
-      </div>
+          <Button type="submit" disabled={isLoading} className="mt-5 w-full">
+            {isLoading && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
+            Siguiente Paso
+          </Button>
+        </form>
+      ) : null}
 
-      <Button type="submit" disabled={isLoading} className="mt-5 w-full">
-        {isLoading && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
-        Crear Propiedad
-      </Button>
-    </form>
+      {step === 'media' ? <ListingFileUploader listingId={listingId} onCreate={onSuccess} /> : null}
+    </>
   )
 }
 

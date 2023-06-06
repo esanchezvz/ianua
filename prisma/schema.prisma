@@ -115,7 +115,7 @@ model Listing {
   public_services         ListingPublicServices[]
   rooms                   Int
   sq_m_balcony            Int?
-  sq_m_construction        Int?
+  sq_m_construction       Int?
   sq_m_garden             Int?
   sq_m_living             Int?
   sq_m_terrace            Int?
@@ -130,7 +130,7 @@ model Listing {
   yearly_tax              Int? // This is the "predio" tax in Mexico
 
   broker   Broker @relation(fields: [brokerId], references: [id], onDelete: Cascade)
-  brokerId String @unique @map("broker")
+  brokerId String @map("broker")
 
   @@map("listings")
 }

@@ -1,13 +1,11 @@
 import { Role } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { v4 as uuidv4 } from 'uuid'
 
 import { getSession } from '@/core/auth'
 import { db } from '@/core/db'
 import { createListingSchema } from '@/core/validations/listing'
-import { uploadListingImage } from '@/lib/supabase'
 
-const allowedRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN]
+const allowedRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
 
 export async function POST(req: NextRequest) {
   // TODO - validate captcha
@@ -19,13 +17,10 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData()
   const data = (formData.get('data') as string) || ''
   const parsedData = JSON.parse(data)
-  const galleryBlobs = formData.getAll('gallery')
-  const galleryKeys = galleryBlobs.map((blob: any) => {
-    const extension = '.' + blob.name.split('.')[1]
-    return uuidv4() + extension
-  })
 
   const listingData = createListingSchema.parse(parsedData)
+
+  const brokerid = listingData.broker
 
   try {
     if (!allowedRoles.includes(session.user.role)) {
@@ -35,23 +30,13 @@ export async function POST(req: NextRequest) {
     const createdListing = await db.listing.create({
       data: {
         ...listingData,
-        data: {
-          gallery_keys: galleryKeys,
-        },
         broker: {
           connect: {
-            id: listingData.broker,
+            id: brokerid,
           },
         },
       },
     })
-
-    const galleryUploads = galleryBlobs.map(
-      async (blob: any, i) =>
-        await uploadListingImage(blob, { path: `${createdListing.id}/${galleryKeys[i]}` })
-    )
-
-    await Promise.all(galleryUploads)
 
     return NextResponse.json(
       { message: 'Listing created successfully.', data: createdListing },

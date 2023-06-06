@@ -2,9 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 
 import { env } from '@/core/env'
 
-const apiUrl = `https://${env.SUPABASE_PROJECT}.supabase.co`
+const apiUrl = `https://${env.NEXT_PUBLIC_SUPABASE_PROJECT}.supabase.co`
 
-export const supabase = createClient(apiUrl, env.SUPABASE_SERVICE_ROLE)
+export const supabase = createClient(apiUrl, env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE)
 
 type UploadListingImageOptions = {
   path: string

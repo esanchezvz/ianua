@@ -11,9 +11,6 @@ export const env = createEnv({
     SENDGRID_API_KEY: z.string().min(1),
     NO_REPLY_EMAIL: z.string().min(1),
     MAILERSEND_API_KEY: z.string().min(1),
-    SUPABASE_PROJECT: z.string().min(1),
-    SUPABASE_ANON_KEY: z.string().min(1),
-    SUPABASE_SERVICE_ROLE: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
@@ -25,6 +22,9 @@ export const env = createEnv({
     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string().min(1),
     NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().min(1),
     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string().min(1),
+    NEXT_PUBLIC_SUPABASE_PROJECT: z.string().min(1),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+    NEXT_PUBLIC_SUPABASE_SERVICE_ROLE: z.string().min(1),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -33,9 +33,6 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NO_REPLY_EMAIL: process.env.NO_REPLY_EMAIL,
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
-    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
-    SUPABASE_PROJECT: process.env.SUPABASE_PROJECT,
-    SUPABASE_SERVICE_ROLE: process.env.SUPABASE_SERVICE_ROLE,
     // Public
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_CAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY,
@@ -46,5 +43,8 @@ export const env = createEnv({
     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    NEXT_PUBLIC_SUPABASE_PROJECT: process.env.NEXT_PUBLIC_SUPABASE_PROJECT,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_SUPABASE_SERVICE_ROLE: process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE,
   },
 })
