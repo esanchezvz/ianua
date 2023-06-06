@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 
+import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import { v4 as uuidV4 } from 'uuid'
 
@@ -45,7 +46,9 @@ export default function ListingFileUploader({
   const handleSave = async () => {
     const formData = new FormData()
     const data = {
-      gallery_keys: images.map((i) => i.key),
+      data: {
+        gallery_keys: images.map((i) => i.key),
+      },
     }
     formData.append('data', JSON.stringify(data))
     setLoading(true)
@@ -101,6 +104,7 @@ export default function ListingFileUploader({
         })}
       </div>
       <Button disabled={loading} onClick={handleSave} className="mt-5 w-full">
+        {loading && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
         Guardar
       </Button>
     </div>
