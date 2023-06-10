@@ -16,6 +16,7 @@ declare module 'next-auth' {
       image: string | null
       name: string | null
       role: Role | null
+      surnames: string | null
     }
   }
 
@@ -25,6 +26,7 @@ declare module 'next-auth' {
     image: string | null
     name: string | null
     role: Role | null
+    surnames: string | null
   }
 }
 
@@ -36,6 +38,7 @@ declare module 'next-auth/jwt' {
     name: string | null
     picture: string | null
     role: Role | null
+    surnames: string | null
   }
 }
 
@@ -48,6 +51,7 @@ declare module 'next-auth/react' {
       image: string | null
       name: string | null
       role: Role | null
+      surnames: string | null
     }
   }
 }
