@@ -5,6 +5,7 @@ import { Fragment } from 'react'
 
 import { Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, ChevronDownIcon } from '@heroicons/react/24/solid'
+import { Role } from '@prisma/client'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 
@@ -25,22 +26,27 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
     <div className="sticky top-0 z-40 border-b border-gray-200 bg-white">
       <header className="lg:mx-auto lg:max-w-7xl lg:px-8">
         <div className="flex h-16 items-center gap-x-4 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
-          <button
-            type="button"
-            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <span className="sr-only">Abrir navegación</span>
-            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-          </button>
-
-          {/* Separator */}
-          <div className="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true" />
+          {session?.data?.user.role !== Role.BROKER ? (
+            <>
+              <button
+                type="button"
+                className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <span className="sr-only">Abrir navegación</span>
+                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+              </button>
+              {/* Separator */}
+              <div className="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true" />
+            </>
+          ) : null}
 
           <div className="flex w-full justify-between">
-            <div className="flex">
-              <p>Breadcrumbs aquí</p>
-            </div>
+            {session?.data?.user.role !== Role.BROKER ? (
+              <div className="flex">
+                <p>Breadcrumbs aquí</p>
+              </div>
+            ) : null}
 
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               {/* Separator */}

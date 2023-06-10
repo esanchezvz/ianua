@@ -1,5 +1,7 @@
 import MainLayout from '@/components/admin/main-layout'
+import { getSession } from '@/core/auth'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  return <MainLayout>{children}</MainLayout>
+  const session = await getSession()
+  return <MainLayout session={session}>{children}</MainLayout>
 }
