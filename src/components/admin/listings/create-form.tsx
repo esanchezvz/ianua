@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Listing, Role } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useForm, Control, Controller } from 'react-hook-form'
 import * as z from 'zod'
@@ -18,6 +19,7 @@ import { TextField } from '@/components/ui/text-field'
 import { TextareaField } from '@/components/ui/textarea-field'
 import { createListingSchema } from '@/core/validations/listing'
 import { toast } from '@/hooks/use-toast'
+import { fetchBrokers } from '@/services/brokers'
 import { cn, zoneOptions } from '@/utils'
 import {
   ammenitiesOptions,
@@ -42,11 +44,6 @@ type _DataFields = z.infer<typeof _Data>['data']
 type AddressFields = `address.${keyof _AddressFields}`
 type DataFields = `data.${keyof _DataFields}`
 
-type Broker = {
-  id: string
-  user: { id: string; name: string; surname_1: string; surname_2: string }
-}
-
 const rangeOptions = [
   { value: '1', label: '1' },
   { value: '2', label: '2' },
@@ -64,7 +61,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
   const session = useSession()
   const [step, setStep] = useState<'data' | 'media'>('data')
   const [listingId, setListingId] = useState('')
-  const [brokers, setBrokers] = useState<Broker[]>([])
+  const { data: brokersData } = useQuery(['brokers'], fetchBrokers)
   const {
     register,
     handleSubmit,
@@ -74,6 +71,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
   } = useForm<Form>({
     resolver: zodResolver(createListingSchema),
   })
+  const brokers = brokersData?.data ?? []
   const [isLoading, setIsLoading] = useState(false)
 
   const onSubmit = async (data: Form) => {
@@ -95,7 +93,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
 
       toast({
         title: 'Pripedad Creada',
-        description: 'La propiedad creaada exitosamente. Puedes seguir creando propiedades.',
+        description: 'Propiedad creada exitosamente. Puedes seguir creando propiedades.',
       })
     } catch (error) {
       toast({
@@ -109,32 +107,15 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
   }
 
   useEffect(() => {
-    const fetchBrokers = async () => {
-      const res = await fetch('/api/brokers', {
-        method: 'get',
-      })
-
-      const { data } = (await res.json()) as {
-        data: Broker[]
-      }
-      setBrokers(data)
-    }
-
-    fetchBrokers()
-  }, [])
-
-  useEffect(() => {
     if (session.data?.user) {
       const { user } = session.data
       const isBroker = user.role === Role.BROKER
 
-      if (isBroker) {
-        const broker = brokers.find((b) => b.user.id === user.id)
-
-        if (broker) setValue('broker', broker.id)
+      if (isBroker && user.broker_id) {
+        setValue('broker', user.broker_id)
       }
     }
-  }, [session, brokers, setValue])
+  }, [session, setValue])
 
   return (
     <>
