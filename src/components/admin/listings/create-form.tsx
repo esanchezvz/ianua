@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,6 +10,9 @@ import { useForm, Control, Controller } from 'react-hook-form'
 import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { RadioGroup } from '@/components/ui/radio-group'
+import { RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectOption } from '@/components/ui/select'
 import { TextField } from '@/components/ui/text-field'
 import { TextareaField } from '@/components/ui/textarea-field'
@@ -28,10 +31,7 @@ import {
   propertyTypeOptions,
 } from '@/utils/listing'
 
-import ListingFileUploader from './listing-file-uploader'
-import { Label } from '../ui/label'
-import { RadioGroup } from '../ui/radio-group'
-import { RadioGroupItem } from '../ui/radio-group'
+import ListingFileUploader from '../listing-file-uploader'
 
 type Form = z.infer<typeof createListingSchema>
 const _Address = createListingSchema.pick({ address: true })

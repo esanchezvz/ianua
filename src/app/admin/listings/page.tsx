@@ -3,9 +3,8 @@ import { useState } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
 
-import { CreateListingForm } from '@/components/admin/create-listing-form'
+import { CreateListingModal } from '@/components/admin/listings/create-modal'
 import { Button } from '@/components/ui/button'
-import Modal from '@/components/ui/modal'
 import { fetchListings } from '@/services/listing'
 
 export default function ListingsPage() {
@@ -34,15 +33,7 @@ export default function ListingsPage() {
         <h1 className="mt-10">{data?.data ?? 0} Propiedades</h1>
       )}
 
-      <Modal
-        opened={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Crear Propiedad"
-        className="max-w-5xl"
-        closeOnEscape={false}
-      >
-        <CreateListingForm onSuccess={onCreate} />
-      </Modal>
+      <CreateListingModal onClose={() => setModalOpen(false)} onCreate={onCreate} open={modalOpen} />
     </div>
   )
 }
