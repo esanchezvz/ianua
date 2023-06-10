@@ -11,7 +11,10 @@ export type ListingAddress = {
   zip_code: string
 }
 
-export type ListingData = Record<string, unknown>
+export type ListingData = {
+  yearly_tax_period: string
+  gallery_keys: string[]
+}
 
 export type Listing = Override<
   PrismaListing,

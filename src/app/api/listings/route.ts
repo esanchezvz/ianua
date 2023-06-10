@@ -56,6 +56,14 @@ export async function GET(req: NextRequest) {
   const take = !where.limit ? 20 : parseInt(where.limit) > 500 ? 500 : parseInt(where.limit)
   const page = parseInt(where.page ?? 1)
 
+  const hasPagination = !!where.page
+
+  let count: number | undefined = undefined
+
+  if (hasPagination) {
+    count = await db.listing.count()
+  }
+
   delete where.limit
   delete where.page
 
@@ -65,5 +73,8 @@ export async function GET(req: NextRequest) {
     skip: (page - 1) * take,
   })
 
-  return NextResponse.json({ message: 'Listings fetched successfuly', data: listings }, { status: 200 })
+  return NextResponse.json(
+    { message: 'Listings fetched successfuly', data: listings, count },
+    { status: 200 }
+  )
 }

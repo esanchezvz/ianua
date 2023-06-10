@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 
 import { CreateListingModal } from '@/components/admin/listings/create-modal'
+import { ListingsTable } from '@/components/admin/listings/table'
 import { Button } from '@/components/ui/button'
 import { fetchListings } from '@/services/listing'
 
@@ -50,9 +51,11 @@ export default function ProfilePage() {
         </>
       ) : null}
 
-      {isLoading ? <h1 className="mt-10">Cargando...</h1> : listings.map((l) => <p key={l.id}>{l.id}</p>)}
-
       <CreateListingModal onClose={() => setModalOpen(false)} onCreate={onCreate} open={modalOpen} />
+
+      <div className="overflow-hidden">
+        <ListingsTable />
+      </div>
     </div>
   )
 }

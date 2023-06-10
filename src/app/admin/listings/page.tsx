@@ -4,20 +4,19 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 import { CreateListingModal } from '@/components/admin/listings/create-modal'
+import { ListingsTable } from '@/components/admin/listings/table'
 import { Button } from '@/components/ui/button'
 import { fetchListings } from '@/services/listing'
 
 export default function ListingsPage() {
   const [modalOpen, setModalOpen] = useState(false)
-  const { data, refetch, isLoading } = useQuery(['listings'], () => fetchListings())
+  const { refetch } = useQuery(['listings'], () => fetchListings())
 
   const onCreate = async () => {
     await refetch()
 
     setModalOpen(false)
   }
-
-  const listings = data?.data ?? []
 
   return (
     <div>
@@ -29,9 +28,9 @@ export default function ListingsPage() {
         </Button>
       </div>
 
-      {isLoading ? <h2 className="mt-10">Cargando...</h2> : listings.map((l) => <p key={l.id}>{l.id}</p>)}
-
       <CreateListingModal onClose={() => setModalOpen(false)} onCreate={onCreate} open={modalOpen} />
+
+      <ListingsTable />
     </div>
   )
 }
