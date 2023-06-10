@@ -1,41 +1,22 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+
+import { useQuery } from '@tanstack/react-query'
 
 import { CreateListingForm } from '@/components/admin/create-listing-form'
 import { Button } from '@/components/ui/button'
 import Modal from '@/components/ui/modal'
-
-type TempListing = { name: string; data: { gallery_keys: string[] }; id: string }
+import { fetchListings } from '@/services/listing'
 
 export default function ListingsPage() {
-  const [listings, setLisitings] = useState<number>(0)
   const [modalOpen, setModalOpen] = useState(false)
+  const { data, refetch, isLoading } = useQuery(['listings'], fetchListings)
 
   const onCreate = async () => {
-    const res = await fetch('/api/listings', {
-      method: 'get',
-    })
-
-    const result: { data: number } = await res.json()
-
-    setLisitings(result.data)
+    await refetch()
 
     setModalOpen(false)
   }
-
-  useEffect(() => {
-    const fetchListings = async () => {
-      const res = await fetch('/api/listings', {
-        method: 'get',
-      })
-
-      const result: { data: number } = await res.json()
-
-      setLisitings(result.data)
-    }
-
-    fetchListings()
-  }, [])
 
   return (
     <div>
@@ -47,7 +28,11 @@ export default function ListingsPage() {
         </Button>
       </div>
 
-      <h1 className="mt-10">{listings} Propiedades</h1>
+      {isLoading ? (
+        <h1 className="mt-10">Cargando...</h1>
+      ) : (
+        <h1 className="mt-10">{data?.data ?? 0} Propiedades</h1>
+      )}
 
       <Modal
         opened={modalOpen}
