@@ -10,6 +10,7 @@ import NextAuth from 'next-auth'
 declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
+      broker_id?: string
       email_verified: Date | null
       email: string | null
       id: string | null
@@ -21,6 +22,7 @@ declare module 'next-auth' {
   }
 
   interface User {
+    broker_id?: string
     email_verified: Date | null
     email: string | null
     image: string | null
@@ -32,6 +34,7 @@ declare module 'next-auth' {
 
 declare module 'next-auth/jwt' {
   interface JWT {
+    broker_id?: string
     email_verified: Date | null
     email: string | null
     id: string | null
@@ -45,6 +48,7 @@ declare module 'next-auth/jwt' {
 declare module 'next-auth/react' {
   interface Session extends DefaultSession {
     user: {
+      broker_id?: string
       email_verified: Date | null
       email: string | null
       id: string | null

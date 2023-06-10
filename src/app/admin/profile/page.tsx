@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 
+import { Role } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 
@@ -11,9 +12,17 @@ import { fetchListings } from '@/services/listing'
 export default function ProfilePage() {
   const [modalOpen, setModalOpen] = useState(false)
   const { data: sessionData } = useSession()
-  const { data: listingsData, refetch, isLoading } = useQuery(['listings'], fetchListings)
+  const {
+    data: listingsData,
+    refetch,
+    isLoading,
+  } = useQuery(['listings'], () =>
+    fetchListings({
+      brokerId: sessionData?.user.role === Role.BROKER ? sessionData?.user.broker_id : undefined,
+    })
+  )
 
-  const listings = listingsData?.data
+  const listings = listingsData?.data ?? []
   const user = sessionData?.user
 
   const onCreate = async () => {
@@ -41,11 +50,7 @@ export default function ProfilePage() {
         </>
       ) : null}
 
-      {isLoading ? (
-        <h1 className="mt-10">Cargando...</h1>
-      ) : (
-        <h1 className="mt-10">{listings ?? 0} Propiedades</h1>
-      )}
+      {isLoading ? <h1 className="mt-10">Cargando...</h1> : listings.map((l) => <p key={l.id}>{l.id}</p>)}
 
       <CreateListingModal onClose={() => setModalOpen(false)} onCreate={onCreate} open={modalOpen} />
     </div>

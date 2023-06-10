@@ -9,13 +9,15 @@ import { fetchListings } from '@/services/listing'
 
 export default function ListingsPage() {
   const [modalOpen, setModalOpen] = useState(false)
-  const { data, refetch, isLoading } = useQuery(['listings'], fetchListings)
+  const { data, refetch, isLoading } = useQuery(['listings'], () => fetchListings())
 
   const onCreate = async () => {
     await refetch()
 
     setModalOpen(false)
   }
+
+  const listings = data?.data ?? []
 
   return (
     <div>
@@ -27,11 +29,7 @@ export default function ListingsPage() {
         </Button>
       </div>
 
-      {isLoading ? (
-        <h1 className="mt-10">Cargando...</h1>
-      ) : (
-        <h1 className="mt-10">{data?.data ?? 0} Propiedades</h1>
-      )}
+      {isLoading ? <h2 className="mt-10">Cargando...</h2> : listings.map((l) => <p key={l.id}>{l.id}</p>)}
 
       <CreateListingModal onClose={() => setModalOpen(false)} onCreate={onCreate} open={modalOpen} />
     </div>

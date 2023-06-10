@@ -5,7 +5,7 @@ import { getSession } from '@/core/auth'
 import { db } from '@/core/db'
 import { updateListingSchema } from '@/core/validations/listing'
 
-const allowedRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
+const editAllowed: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   // TODO - validate captcha
@@ -14,7 +14,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  if (!allowedRoles.includes(session.user.role)) {
+  if (!editAllowed.includes(session.user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 

@@ -48,8 +48,22 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
-  const count = await db.listing.count()
+export async function GET(req: NextRequest) {
+  const params = new URLSearchParams(req.url.split('?')[1])
 
-  return NextResponse.json({ message: 'Listings fetched successfuly', data: count }, { status: 200 })
+  const where = Object.fromEntries(params.entries())
+
+  const take = !where.limit ? 20 : parseInt(where.limit) > 500 ? 500 : parseInt(where.limit)
+  const page = parseInt(where.page ?? 1)
+
+  delete where.limit
+  delete where.page
+
+  const listings = await db.listing.findMany({
+    where,
+    take,
+    skip: (page - 1) * take,
+  })
+
+  return NextResponse.json({ message: 'Listings fetched successfuly', data: listings }, { status: 200 })
 }

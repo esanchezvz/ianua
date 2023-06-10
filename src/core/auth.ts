@@ -44,6 +44,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ token, session }) {
       if (token) {
+        session.user.broker_id = token.broker_id
         session.user.id = token.id
         session.user.name = token.name
         session.user.email = token.email
@@ -56,9 +57,14 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async jwt({ token, user }) {
-      const dbUser = await db.user.findFirst({
+      const dbUser = await db.user.findUnique({
         where: {
-          email: token.email,
+          email: token.email ?? undefined,
+        },
+      })
+      const dbBroker = await db.broker.findUnique({
+        where: {
+          userId: dbUser?.id,
         },
       })
 
@@ -71,6 +77,7 @@ export const authOptions: NextAuthOptions = {
 
       return {
         id: dbUser.id,
+        broker_id: dbBroker?.id,
         name: dbUser.name,
         surnames: `${dbUser.surname_1} ${dbUser.surname_2}`,
         email: dbUser.email,
