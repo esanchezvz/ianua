@@ -43,9 +43,7 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
 
           <div className="flex w-full justify-between">
             {session?.data?.user.role !== Role.BROKER ? (
-              <div className="flex">
-                <p>Breadcrumbs aquí</p>
-              </div>
+              <div className="flex">{/* Breadcrumbs here maybe */}</div>
             ) : null}
 
             <div className="flex items-center gap-x-4 lg:gap-x-6">

@@ -117,7 +117,7 @@ model Listing {
   property_type           PropertyType[]
   public_services         ListingPublicServices[]
   rooms                   Int
-  servcie_rooms           Int?
+  service_rooms           Int?
   sq_m_balcony            Int?
   sq_m_construction       Int?
   sq_m_garden             Int?

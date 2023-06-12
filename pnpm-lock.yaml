@@ -27,6 +27,7 @@ specifiers:
   '@types/node': 20.1.0
   '@types/react': 18.2.6
   '@types/react-dom': 18.2.4
+  '@types/react-text-mask': ^5.4.11
   '@types/uuid': ^9.0.1
   '@vercel/og': ^0.5.4
   autoprefixer: 10.4.14
@@ -63,12 +64,14 @@ specifiers:
   react-dom: 18.2.0
   react-email: ^1.9.3
   react-hook-form: ^7.43.9
+  react-text-mask: ^5.5.0
   react-use: ^17.4.0
   react-use-measure: ^2.1.1
   sharp: ^0.32.1
   tailwind-merge: ^1.12.0
   tailwindcss: 3.3.2
   tailwindcss-animate: ^1.0.5
+  text-mask-addons: ^3.8.0
   typescript: 5.0.4
   uuid: ^9.0.0
   zod: ^3.21.4
@@ -117,11 +120,13 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-email: 1.9.3_encoding@0.1.13
   react-hook-form: 7.43.9_react@18.2.0
+  react-text-mask: 5.5.0_react@18.2.0
   react-use: 17.4.0_biqbaboplfbrettd7655fr4n2y
   react-use-measure: 2.1.1_biqbaboplfbrettd7655fr4n2y
   sharp: 0.32.1
   tailwind-merge: 1.12.0
   tailwindcss-animate: 1.0.5_tailwindcss@3.3.2
+  text-mask-addons: 3.8.0
   uuid: 9.0.0
   zod: 3.21.4
 
@@ -132,6 +137,7 @@ devDependencies:
   '@types/node': 20.1.0
   '@types/react': 18.2.6
   '@types/react-dom': 18.2.4
+  '@types/react-text-mask': 5.4.11
   '@types/uuid': 9.0.1
   autoprefixer: 10.4.14_postcss@8.4.23
   cloc: 1.96.0-cloc
@@ -3808,6 +3814,15 @@ packages:
       }
     dependencies:
       '@types/react': 18.2.6
+
+  /@types/react-text-mask/5.4.11:
+    resolution:
+      {
+        integrity: sha512-DIJ3/dS4jd7NK3lEgsOwcgpp+ZlVrNJEiUDRayZRE/PNMbV/nLWmOKGdL0BUS29hnx0CDgITgPudKx0BgbF5fA==,
+      }
+    dependencies:
+      '@types/react': 18.2.6
+    dev: true
 
   /@types/react/18.2.6:
     resolution:
@@ -10395,6 +10410,18 @@ packages:
       tslib: 2.5.0
     dev: false
 
+  /react-text-mask/5.5.0_react@18.2.0:
+    resolution:
+      {
+        integrity: sha512-SLJlJQxa0uonMXsnXRpv5abIepGmHz77ylQcra0GNd7Jtk4Wj2Mtp85uGQHv1avba2uI8ZvRpIEQPpJKsqRGYw==,
+      }
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
+
   /react-universal-interface/0.6.2_react@18.2.0+tslib@2.5.0:
     resolution:
       {
@@ -11558,6 +11585,13 @@ packages:
       }
     engines: { node: '>=0.10' }
     dev: true
+
+  /text-mask-addons/3.8.0:
+    resolution:
+      {
+        integrity: sha512-VSZSdc/tKn4zGxgpJ+uNBzoW1t472AoAFIlbw1K7hSNXz0DfSBYDJNRxLqgxOfWw1BY2z6DQpm7g0sYZn5qLpg==,
+      }
+    dev: false
 
   /text-table/0.2.0:
     resolution:

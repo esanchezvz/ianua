@@ -2,6 +2,7 @@ import {
   ListingAmmenities,
   ListingClimate,
   ListingPrivateServices,
+  ListingConstructionStyle,
   ListingType,
   ListingPublicServices,
   PropertyType,
@@ -9,6 +10,8 @@ import {
   ListingPriceCurrency,
   ListingParkingSpotStyle,
   ListingCondition,
+  ListingViews,
+  ListingLegalStatus,
 } from '@prisma/client'
 
 import { getOptionsFromMap } from '.'
@@ -34,6 +37,10 @@ export const ammenitiesMap: Record<ListingAmmenities, string> = {
   [ListingAmmenities.SECURITY]: 'Seguridad',
   [ListingAmmenities.SPA]: 'Spa',
   [ListingAmmenities.TENNIS_COURT]: 'Cancha de Tenis',
+  [ListingAmmenities.GAME_ROOM]: 'Salón de Juegos',
+  [ListingAmmenities.GARDEN]: 'Jardín',
+  [ListingAmmenities.STUDIO]: 'Estudio',
+  [ListingAmmenities.BAR]: 'BAR',
 }
 
 export const ammenitiesOptions = getOptionsFromMap(ammenitiesMap)
@@ -91,6 +98,7 @@ export const propertyTypeMap: Record<PropertyType, string> = {
   [PropertyType.HOUSE]: 'Casa Sola',
   [PropertyType.HOUSE_CLOSED_CONDOMINUIM]: 'Casa Fracccionamiento Cerrado',
   [PropertyType.HOUSE_HORIZONTAL_CONDOMINIUM]: 'Casa Condominio Horizontal',
+  [PropertyType.CLOSED_STREET]: 'Calle Cerrada',
 }
 
 export const propertyTypeOptions = getOptionsFromMap(propertyTypeMap)
@@ -121,3 +129,28 @@ export const listingConditionsMap: Record<ListingCondition, string> = {
 }
 
 export const listingConditionOptions = getOptionsFromMap(listingConditionsMap)
+
+export const listingConstuctionStyleMap: Record<ListingConstructionStyle, string> = {
+  [ListingConstructionStyle.MEXICAN]: 'Estilo Mexicano',
+  [ListingConstructionStyle.CLASSIC]: 'Estilo Clásico',
+  [ListingConstructionStyle.CONTEMPORARY]: 'Estilo Contemporáneo',
+  [ListingConstructionStyle.INDUSTRIAL]: 'Estilo Industrial',
+}
+
+export const listingContructionStyleOptions = getOptionsFromMap(listingConstuctionStyleMap)
+
+export const listingViewMap: Record<ListingViews, string> = {
+  [ListingViews.CLOSED]: 'Cerrada',
+  [ListingViews.OPEN]: 'Abierta',
+}
+
+export const listingViewOptions = getOptionsFromMap(listingViewMap)
+
+export const legalStatusMap: Record<ListingLegalStatus, string> = {
+  [ListingLegalStatus.ASSESMENT_OR_LITIGATION_FREE]: 'Libre de gravamen o litigio',
+  [ListingLegalStatus.IN_LITIGATION]: 'Litigio',
+  [ListingLegalStatus.SETTLED_MORTGAGE]: 'Hipoteca liquidada pero vigente',
+  [ListingLegalStatus.UNSETTLED_MORTGAGE]: 'Hipoteca sin liquidar',
+}
+
+export const legalStatusOptions = getOptionsFromMap(legalStatusMap)

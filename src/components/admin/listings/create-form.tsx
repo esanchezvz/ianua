@@ -1,16 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Listing, Role } from '@prisma/client'
+import { Listing, PropertyType, Role } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useForm, Control, Controller } from 'react-hook-form'
+import MaskedInput from 'react-text-mask'
+import { createNumberMask } from 'text-mask-addons'
 import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup } from '@/components/ui/radio-group'
 import { RadioGroupItem } from '@/components/ui/radio-group'
@@ -24,10 +28,13 @@ import { cn, zoneOptions } from '@/utils'
 import {
   ammenitiesOptions,
   climateOptions,
+  legalStatusOptions,
   listingConditionOptions,
+  listingContructionStyleOptions,
   listingCurrencyOptions,
   listingPrivateServicesOptions,
   listingPublicServicesOptions,
+  listingViewOptions,
   lsitingTypeOptions,
   parkingSpotStyleOptions,
   propertyTypeOptions,
@@ -61,6 +68,8 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
   const session = useSession()
   const [step, setStep] = useState<'data' | 'media'>('data')
   const [listingId, setListingId] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [acceptsTerms, setAcceptTerms] = useState(false)
   const { data: brokersData } = useQuery(['brokers'], fetchBrokers)
   const {
     register,
@@ -68,14 +77,28 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
     formState: { errors },
     control,
     setValue,
+    watch,
   } = useForm<Form>({
     resolver: zodResolver(createListingSchema),
   })
   const brokers = brokersData?.data ?? []
-  const [isLoading, setIsLoading] = useState(false)
+  const propertyType = watch('property_type')
+  const isAppartment = propertyType?.includes(PropertyType.APPARTMENT)
+  const showCondominuimUnits =
+    propertyType?.includes(PropertyType.HOUSE_HORIZONTAL_CONDOMINIUM) ||
+    propertyType?.includes(PropertyType.HOUSE_CLOSED_CONDOMINUIM)
 
   const onSubmit = async (data: Form) => {
     const formData = new FormData()
+
+    if (!showCondominuimUnits && data.data.condominium_units) {
+      data.data.condominium_units = undefined
+    }
+
+    if (isAppartment) {
+      data.sq_m_construction = undefined
+      data.sq_m_total = undefined
+    }
 
     setIsLoading(true)
 
@@ -92,7 +115,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
       setStep('media')
 
       toast({
-        title: 'Pripedad Creada',
+        title: 'Propiedad Creada',
         description: 'Propiedad creada exitosamente. Puedes seguir creando propiedades.',
       })
     } catch (error) {
@@ -137,6 +160,18 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
               ) : null}
             </div>
 
+            <div className="flex w-full flex-1 items-start justify-between gap-5">
+              <TextField
+                id="name"
+                label="Nombre de la propiedad"
+                error={errors?.name?.message}
+                type="text"
+                disabled={isLoading}
+                className="grow"
+                {...register('name')}
+              />
+            </div>
+
             <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
               <SelectField
                 disabled={isLoading}
@@ -152,7 +187,20 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 name="property_type"
                 options={propertyTypeOptions}
                 label="¿Casa o Depa?"
+                multiple
               />
+
+              {showCondominuimUnits ? (
+                <TextField
+                  id="condominium_units"
+                  label="Casas en Condominio"
+                  error={errors?.data?.condominium_units?.message}
+                  type="number"
+                  disabled={isLoading}
+                  className="grow"
+                  {...register('data.condominium_units')}
+                />
+              ) : null}
             </div>
 
             <div className="flex w-full flex-1 items-start justify-between gap-5">
@@ -161,21 +209,14 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 label="Descripción"
                 error={errors?.description?.message}
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('description')}
               />
             </div>
 
             <div className="flex w-full flex-1 items-start justify-between gap-5">
-              <TextField
-                id="price"
-                label="Precio"
-                error={errors?.price?.message}
-                type="number"
-                disabled={isLoading}
-                className="flex-1"
-                {...register('price')}
-              />
+              <NumberField control={control} id="price" label="Precio" name="price" />
+
               <SelectField
                 disabled={isLoading}
                 control={control}
@@ -183,34 +224,45 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 name="price_currency"
                 label="Moneda"
               />
+
+              <SelectField
+                control={control}
+                name="legal_status"
+                options={legalStatusOptions}
+                label="Situación legal"
+              />
             </div>
 
             <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-              <TextField
-                id="sq_m_total"
-                label="Terreno Total (m2)"
-                error={errors?.sq_m_total?.message}
-                type="number"
-                disabled={isLoading}
-                className="flex-1"
-                {...register('sq_m_total')}
-              />
-              <TextField
-                id="sq_m_construction"
-                label="Contrucción (m2)"
-                error={errors?.sq_m_construction?.message}
-                type="number"
-                disabled={isLoading}
-                className="flex-1"
-                {...register('sq_m_construction')}
-              />
+              {!isAppartment ? (
+                <TextField
+                  id="sq_m_total"
+                  label="Terreno Total (m2)"
+                  error={errors?.sq_m_total?.message}
+                  type="number"
+                  disabled={isLoading}
+                  className="grow"
+                  {...register('sq_m_total')}
+                />
+              ) : null}
+              {!isAppartment ? (
+                <TextField
+                  id="sq_m_construction"
+                  label="Contrucción (m2)"
+                  error={errors?.sq_m_construction?.message}
+                  type="number"
+                  disabled={isLoading}
+                  className="grow"
+                  {...register('sq_m_construction')}
+                />
+              ) : null}
               <TextField
                 id="sq_m_living"
                 label="Habitable (m2)"
                 error={errors?.sq_m_living?.message}
                 type="number"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('sq_m_living')}
               />
               <TextField
@@ -219,7 +271,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 error={errors?.sq_m_terrace?.message}
                 type="number"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('sq_m_terrace')}
               />
               <TextField
@@ -228,7 +280,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 error={errors?.sq_m_balcony?.message}
                 type="number"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('sq_m_balcony')}
               />
               <TextField
@@ -237,30 +289,14 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 error={errors?.sq_m_garden?.message}
                 type="number"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('sq_m_garden')}
               />
             </div>
 
             <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-              <TextField
-                id="dimension_front"
-                type="number"
-                label="Frente"
-                error={errors?.dimension_front?.message}
-                disabled={isLoading}
-                className="flex-1"
-                {...register('dimension_front')}
-              />
-              <TextField
-                id="dimension_depth"
-                type="number"
-                label="Fondo"
-                error={errors?.dimension_depth?.message}
-                disabled={isLoading}
-                className="flex-1"
-                {...register('dimension_depth')}
-              />
+              <NumberField control={control} id="dimension_front" label="Frente" name="dimension_front" />
+              <NumberField control={control} id="dimension_depth" label="Fondo" name="dimension_depth" />
             </div>
 
             <div className="flex w-full flex-1 items-start justify-between gap-5">
@@ -270,17 +306,26 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 label="Habitaciones"
                 error={errors?.rooms?.message}
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('rooms')}
               />
               <TextField
-                id="bathrooms"
+                id="full-bathrooms"
                 type="number"
-                label="Baños"
-                error={errors?.bathrooms?.message}
+                label="Baños Completos"
+                error={errors?.full_bathrooms?.message}
                 disabled={isLoading}
-                className="flex-1"
-                {...register('bathrooms')}
+                className="grow"
+                {...register('full_bathrooms')}
+              />
+              <TextField
+                id="half-bathrooms"
+                type="number"
+                label="Medios Baños"
+                error={errors?.half_bathrooms?.message}
+                disabled={isLoading}
+                className="grow"
+                {...register('half_bathrooms')}
               />
               <TextField
                 id="parking"
@@ -288,7 +333,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 label="Lugares de Estacionamiento"
                 error={errors?.parking_spots?.message}
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('parking_spots')}
               />
 
@@ -298,39 +343,47 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 name="parking_spots_style"
                 options={parkingSpotStyleOptions}
                 label="Tipo de Estacionamiento"
+                multiple
               />
             </div>
 
             <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+              <TextField
+                id="service_rooms"
+                type="number"
+                label="Cuartos de Servicio"
+                error={errors?.service_rooms?.message}
+                disabled={isLoading}
+                className="grow"
+                {...register('service_rooms')}
+              />
               <TextField
                 id="storage_units"
                 type="number"
                 label="No. de Bodegas"
                 error={errors?.storage_units?.message}
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('storage_units')}
               />
-              <TextField
+
+              <NumberField
+                control={control}
                 id="maintenance_cost"
-                type="number"
                 label="Costo de Mantenimiento"
-                error={errors?.maintenance_cost?.message}
-                disabled={isLoading}
-                className="flex-1"
-                {...register('maintenance_cost')}
+                name="maintenance_cost"
               />
             </div>
 
             <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
               <TextField
-                id="age"
+                id="construction_year"
                 type="number"
-                label="Edad Inmueble (Años)"
-                error={errors?.age?.message}
+                label="Año de constucción"
+                error={errors?.construction_year?.message}
                 disabled={isLoading}
-                className="flex-1"
-                {...register('age')}
+                className="grow"
+                {...register('construction_year')}
               />
               <SelectField
                 disabled={isLoading}
@@ -339,14 +392,13 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 options={listingConditionOptions}
                 label="Condición Física Inmueble"
               />
-              <TextField
-                id="construction_style"
-                type="text"
-                label="Estilo de Construcción"
-                error={errors?.construction_style?.message}
+
+              <SelectField
                 disabled={isLoading}
-                className="flex-1"
-                {...register('construction_style')}
+                control={control}
+                name="construction_style"
+                options={listingContructionStyleOptions}
+                label="Estilo de Construcción"
               />
             </div>
 
@@ -358,14 +410,14 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 options={climateOptions}
                 label="Clima"
               />
-              <TextField
-                id="views"
-                type="text"
-                label="Vistas"
-                error={errors?.views?.message}
+
+              <SelectField
                 disabled={isLoading}
-                className="flex-1"
-                {...register('views')}
+                control={control}
+                name="views"
+                options={listingViewOptions}
+                label="Vistas"
+                hint="Abierta es jardín, vista padre de edificio, a bosques, etc. Cerrada es edificio de a lado, pared o no tiene."
               />
             </div>
 
@@ -400,8 +452,17 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 error={errors?.address?.street_1?.message}
                 type="text"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('address.street_1')}
+              />
+              <TextField
+                id="neighborhood"
+                label="Colonia"
+                error={errors?.address?.neighborhood?.message}
+                type="text"
+                disabled={isLoading}
+                className="grow"
+                {...register('address.neighborhood')}
               />
               <TextField
                 id="number"
@@ -409,7 +470,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 error={errors?.address?.number?.message}
                 type="text"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('address.number')}
               />
               <TextField
@@ -418,7 +479,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 error={errors?.address?.int_number?.message}
                 type="text"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('address.int_number')}
               />
 
@@ -428,7 +489,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 error={errors?.address?.city?.message}
                 type="text"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('address.city', { value: 'CDMX' })}
               />
             </div>
@@ -447,7 +508,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 error={errors?.address?.state?.message}
                 type="text"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('address.state', { value: 'CDMX' })}
               />
               <TextField
@@ -456,71 +517,78 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 error={errors?.address?.zip_code?.message}
                 type="text"
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('address.zip_code')}
               />
             </div>
 
             <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-              <TextField
-                id="development_name"
-                type="text"
-                label="Nombre de Desarrollo"
-                error={errors?.development_name?.message}
-                disabled={isLoading}
-                className="flex-1"
-                {...register('development_name')}
-              />
+              {isAppartment ? (
+                <TextField
+                  id="development_name"
+                  type="text"
+                  label="Nombre de Desarrollo"
+                  error={errors?.development_name?.message}
+                  disabled={isLoading}
+                  className="grow"
+                  {...register('development_name')}
+                />
+              ) : null}
               <TextField
                 id="stories"
                 type="number"
                 label="Niveles en la Propiedad"
                 error={errors?.stories?.message}
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 {...register('stories')}
               />
-              <TextField
-                id="floor"
-                type="number"
-                label="¿En qué piso está?"
-                error={errors?.floor?.message}
-                disabled={isLoading}
-                className="flex-1"
-                {...register('floor')}
-              />
+
+              {isAppartment ? (
+                <TextField
+                  id="floor"
+                  type="number"
+                  label="¿En qué piso está?"
+                  error={errors?.floor?.message}
+                  disabled={isLoading}
+                  className="grow"
+                  {...register('floor')}
+                />
+              ) : null}
             </div>
 
-            <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
-              <TextField
-                id="development_stories"
-                type="number"
-                label="Total de pisos en el desarrollo"
-                error={errors?.development_stories?.message}
-                disabled={isLoading}
-                className="flex-1"
-                {...register('development_stories')}
-              />
-              <TextField
-                id="development_buildings"
-                type="number"
-                label="No. Torres"
-                error={errors?.development_buildings?.message}
-                disabled={isLoading}
-                className="flex-1"
-                {...register('development_buildings')}
-              />
+            {isAppartment ? (
+              <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
+                <TextField
+                  id="development_stories"
+                  type="number"
+                  label="Total de pisos en el desarrollo"
+                  error={errors?.development_stories?.message}
+                  disabled={isLoading}
+                  className="grow"
+                  {...register('development_stories')}
+                />
+                <TextField
+                  id="development_buildings"
+                  type="number"
+                  label="No. Torres"
+                  error={errors?.development_buildings?.message}
+                  disabled={isLoading}
+                  className="grow"
+                  {...register('development_buildings')}
+                />
 
-              <TextField
-                id="development_units"
-                type="number"
-                label="Total de Unidades en el desarrollo"
-                error={errors?.development_units?.message}
-                disabled={isLoading}
-                className="flex-1"
-                {...register('development_units')}
-              />
-            </div>
+                <TextField
+                  id="development_units"
+                  type="number"
+                  label="Total de Unidades en el desarrollo"
+                  error={errors?.development_units?.message}
+                  disabled={isLoading}
+                  className="grow"
+                  {...register('development_units')}
+                />
+              </div>
+            ) : null}
 
             <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
               <SelectField
@@ -557,18 +625,17 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 placeholder="Tipoe de alubrado, pavimento, recolección de basura, etc..."
                 error={errors?.urban_equipment?.message}
                 disabled={isLoading}
-                className="flex-1"
+                className="grow"
                 hint="Separados por comas. Ej. Bares, Restaurantes, etc..."
                 {...register('urban_equipment')}
               />
-              <TextField
-                id="yearly_tax"
-                type="number"
+
+              <NumberField
+                name="yearly_tax"
                 label="Predial"
-                error={errors?.yearly_tax?.message}
-                disabled={isLoading}
-                className="flex-1"
-                {...register('yearly_tax')}
+                className="grow"
+                control={control}
+                id="yearly_tax"
               />
               <SelectField
                 disabled={isLoading}
@@ -578,13 +645,23 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                   { label: 'Anual', value: 'yearly' },
                   { label: 'Bimestral', value: 'bimonthly' },
                 ]}
-                defaultSelected={{ label: 'Anual', value: 'yearly' }}
                 label="Recurrencia Predial"
               />
             </div>
           </div>
 
-          <Button type="submit" disabled={isLoading} className="mt-5 w-full">
+          <div className="mt-3 flex gap-4">
+            <Checkbox
+              id="terms"
+              checked={acceptsTerms}
+              onCheckedChange={(value) => setAcceptTerms(!!value)}
+            />
+            <Label htmlFor="terms">
+              Leí y estoy de acuerdo con los términos y condiciones y el aviso de privacidad
+            </Label>
+          </div>
+
+          <Button type="submit" disabled={isLoading || !acceptsTerms} className="mt-5 w-full">
             {isLoading && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
             Siguiente Paso
           </Button>
@@ -602,14 +679,14 @@ type SelectFieldProps = {
   hint?: string
 } & React.ComponentProps<typeof Select>
 
-const SelectField = ({ control, name, hint, ...props }: SelectFieldProps) => {
+const SelectField = ({ control, name, hint, fullWidth = true, ...props }: SelectFieldProps) => {
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <div className={cn('grid flex-1  items-center gap-1.5')}>
-          <Select {...props} {...field} />
+        <div className={cn('grid grow items-center gap-1.5')}>
+          <Select fullWidth={fullWidth} {...props} {...field} />
 
           {hint && !error ? <small className="text-sm text-gray-500/50">{hint}</small> : null}
           {error?.message ? <small className="text-sm text-red-400">{error.message}</small> : null}
@@ -633,7 +710,7 @@ const RadioGroupField = ({ control, name, label, hint, options, ...props }: Radi
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <div className={cn('grid flex-1 items-center gap-1.5')}>
+        <div className={cn('grid grow items-center gap-1.5')}>
           {label ? <Label htmlFor={field.name}>{label}</Label> : null}
 
           <RadioGroup
@@ -665,6 +742,62 @@ const RadioGroupField = ({ control, name, label, hint, options, ...props }: Radi
           {error?.message ? <small className="text-sm text-red-400">{error.message}</small> : null}
         </div>
       )}
+    />
+  )
+}
+
+type NumberFieldProps = {
+  control: Control<Form>
+  name: keyof Omit<Form, 'address' | 'data'> | AddressFields | DataFields
+  label: string
+  id: string
+  hint?: string
+} & React.ComponentProps<typeof Input>
+
+const NumberField = ({ control, name, hint, id, label, ...props }: NumberFieldProps) => {
+  const mask = createNumberMask({
+    prefix: '',
+    suffix: '',
+    includeThousandsSeparator: true,
+    thousandsSeparatorSymbol: ',',
+    allowDecimal: true,
+    decimalSymbol: '.',
+    decimalLimit: 2, // how many digits allowed after the decimal
+    allowNegative: false,
+    allowLeadingZeroes: false,
+  })
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { value, ...field }, fieldState: { error } }) => {
+        return (
+          <div className={cn('grid grow items-center gap-1.5')}>
+            {label ? <Label htmlFor={id}>{label}</Label> : null}
+
+            <MaskedInput
+              {...props}
+              {...field}
+              value={value as string}
+              mask={mask}
+              render={(inputRef: (inputElement: HTMLInputElement) => void, inputProps) => {
+                const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+                  inputProps.onChange(e)
+                  field.onChange(e)
+                }
+
+                return (
+                  <Input ref={inputRef} {...inputProps} onChange={onChange} inputMode="numeric" type="text" />
+                )
+              }}
+            />
+
+            {hint && !error ? <small className="text-sm text-gray-500/50">{hint}</small> : null}
+            {error?.message ? <small className="text-sm text-red-400">{error.message}</small> : null}
+          </div>
+        )
+      }}
     />
   )
 }
