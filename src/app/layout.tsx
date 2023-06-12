@@ -7,6 +7,7 @@ import localFont from 'next/font/local'
 import { Toaster } from '@/components/shared/toaster'
 import { CapthaProvider } from '@/context/captcha'
 import { CookiesProvider } from '@/context/cookies'
+import { DragAndDropProvider } from '@/context/dnd'
 import { ReactQueryProvider } from '@/context/react-query'
 import { SessionProvider } from '@/context/session'
 import { getSession } from '@/core/auth'
@@ -40,8 +41,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <SessionProvider session={session}>
             <CookiesProvider>
               <CapthaProvider>
-                {children}
-                <Toaster />
+                <DragAndDropProvider>
+                  {children}
+                  <Toaster />
+                </DragAndDropProvider>
               </CapthaProvider>
             </CookiesProvider>
           </SessionProvider>
