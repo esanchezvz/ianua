@@ -114,7 +114,7 @@ model Listing {
   price                   Int
   price_currency          ListingPriceCurrency?
   private_services        ListingPrivateServices[]
-  property_type           String?
+  property_type           PropertyType[]
   public_services         ListingPublicServices[]
   rooms                   Int
   servcie_rooms           Int?
