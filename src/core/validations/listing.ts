@@ -198,6 +198,57 @@ export const updateListingSchema = createListingSchema
   })
   .deepPartial()
   .extend({
+    orientation: z.string().or(z.null()).optional(),
+    development_name: z.string().or(z.null()).optional(),
+    construction_style: z.nativeEnum(ListingConstructionStyle).or(z.null()).optional(),
+    floor: z
+      .string()
+      .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
+      .or(z.number())
+      .or(z.null())
+      .optional(),
+    development_stories: z
+      .string()
+      .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
+      .or(z.number())
+      .or(z.null())
+      .optional(),
+    development_buildings: z
+      .string()
+      .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
+      .or(z.number())
+      .or(z.null())
+      .optional(),
+    development_units: z
+      .string()
+      .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
+      .or(z.number())
+      .or(z.null())
+      .optional(),
+    construction_year: z
+      .string()
+      .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
+      .or(z.number())
+      .or(z.null())
+      .optional(),
+    full_bathrooms: z
+      .string({ required_error: 'Campo requerido' })
+      .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
+      .or(z.number())
+      .or(z.null()),
+    half_bathrooms: z
+      .string({ required_error: 'Campo requerido' })
+      .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
+      .or(z.number())
+      .or(z.null()),
+    service_rooms: z
+      .string()
+      .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
+      .or(z.number())
+      .or(z.null())
+      .optional(),
+    legal_status: z.nativeEnum(ListingLegalStatus, { required_error: 'Campo requerido' }).or(z.null()),
+    views: z.nativeEnum(ListingViews, { required_error: 'Campo requerido' }).or(z.null()),
     data: z
       .object({
         gallery_keys: z.array(z.string()).optional(),

@@ -17,7 +17,7 @@ export type SelectOption = {
 
 type SelectProps = {
   options: SelectOption[]
-  defaultSelected?: SelectOption
+  defaultSelected?: SelectOption | SelectOption[]
   label?: string
   multiple?: boolean
   fullWidth?: boolean

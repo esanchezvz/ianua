@@ -6,6 +6,7 @@ import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Listing, PropertyType, Role } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { get } from 'lodash'
 import { useSession } from 'next-auth/react'
 import { useForm, Control, Controller } from 'react-hook-form'
 import MaskedInput from 'react-text-mask'
@@ -21,9 +22,10 @@ import { RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectOption } from '@/components/ui/select'
 import { TextField } from '@/components/ui/text-field'
 import { TextareaField } from '@/components/ui/textarea-field'
-import { createListingSchema } from '@/core/validations/listing'
+import { createListingSchema, updateListingSchema } from '@/core/validations/listing'
 import { toast } from '@/hooks/use-toast'
 import { fetchBrokers } from '@/services/brokers'
+import { PopulatedListing } from '@/types/listing'
 import { cn, zoneOptions } from '@/utils'
 import {
   ammenitiesOptions,
@@ -35,7 +37,7 @@ import {
   listingPrivateServicesOptions,
   listingPublicServicesOptions,
   listingViewOptions,
-  lsitingTypeOptions,
+  lsitingTypeOptions as listingTypeOptions,
   parkingSpotStyleOptions,
   propertyTypeOptions,
 } from '@/utils/listing'
@@ -64,22 +66,72 @@ const booleanOptions = [
   { value: '1', label: 'Sí' },
 ]
 
-export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
+type Props = {
+  onSuccess: () => void | Promise<void>
+} & (
+  | { editMode?: never; defaultValues?: never; listingId?: never }
+  | {
+      editMode: true
+      defaultValues: PopulatedListing
+      listingId: string
+    }
+)
+
+const getDefaultValues = (values: PopulatedListing) => {
+  const { success } = updateListingSchema.safeParse(values)
+
+  if (!success) {
+    toast({
+      title: 'OOOPPSS',
+      description: 'Algo está mal con esta propiedad. Reporta la propiedad a TI.',
+    })
+
+    return
+  }
+
+  const entries = Object.entries(values).filter(([, value]) => {
+    if (value === null || value === undefined) return false
+
+    return true
+  })
+
+  const result = Object.fromEntries(entries)
+
+  result.broker = values.broker?.id
+
+  return result as Partial<PopulatedListing> & { broker: string }
+}
+
+const getSelectDefaultValue = (options: SelectOption[], multiple: boolean, value?: string | string[]) => {
+  if (multiple) {
+    return options.filter((o) => value?.includes(o.value)) ?? undefined
+  }
+
+  if (typeof value === 'boolean') {
+    if (!value) return booleanOptions.find((o) => o.value === '0')
+    return booleanOptions.find((o) => o.value === '1')
+  }
+
+  return options.find((o) => value?.includes(o.value)) ?? undefined
+}
+
+export function CreateListingForm({ onSuccess, defaultValues, editMode }: Props) {
   const session = useSession()
   const [step, setStep] = useState<'data' | 'media'>('data')
-  const [listingId, setListingId] = useState('')
+  const [listingId, setListingId] = useState(defaultValues?.['id'] ?? '')
   const [isLoading, setIsLoading] = useState(false)
   const [acceptsTerms, setAcceptTerms] = useState(false)
   const { data: brokersData } = useQuery(['brokers'], fetchBrokers)
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, defaultValues: _defaultValues },
     control,
     setValue,
     watch,
   } = useForm<Form>({
-    resolver: zodResolver(createListingSchema),
+    resolver: zodResolver(editMode ? updateListingSchema : createListingSchema),
+    defaultValues: editMode ? (getDefaultValues(defaultValues) as any) : undefined,
   })
   const brokers = brokersData?.data ?? []
   const propertyType = watch('property_type')
@@ -88,7 +140,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
     propertyType?.includes(PropertyType.HOUSE_HORIZONTAL_CONDOMINIUM) ||
     propertyType?.includes(PropertyType.HOUSE_CLOSED_CONDOMINUIM)
 
-  const onSubmit = async (data: Form) => {
+  const onCreateSubmit = async (data: Form) => {
     const formData = new FormData()
 
     if (!showCondominuimUnits && data.data.condominium_units) {
@@ -129,6 +181,45 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
     setIsLoading(false)
   }
 
+  const onEditSubmit = async (data: Form) => {
+    const formData = new FormData()
+
+    if (!showCondominuimUnits && data.data.condominium_units) {
+      data.data.condominium_units = undefined
+    }
+
+    if (isAppartment) {
+      data.sq_m_construction = undefined
+      data.sq_m_total = undefined
+    }
+
+    setIsLoading(true)
+
+    formData.append('data', JSON.stringify(data))
+
+    try {
+      const res = await fetch(`/api/listings/${listingId}`, {
+        method: 'put',
+        body: formData,
+      })
+      const response = (await res.json()) as { data: Listing }
+
+      setListingId(response.data.id)
+
+      await onSuccess()
+      toast({
+        title: 'Propiedad Guardad',
+        description: 'Propiedad guardada exitosamente.',
+      })
+    } catch (error) {
+      toast({
+        title: 'Oooops!',
+        description: 'Ocurrió un error. Intenta nuevamente.',
+        variant: 'destructive',
+      })
+    }
+  }
+
   useEffect(() => {
     if (session.data?.user) {
       const { user } = session.data
@@ -143,7 +234,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <>
       {step === 'data' ? (
-        <form noValidate onSubmit={handleSubmit(onSubmit)}>
+        <form noValidate onSubmit={handleSubmit(editMode ? onEditSubmit : onCreateSubmit)}>
           <div className="flex flex-col items-center justify-between gap-5">
             <div className="flex w-full flex-1 flex-wrap items-start justify-between gap-5">
               {session.data?.user.role !== Role.BROKER ? (
@@ -177,8 +268,9 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
                 disabled={isLoading}
                 control={control}
                 name="type"
-                options={lsitingTypeOptions}
+                options={listingTypeOptions}
                 label="Tipo"
+                defaultSelected={getSelectDefaultValue(listingTypeOptions, false, _defaultValues?.['type'])}
               />
 
               <SelectField
@@ -663,7 +755,7 @@ export function CreateListingForm({ onSuccess }: { onSuccess: () => void }) {
 
           <Button type="submit" disabled={isLoading || !acceptsTerms} className="mt-5 w-full">
             {isLoading && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
-            Siguiente Paso
+            {editMode ? 'Guardar' : 'Subir Galería'}
           </Button>
         </form>
       ) : null}
@@ -684,14 +776,25 @@ const SelectField = ({ control, name, hint, fullWidth = true, ...props }: Select
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState: { error } }) => (
-        <div className={cn('grid grow items-center gap-1.5')}>
-          <Select fullWidth={fullWidth} {...props} {...field} />
+      render={({ field, formState: { defaultValues }, fieldState: { error } }) => {
+        return (
+          <div className={cn('grid grow items-center gap-1.5')}>
+            <Select
+              fullWidth={fullWidth}
+              {...props}
+              {...field}
+              defaultSelected={getSelectDefaultValue(
+                props.options,
+                props.multiple ?? false,
+                get(defaultValues, name) as any
+              )}
+            />
 
-          {hint && !error ? <small className="text-sm text-gray-500/50">{hint}</small> : null}
-          {error?.message ? <small className="text-sm text-red-400">{error.message}</small> : null}
-        </div>
-      )}
+            {hint && !error ? <small className="text-sm text-gray-500/50">{hint}</small> : null}
+            {error?.message ? <small className="text-sm text-red-400">{error.message}</small> : null}
+          </div>
+        )
+      }}
     />
   )
 }

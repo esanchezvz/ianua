@@ -14,6 +14,7 @@ export type ListingAddress = {
 export type ListingData = {
   yearly_tax_period: string
   gallery_keys: string[]
+  condominium_units: string
 }
 
 export type Listing = Override<
@@ -23,3 +24,15 @@ export type Listing = Override<
     data: ListingData
   }
 >
+
+export interface PopulatedListing extends Listing {
+  broker?: {
+    id: string
+    user: {
+      name: string
+      surname_1: string
+      surname_2: string
+      email: true
+    }
+  }
+}

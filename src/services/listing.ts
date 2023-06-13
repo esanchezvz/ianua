@@ -13,9 +13,11 @@ type Pagination =
       page: number
     }
 
-export const fetchListings = async (params?: Partial<Listing> & Pagination) => {
+export const fetchListings = async <T = Listing[]>(
+  params?: Partial<Listing> & Pagination & { includes?: string; search?: string }
+) => {
   try {
-    const res = await axios.get<ApiResponse<Listing[]>>('/api/listings', {
+    const res = await axios.get<ApiResponse<T>>('/api/listings', {
       params,
     })
     return res.data

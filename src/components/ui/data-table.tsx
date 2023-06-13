@@ -26,6 +26,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn } from '@/utils'
 
+import { Input } from './input'
+
 type PaginationProps =
   | {
       count?: never
@@ -42,6 +44,8 @@ type DataTableProps<T, V> = {
   columns: ColumnDef<T, V>[]
   data: T[]
   loading?: boolean
+  hideColumns?: boolean
+  onSearchChange?: React.ChangeEventHandler<HTMLInputElement>
 } & PaginationProps
 
 const pageSizeOptions = [5, 10, 20, 50, 100, 200]
@@ -52,6 +56,8 @@ export function DataTable<T, V>({
   count,
   pagination,
   onPaginationChange,
+  hideColumns,
+  onSearchChange,
   loading,
 }: DataTableProps<T, V>) {
   const [sorting, setSorting] = useState<SortingState>([])
@@ -75,6 +81,11 @@ export function DataTable<T, V>({
   return (
     <div className="p-3">
       <div className="flex items-center justify-end gap-2 py-4">
+        {onSearchChange ? (
+          <div className="mr-auto">
+            <Input type="text" placeholder="Buscar" onChange={onSearchChange} />
+          </div>
+        ) : null}
         {pagination ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -95,29 +106,31 @@ export function DataTable<T, V>({
           </DropdownMenu>
         ) : null}
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">Columnas</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                    onSelect={(e) => e.preventDefault()}
-                  >
-                    {(column.columnDef.header as string) ?? column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {hideColumns ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">Columnas</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      {(column.columnDef.header as string) ?? column.id}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </div>
       <div className="relative rounded-md border">
         <div
