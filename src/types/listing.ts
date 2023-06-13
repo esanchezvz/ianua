@@ -11,7 +11,11 @@ export type ListingAddress = {
   zip_code: string
 }
 
-export type ListingData = Record<string, unknown>
+export type ListingData = {
+  yearly_tax_period: string
+  gallery_keys: string[]
+  condominium_units: string
+}
 
 export type Listing = Override<
   PrismaListing,
@@ -20,3 +24,15 @@ export type Listing = Override<
     data: ListingData
   }
 >
+
+export interface PopulatedListing extends Listing {
+  broker?: {
+    id: string
+    user: {
+      name: string
+      surname_1: string
+      surname_2: string
+      email: true
+    }
+  }
+}

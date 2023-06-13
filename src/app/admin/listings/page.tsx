@@ -1,41 +1,22 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import { CreateListingForm } from '@/components/admin/create-listing-form'
+import { useQuery } from '@tanstack/react-query'
+
+import { CreateListingModal } from '@/components/admin/listings/create-modal'
+import { ListingsTable } from '@/components/admin/listings/table'
 import { Button } from '@/components/ui/button'
-import Modal from '@/components/ui/modal'
-
-type TempListing = { name: string; data: { gallery_keys: string[] }; id: string }
+import { fetchListings } from '@/services/listing'
 
 export default function ListingsPage() {
-  const [listings, setLisitings] = useState<number>(0)
   const [modalOpen, setModalOpen] = useState(false)
+  const { refetch } = useQuery(['listings'], () => fetchListings())
 
   const onCreate = async () => {
-    const res = await fetch('/api/listings', {
-      method: 'get',
-    })
-
-    const result: { data: number } = await res.json()
-
-    setLisitings(result.data)
+    await refetch()
 
     setModalOpen(false)
   }
-
-  useEffect(() => {
-    const fetchListings = async () => {
-      const res = await fetch('/api/listings', {
-        method: 'get',
-      })
-
-      const result: { data: number } = await res.json()
-
-      setLisitings(result.data)
-    }
-
-    fetchListings()
-  }, [])
 
   return (
     <div>
@@ -47,17 +28,9 @@ export default function ListingsPage() {
         </Button>
       </div>
 
-      <h1 className="mt-10">{listings} Propiedades</h1>
+      <CreateListingModal onClose={() => setModalOpen(false)} onCreate={onCreate} open={modalOpen} />
 
-      <Modal
-        opened={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Crear Propiedad"
-        className="max-w-5xl"
-        closeOnEscape={false}
-      >
-        <CreateListingForm onSuccess={onCreate} />
-      </Modal>
+      <ListingsTable />
     </div>
   )
 }

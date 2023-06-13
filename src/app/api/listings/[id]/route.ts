@@ -1,11 +1,12 @@
-import { Role } from '@prisma/client'
+import { ListingStatus, Role } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 import { getSession } from '@/core/auth'
 import { db } from '@/core/db'
 import { updateListingSchema } from '@/core/validations/listing'
 
-const allowedRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
+const editAllowed: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
+const publishRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN]
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   // TODO - validate captcha
@@ -14,7 +15,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  if (!allowedRoles.includes(session.user.role)) {
+  if (!editAllowed.includes(session.user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
@@ -23,6 +24,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const parsedData = JSON.parse(data)
 
   const listingData = updateListingSchema.parse(parsedData)
+
+  if (listingData.status !== ListingStatus.PENDING && !publishRoles.includes(session.user.role)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   try {
     const listing = await db.listing.findUnique({ where: { id: params.id } })

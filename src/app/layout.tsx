@@ -7,6 +7,8 @@ import localFont from 'next/font/local'
 import { Toaster } from '@/components/shared/toaster'
 import { CapthaProvider } from '@/context/captcha'
 import { CookiesProvider } from '@/context/cookies'
+import { DragAndDropProvider } from '@/context/dnd'
+import { ReactQueryProvider } from '@/context/react-query'
 import { SessionProvider } from '@/context/session'
 import { getSession } from '@/core/auth'
 
@@ -30,16 +32,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const session = await getSession()
 
   return (
-    <html lang="es" className={`${roboto.variable} ${larisAlte.variable} h-min-screen antialiased`}>
+    <html
+      lang="es"
+      className={`${roboto.variable} ${larisAlte.variable} h-min-screen overflow-x-hidden antialiased`}
+    >
       <body className="flex h-full flex-col">
-        <SessionProvider session={session}>
-          <CookiesProvider>
-            <CapthaProvider>
-              {children}
-              <Toaster />
-            </CapthaProvider>
-          </CookiesProvider>
-        </SessionProvider>
+        <ReactQueryProvider>
+          <SessionProvider session={session}>
+            <CookiesProvider>
+              <CapthaProvider>
+                <DragAndDropProvider>
+                  {children}
+                  <Toaster />
+                </DragAndDropProvider>
+              </CapthaProvider>
+            </CookiesProvider>
+          </SessionProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   )

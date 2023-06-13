@@ -51,6 +51,10 @@ export default withAuth(
       if (isAuth && token.role === Role.USER) {
         return NextResponse.redirect(new URL(`/login`, req.url))
       }
+
+      if (isAuth && token.role === Role.BROKER && req.nextUrl.pathname !== '/admin/profile') {
+        return NextResponse.redirect(new URL(`/admin/profile`, req.url))
+      }
     }
 
     return res
