@@ -78,7 +78,10 @@ export const ListingsTable = () => {
       'data',
       JSON.stringify({
         ...drawer.listing,
-        status: ListingStatus.PUBLISHED,
+        status:
+          drawer.listing?.status === ListingStatus.PUBLISHED
+            ? ListingStatus.PENDING
+            : ListingStatus.PUBLISHED,
       })
     )
 
@@ -105,7 +108,44 @@ export const ListingsTable = () => {
     setPublishing(false)
   }
 
+  const removeListing = async () => {
+    setPublishing(true)
+    const formData = new FormData()
+    formData.append(
+      'data',
+      JSON.stringify({
+        ...drawer.listing,
+        status: ListingStatus.DELETED,
+      })
+    )
+
+    try {
+      const res = await fetch(`/api/listings/${drawer.listing?.id}`, {
+        method: 'put',
+        body: formData,
+      })
+      await res.json()
+      await onSuccess()
+
+      toast({
+        title: 'Propiedad Eliminada',
+        description: 'Puede ser reactivada.',
+      })
+    } catch (error) {
+      toast({
+        title: 'Oooops!',
+        description: 'Ocurrió un error. Intenta nuevamente.',
+        variant: 'destructive',
+      })
+    }
+
+    setPublishing(false)
+  }
+
   const memoColumns = useMemo(() => columns(handlePreview), [])
+
+  const publishUnpublish =
+    drawer.listing?.status === ListingStatus.PUBLISHED || drawer.listing?.status === ListingStatus.PENDING
 
   return (
     <>
@@ -124,12 +164,19 @@ export const ListingsTable = () => {
         title="Editiar Propiedad"
         className="w-full max-w-5xl"
       >
-        <div className="flex items-center justify-end">
-          {publishing && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
-          <Button disabled={publishing} variant="secondary" onClick={publishListing}>
-            Publicar
+        <div className="flex items-center justify-end gap-5">
+          {publishUnpublish ? (
+            <Button disabled={publishing} variant="secondary" onClick={publishListing}>
+              {publishing && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
+              {drawer.listing?.status === ListingStatus.PUBLISHED ? 'Despublicar' : 'Publicar'}
+            </Button>
+          ) : null}
+          <Button disabled={publishing} variant="destructive" onClick={removeListing}>
+            {publishing && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
+            Eliminar
           </Button>
         </div>
+
         {drawer.listing ? (
           <CreateListingForm
             onSuccess={onSuccess}
