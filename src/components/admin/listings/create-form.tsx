@@ -153,7 +153,6 @@ export function CreateListingForm({ onSuccess, defaultValues, editMode }: Props)
     }
 
     setIsLoading(true)
-
     formData.append('data', JSON.stringify(data))
 
     try {

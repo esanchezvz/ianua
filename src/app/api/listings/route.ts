@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/core/auth'
 import { db } from '@/core/db'
 import { createListingSchema } from '@/core/validations/listing'
-import { PopulatedListing } from '@/types/listing'
 
 const allowedRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
 
@@ -17,7 +16,14 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData()
   const data = (formData.get('data') as string) || ''
-  const parsedData = JSON.parse(data)
+
+  const entries = Object.entries(JSON.parse(data) ?? {}).filter(([, value]) => {
+    if (value === null || value === undefined) return false
+
+    return true
+  })
+
+  const parsedData = Object.fromEntries(entries)
 
   const listingData = createListingSchema.parse(parsedData)
 

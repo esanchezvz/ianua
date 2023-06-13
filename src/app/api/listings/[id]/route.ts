@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { getSession } from '@/core/auth'
 import { db } from '@/core/db'
-import { updateListingSchema } from '@/core/validations/listing'
+// import { updateListingSchema } from '@/core/validations/listing'
 
 const editAllowed: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
 const publishRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN]
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  // TODO - validate captcha
+  // TODO - validate captcha and validate data correctly
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -21,9 +21,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   const formData = await req.formData()
   const data = (formData.get('data') as string) || ''
-  const parsedData = JSON.parse(data)
-
-  const listingData = updateListingSchema.parse(parsedData)
+  const listingData = JSON.parse(data) ?? {}
 
   if (listingData.status !== ListingStatus.PENDING && !publishRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
