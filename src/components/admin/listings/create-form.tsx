@@ -202,9 +202,7 @@ export function CreateListingForm({ onSuccess, defaultValues, editMode }: Props)
         method: 'put',
         body: formData,
       })
-      const response = (await res.json()) as { data: Listing }
-
-      setListingId(response.data.id)
+      await res.json()
 
       await onSuccess()
       toast({

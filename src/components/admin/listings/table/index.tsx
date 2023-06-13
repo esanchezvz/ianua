@@ -2,12 +2,14 @@
 
 import { useMemo, useState } from 'react'
 
-import { Role } from '@prisma/client'
+import { ArrowPathIcon } from '@heroicons/react/24/outline'
+import { ListingStatus, Role } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { PaginationState, Row } from '@tanstack/react-table'
 import { debounce } from 'lodash'
 import { useSession } from 'next-auth/react'
 
+import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/ui/data-table'
 import Drawer from '@/components/ui/drawer'
 import { toast } from '@/hooks/use-toast'
@@ -20,6 +22,7 @@ import { CreateListingForm } from '../create-form'
 
 export const ListingsTable = () => {
   useQuery(['brokers'], fetchBrokers)
+  const [publishing, setPublishing] = useState(false)
   const { data: sessionData } = useSession()
   const [search, setSearch] = useState('')
   const [drawer, setDrawer] = useState<{
@@ -68,6 +71,40 @@ export const ListingsTable = () => {
     closeDrawer()
   }
 
+  const publishListing = async () => {
+    setPublishing(true)
+    const formData = new FormData()
+    formData.append(
+      'data',
+      JSON.stringify({
+        ...drawer.listing,
+        status: ListingStatus.PUBLISHED,
+      })
+    )
+
+    try {
+      const res = await fetch(`/api/listings/${drawer.listing?.id}`, {
+        method: 'put',
+        body: formData,
+      })
+      await res.json()
+      await onSuccess()
+
+      toast({
+        title: 'Propiedad Publicada',
+        description: 'Propiedad publicada exitosamente.',
+      })
+    } catch (error) {
+      toast({
+        title: 'Oooops!',
+        description: 'Ocurrió un error. Intenta nuevamente.',
+        variant: 'destructive',
+      })
+    }
+
+    setPublishing(false)
+  }
+
   const memoColumns = useMemo(() => columns(handlePreview), [])
 
   return (
@@ -87,6 +124,12 @@ export const ListingsTable = () => {
         title="Editiar Propiedad"
         className="w-full max-w-5xl"
       >
+        <div className="flex items-center justify-end">
+          {publishing && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
+          <Button disabled={publishing} variant="secondary" onClick={publishListing}>
+            Publicar
+          </Button>
+        </div>
         {drawer.listing ? (
           <CreateListingForm
             onSuccess={onSuccess}

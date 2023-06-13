@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { PopulatedListing } from '@/types/listing'
-import { propertyTypeMap } from '@/utils/listing'
+import { listingStatusMap, propertyTypeMap } from '@/utils/listing'
 
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -82,6 +82,11 @@ export const columns: (
     accessorKey: 'price',
     header: 'Precio',
     accessorFn: (row) => currencyFormatter(row.price_currency, row.price),
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    accessorFn: (row) => listingStatusMap[row.status],
   },
   {
     id: 'actions',
