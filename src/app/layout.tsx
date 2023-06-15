@@ -32,10 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const session = await getSession()
 
   return (
-    <html
-      lang="es"
-      className={`${roboto.variable} ${larisAlte.variable} h-min-screen overflow-x-hidden antialiased`}
-    >
+    <html lang="es" className={`${roboto.variable} ${larisAlte.variable} h-min-screen antialiased`}>
       <body className="flex h-full flex-col">
         <ReactQueryProvider>
           <SessionProvider session={session}>
