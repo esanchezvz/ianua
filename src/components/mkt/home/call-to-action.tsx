@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { PachonMessage } from '@/components/shared/pachon-message'
 import { buttonVariants } from '@/components/ui/button'
 import { CircleBackground } from '@/components/ui/circle-background'
 import { Container } from '@/components/ui/container'
@@ -12,15 +13,13 @@ export default function CallToAction() {
       </div>
       <Container className="relative">
         <div className="mx-auto max-w-md sm:text-center">
-          <h2 className="text-3xl font-medium tracking-tight text-white sm:text-4xl">Este es titulo</h2>
-          <p className="mt-4 text-lg text-gray-300">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nobis vitae laboriosam tenetur,
-            explicabo atque id sint eum quaerat nisi hic? Maxime asperiores repellat incidunt suscipit quis
-            ratione sequi quisquam ullam.
-          </p>
+          <PachonMessage
+            variant="light"
+            message="La importancia de los créditos. Este texto falta pero esta este de relleno para ver como se vería"
+          />
 
           <Link className={buttonVariants({ variant: 'secondary', className: 'mt-10' })} href="/perfilador">
-            Ir Al PERFILADOR
+            Solicitar Crédito
           </Link>
         </div>
       </Container>

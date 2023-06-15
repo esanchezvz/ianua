@@ -8,7 +8,7 @@ import { cn } from '@/utils'
 type ModalProps = {
   opened: boolean
   onClose: () => void
-  title: string
+  title?: string
   children: React.ReactNode
   className?: string
   initialFocus?: React.MutableRefObject<HTMLElement | null>
