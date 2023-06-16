@@ -30,7 +30,7 @@ const navigation = [
   { name: 'Company', href: '/admin/users' },
 ]
 
-const darkLogoHeader = ['/perfilador']
+const darkLogoHeader = ['/perfilador', '/faq', '/propiedades']
 
 export function Header() {
   const pathname = usePathname() ?? ''

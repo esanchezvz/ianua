@@ -13,12 +13,19 @@ export default function CallToAction() {
       </div>
       <Container className="relative">
         <div className="mx-auto max-w-md sm:text-center">
-          <PachonMessage
-            variant="light"
-            message="La importancia de los créditos. Este texto falta pero esta este de relleno para ver como se vería"
-          />
+          <div className="translate-x-[85px]">
+            <PachonMessage
+              variant="light"
+              message="La importancia de los créditos. Este texto falta pero esta este de relleno para ver como se vería"
+            />
+          </div>
 
-          <Link className={buttonVariants({ variant: 'secondary', className: 'mt-10' })} href="/perfilador">
+          <Link
+            className={buttonVariants({ variant: 'secondary', className: 'mt-10' })}
+            href="https://google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Solicitar Crédito
           </Link>
         </div>
