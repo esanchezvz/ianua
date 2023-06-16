@@ -25,8 +25,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   const parsedData = updateListingSchema.partial().parse(listingData)
 
-  console.log({ parsedData })
-
   if (listingData.status !== ListingStatus.PENDING && !publishRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }

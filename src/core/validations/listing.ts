@@ -25,6 +25,7 @@ export const createListingSchema = z.object({
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .optional()
+    .nullable()
     .or(z.number())
     .transform(Boolean)
     .or(z.boolean()),
@@ -39,17 +40,20 @@ export const createListingSchema = z.object({
     .string({ required_error: 'Campo requerido' })
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   sq_m_construction: z
     .string({ required_error: 'Campo requerido' })
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   sq_m_garden: z
     .string({ required_error: 'Campo requerido' })
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   sq_m_living: z
     .string({ required_error: 'Campo requerido' })
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
@@ -58,22 +62,26 @@ export const createListingSchema = z.object({
     .string({ required_error: 'Campo requerido' })
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   sq_m_total: z
     .string({ required_error: 'Campo requerido' })
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   dimension_depth: z
     .string({ required_error: 'Campo requerido' })
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   dimension_front: z
     .string({ required_error: 'Campo requerido' })
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   rooms: z
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
@@ -90,7 +98,8 @@ export const createListingSchema = z.object({
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   parking_spots: z
     .string({ required_error: 'Campo requerido' })
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
@@ -100,21 +109,24 @@ export const createListingSchema = z.object({
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   maintenance_cost: z
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   construction_year: z
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   condition: z.nativeEnum(ListingCondition, { required_error: 'Campo requerido' }),
-  construction_style: z.nativeEnum(ListingConstructionStyle).optional(),
+  construction_style: z.nativeEnum(ListingConstructionStyle).optional().nullable(),
   climate: z.nativeEnum(ListingClimate, { required_error: 'Campo requerido' }),
-  orientation: z.string().optional(),
+  orientation: z.string().optional().nullable(),
   views: z.nativeEnum(ListingViews, { required_error: 'Campo requerido' }),
   natural_lighting: z
     .number({ required_error: 'Campo requerido' })
@@ -128,45 +140,51 @@ export const createListingSchema = z.object({
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .optional()
+    .nullable()
     .or(z.number())
     .transform(Boolean)
     .or(z.boolean()),
   address: z.object({
     street_1: z.string().min(1, 'Campo requerido'),
     number: z.string().min(1, 'Campo requerido'),
-    int_number: z.string().optional(),
+    int_number: z.string().optional().nullable(),
     locality: z.string().min(1, 'Campo requerido'),
     neighborhood: z.string().min(1, 'Campo requerido'),
     city: z.string().min(1, 'Campo requerido').default('CDMX'),
     state: z.string().min(1, 'Campo requerido').default('CDMX'),
     zip_code: z.string().min(1, 'Campo requerido'),
   }),
-  development_name: z.string().optional(),
+  development_name: z.string().optional().nullable(),
   stories: z
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   floor: z
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   development_stories: z
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   development_buildings: z
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   development_units: z
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   ammenities: z.array(z.nativeEnum(ListingAmmenities)).optional(),
   private_services: z.array(z.nativeEnum(ListingPrivateServices)).optional(),
   public_services: z.array(z.nativeEnum(ListingPublicServices)).optional(),
@@ -179,7 +197,8 @@ export const createListingSchema = z.object({
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
     .or(z.number())
-    .optional(),
+    .optional()
+    .nullable(),
   status: z.nativeEnum(ListingStatus, { required_error: 'Campo requerido' }).default(ListingStatus.PENDING),
   data: z.object({
     gallery_keys: z.array(z.string()).optional(),
@@ -188,7 +207,8 @@ export const createListingSchema = z.object({
       .string()
       .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
       .or(z.number())
-      .optional(),
+      .optional()
+      .nullable(),
   }),
   legal_status: z.nativeEnum(ListingLegalStatus, { required_error: 'Campo requerido' }),
 })
@@ -199,39 +219,44 @@ export const updateListingSchema = createListingSchema
   })
   .deepPartial()
   .extend({
-    orientation: z.string().or(z.null()).optional(),
-    development_name: z.string().or(z.null()).optional(),
-    construction_style: z.nativeEnum(ListingConstructionStyle).or(z.null()).optional(),
+    orientation: z.string().or(z.null()).optional().nullable(),
+    development_name: z.string().or(z.null()).optional().nullable(),
+    construction_style: z.nativeEnum(ListingConstructionStyle).or(z.null()).optional().nullable(),
     floor: z
       .string()
       .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
       .or(z.number())
       .or(z.null())
-      .optional(),
+      .optional()
+      .nullable(),
     development_stories: z
       .string()
       .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
       .or(z.number())
       .or(z.null())
-      .optional(),
+      .optional()
+      .nullable(),
     development_buildings: z
       .string()
       .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
       .or(z.number())
       .or(z.null())
-      .optional(),
+      .optional()
+      .nullable(),
     development_units: z
       .string()
       .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
       .or(z.number())
       .or(z.null())
-      .optional(),
+      .optional()
+      .nullable(),
     construction_year: z
       .string()
       .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
       .or(z.number())
       .or(z.null())
-      .optional(),
+      .optional()
+      .nullable(),
     full_bathrooms: z
       .string({ required_error: 'Campo requerido' })
       .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
@@ -247,13 +272,15 @@ export const updateListingSchema = createListingSchema
       .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
       .or(z.number())
       .or(z.null())
-      .optional(),
+      .optional()
+      .nullable(),
     legal_status: z.nativeEnum(ListingLegalStatus, { required_error: 'Campo requerido' }).or(z.null()),
     views: z.nativeEnum(ListingViews, { required_error: 'Campo requerido' }).or(z.null()),
     data: z
       .object({
         gallery_keys: z.array(z.string()).optional(),
       })
-      .optional(),
+      .optional()
+      .nullable(),
   })
 export type UpdateListingSchema = z.infer<typeof updateListingSchema>
