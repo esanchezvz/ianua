@@ -101,30 +101,31 @@ const MoreOptionsCell = ({
 }: CellContext<PopulatedListing, unknown> & { handlePreview: (row: Row<PopulatedListing>) => void }) => {
   const session = useSession()
 
-  if (!session.data || session.data?.user.role === Role.BROKER) return null
-
   return (
     <div className="flex items-center justify-center">
       <Button variant="ghost" onClick={() => handlePreview(row)}>
         <EyeIcon className="h-4 w-4" />
       </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Ver Opciones</span>
-            <EllipsisHorizontalIcon className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuPortal>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(row.getValue('address'))}>
-              Copiar Dirección
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>TBD</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenuPortal>
-      </DropdownMenu>
+
+      {session.data?.user.role !== Role.BROKER ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Ver Opciones</span>
+              <EllipsisHorizontalIcon className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(row.getValue('address'))}>
+                Copiar Dirección
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>TBD</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenuPortal>
+        </DropdownMenu>
+      ) : null}
     </div>
   )
 }
