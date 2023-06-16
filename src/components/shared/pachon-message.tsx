@@ -11,7 +11,7 @@ export const PachonMessage = ({ message, variant = 'dark' }: Props) => {
   const src = variant === 'dark' ? '/pachon.png' : '/pachon_light.png'
 
   return (
-    <div className="m-auto flex w-full max-w-[max-content] flex-col">
+    <div className="m-auto flex w-full max-w-[max-content] flex-col pr-[140px]">
       <MessageBubble
         message={message}
         className={cn('w-64 translate-x-[140px]', {

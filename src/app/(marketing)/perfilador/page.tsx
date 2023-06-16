@@ -6,18 +6,22 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useMeasure } from 'react-use'
 
+import { PachonMessage } from '@/components/shared/pachon-message'
 import { Button } from '@/components/ui/button'
 import { usePrevious } from '@/hooks/use-previous'
 
 export default function Profiler() {
   return (
     <main className="flex h-full">
-      <div className="hidden h-full grow flex-col items-center justify-center bg-blue text-white md:flex">
-        Todos te ofrecen lo que piensan que quieres, no lo que realmente necesitas. Queremos conocerte mejor,
+      <div className="hidden h-full grow-[2] flex-col items-center justify-center bg-blue text-white md:flex">
+        <PachonMessage
+          variant="light"
+          message="Todos te ofrecen lo que piensan que quieres, no lo que realmente necesitas. Queremos conocerte mejor,
         con base a una breve serie de preguntas el perfilador de IANUA se encarga de encontrar las propiedades
-        que son perfectas para ti. Deja que tu hogar te encuentre.
+        que son perfectas para ti. Deja que tu hogar te encuentre."
+        />
       </div>
-      <div className="flex h-full grow flex-col items-center justify-center bg-white p-10 md:w-[50%]">
+      <div className="flex h-full grow-[6] flex-col items-center justify-center bg-white p-10 md:w-[50%]">
         <ProfilerCarousel />
       </div>
     </main>
