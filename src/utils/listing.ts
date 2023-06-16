@@ -58,7 +58,7 @@ export const listingTypeMap: Record<ListingType, string> = {
   [ListingType.FOR_RENT]: 'Renta',
 }
 
-export const lsitingTypeOptions = getOptionsFromMap(listingTypeMap)
+export const listingTypeOptions = getOptionsFromMap(listingTypeMap)
 
 export const listingPrivateServicesMap: Record<ListingPrivateServices, string> = {
   [ListingPrivateServices.BANK]: 'Bancos',

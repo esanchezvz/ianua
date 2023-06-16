@@ -41,7 +41,7 @@ import {
   listingPrivateServicesOptions,
   listingPublicServicesOptions,
   listingViewOptions,
-  lsitingTypeOptions as listingTypeOptions,
+  listingTypeOptions,
   parkingSpotStyleOptions,
   propertyTypeOptions,
 } from '@/utils/listing'
