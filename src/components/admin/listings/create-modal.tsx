@@ -1,6 +1,6 @@
 import Modal from '@/components/ui/modal'
 
-import { CreateListingForm } from './create-form'
+import { CreateListingForm } from './create-update-form'
 
 type Props = {
   open: boolean

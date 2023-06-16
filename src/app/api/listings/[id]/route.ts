@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { getSession } from '@/core/auth'
 import { db } from '@/core/db'
-// import { updateListingSchema } from '@/core/validations/listing'
+import { updateListingSchema } from '@/core/validations/listing'
 
 const editAllowed: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
 const publishRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN]
@@ -22,6 +22,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const formData = await req.formData()
   const data = (formData.get('data') as string) || ''
   const listingData = JSON.parse(data) ?? {}
+
+  const parsedData = updateListingSchema.partial().parse(listingData)
+
+  console.log({ parsedData })
 
   if (listingData.status !== ListingStatus.PENDING && !publishRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -52,14 +56,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         id: params.id,
       },
       data: {
-        ...listingData,
+        ...parsedData,
         address: {
           ...((listing?.address as Record<string, string>) ?? {}),
-          ...((listingData?.address as Record<string, string>) ?? {}),
+          ...((parsedData?.address as Record<string, string>) ?? {}),
         },
         data: {
           ...((listing?.data as Record<string, string>) ?? {}),
-          ...(listingData?.data ?? {}),
+          ...(parsedData?.data ?? {}),
         },
       },
     })

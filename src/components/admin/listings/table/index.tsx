@@ -18,7 +18,7 @@ import { fetchListings } from '@/services/listing'
 import { Listing, PopulatedListing } from '@/types/listing'
 
 import { columns } from './columns'
-import { CreateListingForm } from '../create-form'
+import { CreateListingForm } from '../create-update-form'
 
 export const ListingsTable = () => {
   useQuery(['brokers'], fetchBrokers)

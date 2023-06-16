@@ -25,6 +25,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_PROJECT: z.string().min(1),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
     NEXT_PUBLIC_SUPABASE_SERVICE_ROLE: z.string().min(1),
+    NEXT_PUBLIC_CDN: z.string().min(1),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -46,5 +47,6 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_PROJECT: process.env.NEXT_PUBLIC_SUPABASE_PROJECT,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_SUPABASE_SERVICE_ROLE: process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE,
+    NEXT_PUBLIC_CDN: process.env.NEXT_PUBLIC_CDN,
   },
 })

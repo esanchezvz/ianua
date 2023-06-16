@@ -1,19 +1,22 @@
 'use client'
 
-import { forwardRef, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Listing, PropertyType, Role } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { get } from 'lodash'
+import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useForm, Control, Controller } from 'react-hook-form'
 import MaskedInput from 'react-text-mask'
 import { createNumberMask } from 'text-mask-addons'
 import * as z from 'zod'
 
+import { ImageSort } from '@/components/shared/image-sort'
 import { Button } from '@/components/ui/button'
+import Carousel from '@/components/ui/carousel'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,6 +25,7 @@ import { RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectOption } from '@/components/ui/select'
 import { TextField } from '@/components/ui/text-field'
 import { TextareaField } from '@/components/ui/textarea-field'
+import { env } from '@/core/env'
 import { createListingSchema, updateListingSchema } from '@/core/validations/listing'
 import { toast } from '@/hooks/use-toast'
 import { fetchBrokers } from '@/services/brokers'
@@ -121,6 +125,7 @@ export function CreateListingForm({ onSuccess, defaultValues, editMode }: Props)
   const [listingId, setListingId] = useState(defaultValues?.['id'] ?? '')
   const [isLoading, setIsLoading] = useState(false)
   const [acceptsTerms, setAcceptTerms] = useState(false)
+  const [galleryKeys, setGalleryKeys] = useState<string[]>(defaultValues?.data?.gallery_keys ?? [])
   const { data: brokersData } = useQuery(['brokers'], fetchBrokers)
   const {
     register,
@@ -192,6 +197,8 @@ export function CreateListingForm({ onSuccess, defaultValues, editMode }: Props)
       data.sq_m_total = undefined
     }
 
+    data.data.gallery_keys = galleryKeys
+
     setIsLoading(true)
 
     formData.append('data', JSON.stringify(data))
@@ -205,7 +212,7 @@ export function CreateListingForm({ onSuccess, defaultValues, editMode }: Props)
 
       await onSuccess()
       toast({
-        title: 'Propiedad Guardad',
+        title: 'Propiedad Guardada',
         description: 'Propiedad guardada exitosamente.',
       })
     } catch (error) {
@@ -230,6 +237,22 @@ export function CreateListingForm({ onSuccess, defaultValues, editMode }: Props)
 
   return (
     <>
+      {editMode ? (
+        <div className="mx-auto w-full max-w-4xl">
+          <Carousel>
+            {galleryKeys?.map((key) => (
+              <Slide src={`${env.NEXT_PUBLIC_CDN}/listings/${listingId}/${key}`} key={key} />
+            ))}
+          </Carousel>
+          <ImageSort
+            onChange={setGalleryKeys}
+            images={galleryKeys.map((k) => ({
+              key: k,
+              url: `${env.NEXT_PUBLIC_CDN}/listings/${listingId}/${k}`,
+            }))}
+          />
+        </div>
+      ) : null}
       {step === 'data' ? (
         <form noValidate onSubmit={handleSubmit(editMode ? onEditSubmit : onCreateSubmit)}>
           <div className="flex flex-col items-center justify-between gap-5">
@@ -899,5 +922,19 @@ const NumberField = ({ control, name, hint, id, label, ...props }: NumberFieldPr
         )
       }}
     />
+  )
+}
+
+function Slide({ src }: { src: string }) {
+  return (
+    <div className="relative my-4 mr-4 h-96 flex-[0_0_100%] overflow-hidden">
+      <Image
+        src={`${src}?width=900&resize=contain&quality=60`}
+        fill
+        className="object-cover object-center"
+        alt=""
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+    </div>
   )
 }

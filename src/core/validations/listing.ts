@@ -182,6 +182,7 @@ export const createListingSchema = z.object({
     .optional(),
   status: z.nativeEnum(ListingStatus, { required_error: 'Campo requerido' }).default(ListingStatus.PENDING),
   data: z.object({
+    gallery_keys: z.array(z.string()).optional(),
     yearly_tax_period: z.string({ required_error: 'Campo requerido' }).optional(),
     condominium_units: z
       .string()
