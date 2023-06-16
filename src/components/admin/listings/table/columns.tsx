@@ -1,8 +1,9 @@
 'use client'
 
 import { EllipsisHorizontalIcon, EyeIcon } from '@heroicons/react/24/outline'
-import { ListingPriceCurrency } from '@prisma/client'
-import { ColumnDef, Row } from '@tanstack/react-table'
+import { ListingPriceCurrency, Role } from '@prisma/client'
+import { CellContext, ColumnDef, Row } from '@tanstack/react-table'
+import { useSession } from 'next-auth/react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -90,31 +91,40 @@ export const columns: (
   },
   {
     id: 'actions',
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center justify-center">
-          <Button variant="ghost" onClick={() => handlePreview(row)}>
-            <EyeIcon className="h-4 w-4" />
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Ver Opciones</span>
-                <EllipsisHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(row.getValue('address'))}>
-                  Copiar Dirección
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>TBD</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
-          </DropdownMenu>
-        </div>
-      )
-    },
+    cell: (cell) => <MoreOptionsCell {...cell} handlePreview={handlePreview} />,
   },
 ]
+
+const MoreOptionsCell = ({
+  row,
+  handlePreview,
+}: CellContext<PopulatedListing, unknown> & { handlePreview: (row: Row<PopulatedListing>) => void }) => {
+  const session = useSession()
+
+  if (!session.data || session.data?.user.role === Role.BROKER) return null
+
+  return (
+    <div className="flex items-center justify-center">
+      <Button variant="ghost" onClick={() => handlePreview(row)}>
+        <EyeIcon className="h-4 w-4" />
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Ver Opciones</span>
+            <EllipsisHorizontalIcon className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuPortal>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(row.getValue('address'))}>
+              Copiar Dirección
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>TBD</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenuPortal>
+      </DropdownMenu>
+    </div>
+  )
+}

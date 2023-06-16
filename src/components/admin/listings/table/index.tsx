@@ -164,18 +164,20 @@ export const ListingsTable = () => {
         title="Editiar Propiedad"
         className="w-full max-w-5xl"
       >
-        <div className="flex items-center justify-end gap-5">
-          {publishUnpublish ? (
-            <Button disabled={publishing} variant="secondary" onClick={publishListing}>
+        {sessionData?.user.role !== Role.BROKER ? (
+          <div className="flex items-center justify-end gap-5">
+            {publishUnpublish ? (
+              <Button disabled={publishing} variant="secondary" onClick={publishListing}>
+                {publishing && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
+                {drawer.listing?.status === ListingStatus.PUBLISHED ? 'Despublicar' : 'Publicar'}
+              </Button>
+            ) : null}
+            <Button disabled={publishing} variant="destructive" onClick={removeListing}>
               {publishing && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
-              {drawer.listing?.status === ListingStatus.PUBLISHED ? 'Despublicar' : 'Publicar'}
+              Eliminar
             </Button>
-          ) : null}
-          <Button disabled={publishing} variant="destructive" onClick={removeListing}>
-            {publishing && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
-            Eliminar
-          </Button>
-        </div>
+          </div>
+        ) : null}
 
         {drawer.listing ? (
           <CreateListingForm
