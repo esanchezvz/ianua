@@ -20,7 +20,7 @@ export const createListingSchema = z.object({
   name: z.string().min(1, 'Campo requerido'),
   type: z.nativeEnum(ListingType, { required_error: 'Campo requerido' }),
   property_type: z.array(z.nativeEnum(PropertyType), { required_error: 'Campo requerido' }),
-  description: z.string().min(1, 'Campo requerido').max(1000, 'Máximo 2,000 caracteres'),
+  description: z.string().min(1, 'Campo requerido').max(10000, 'Máximo 10,000 caracteres'),
   furnished: z
     .string()
     .transform((s) => Number(parseFloat(s.replaceAll(',', ''))))
