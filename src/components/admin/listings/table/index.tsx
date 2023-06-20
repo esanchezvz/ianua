@@ -161,7 +161,7 @@ export const ListingsTable = () => {
       <Drawer
         opened={drawer.open}
         onClose={closeDrawer}
-        title="Editiar Propiedad"
+        title="Editar Propiedad"
         className="w-full max-w-5xl"
       >
         {sessionData?.user.role !== Role.BROKER ? (

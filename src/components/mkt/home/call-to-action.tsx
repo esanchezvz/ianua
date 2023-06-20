@@ -16,7 +16,7 @@ export default function CallToAction() {
           <div className="translate-x-[85px]">
             <PachonMessage
               variant="light"
-              message="La importancia de los créditos. Este texto falta pero esta este de relleno para ver como se vería"
+              message="Estás a solo 3 minutos de encontrar tu hogar ideal. Usa nuestro perfilador para que llegue a ti."
             />
           </div>
 

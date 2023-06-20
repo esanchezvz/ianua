@@ -18,8 +18,7 @@ module.exports = {
         'spin-reverse-slower': 'spin-reverse 6s linear infinite',
       },
       backgroundImage: {
-        'home-hero':
-          "linear-gradient(to bottom, rgba(38, 43, 45, 0.65), rgba(38, 43, 45, 0.65)),  url('/home-hero-bg.jpg')",
+        'home-hero': "url('/home-hero-bg.jpg')",
       },
       colors: {
         primary: '#262b2d', // blue main

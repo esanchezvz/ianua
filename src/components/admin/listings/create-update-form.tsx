@@ -734,11 +734,10 @@ export function CreateListingForm({ onSuccess, defaultValues, editMode }: Props)
                 id="urban-equipment"
                 type="text"
                 label="Equipamento Urbano"
-                placeholder="Tipoe de alubrado, pavimento, recolección de basura, etc..."
                 error={errors?.urban_equipment?.message}
                 disabled={isLoading}
                 className="grow"
-                hint="Separados por comas. Ej. Bares, Restaurantes, etc..."
+                hint="Tipo de alumbrado, pavimento, recolección de basura, etc..."
                 {...register('urban_equipment')}
               />
 

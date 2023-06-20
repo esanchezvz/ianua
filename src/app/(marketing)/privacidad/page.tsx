@@ -192,8 +192,11 @@ export default function Privacy() {
         </p>
         <p>
           Si tiene alguna pregunta o comentario sobre esta política de privacidad, o si desea ejercer alguno
-          de sus derechos como titular de los datos personales, puede comunicarse con nosotros a través de
-          <a href="mailto:contacto@ianua.mx">contacto@ianua.mx</a>.
+          de sus derechos como titular de los datos personales, puede comunicarse con nosotros a través de{' '}
+          <a href="mailto:resolvemos@ianua.mx" className="text-light-blue">
+            resolvemos@ianua.mx
+          </a>
+          .
         </p>
       </div>
 

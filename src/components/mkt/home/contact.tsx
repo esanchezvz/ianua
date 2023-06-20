@@ -58,12 +58,14 @@ export default function Contact() {
                   <BuildingOffice2Icon className="h-7 w-6 text-gray-400" aria-hidden="true" />
                 </dt>
                 <dd>
-                  Calzada las Aguilas #436
+                  Av. Santa Fe 505, Colonia Cruz Manca, Santa Fe, Alcaldía Cuajimalpa Lomas de Santa Fe
                   <br />
-                  Álvaro Obregón, CDMX
+                  Contadero, Cuajimalpa de Morelos, Ciudad de México, 01219
                 </dd>
               </div>
-              <div className="flex gap-x-4">
+              {/* TODO - wait for WA Business */}
+
+              {/* <div className="flex gap-x-4">
                 <dt className="flex-none">
                   <span className="sr-only">Teléfono</span>
                   <PhoneIcon className="h-7 w-6 text-gray-400" aria-hidden="true" />
@@ -73,15 +75,16 @@ export default function Contact() {
                     +52 (55) 3332-8717
                   </a>
                 </dd>
-              </div>
+              </div> */}
+
               <div className="flex gap-x-4">
                 <dt className="flex-none">
                   <span className="sr-only">Teléfono</span>
                   <EnvelopeIcon className="h-7 w-6 text-gray-400" aria-hidden="true" />
                 </dt>
                 <dd>
-                  <a className="hover:text-gray-900" href="mailto:hello@example.com">
-                    hola@ejemplo.com
+                  <a className="hover:text-gray-900" href="mailto:resolvemos@ianua.mx">
+                    resolvemos@ianua.mx
                   </a>
                 </dd>
               </div>
