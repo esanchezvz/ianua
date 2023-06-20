@@ -30,8 +30,6 @@ const navigation = [
   { name: 'Company', href: '/admin/users' },
 ]
 
-const darkLogoHeader = ['/perfilador', '/faq', '/propiedades']
-
 export function Header() {
   const pathname = usePathname() ?? ''
   const { data: sessionData } = useSession()
@@ -39,7 +37,7 @@ export function Header() {
   const [headerRef, setHeaderRef] = useState<HTMLElement | null>(null)
   const { y } = useWindowScroll()
   const { height } = useWindowSize()
-  const isLightBg = y >= height / 2 || darkLogoHeader.includes(pathname)
+  const isLightBg = y >= height / 2 || pathname !== '/'
 
   const headerHeight = headerRef?.clientHeight ?? 0
 

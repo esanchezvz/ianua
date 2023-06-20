@@ -5,8 +5,9 @@ import Logo from '@/components/ui/logo'
 
 const navigation = {
   main: [
-    { name: 'Aviso de Privacidad', href: '#' },
-    { name: 'Términos y Condiciones', href: '#' },
+    { name: 'NOM 247', href: '/nom-247' },
+    { name: 'Aviso de Privacidad', href: '/privacidad' },
+    { name: 'Términos y Condiciones', href: '/terminos-y-condiciones' },
     { name: 'FAQ', href: '/faq' },
   ],
   social: [
