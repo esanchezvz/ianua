@@ -12,10 +12,12 @@ import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/ui/data-table'
 import Drawer from '@/components/ui/drawer'
+import { Select } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
 import { fetchBrokers } from '@/services/brokers'
 import { fetchListings } from '@/services/listing'
 import { Listing, PopulatedListing } from '@/types/listing'
+import { listingStatusOptions } from '@/utils/listing'
 
 import { columns } from './columns'
 import { CreateListingForm } from '../create-update-form'
@@ -25,6 +27,7 @@ export const ListingsTable = () => {
   const [publishing, setPublishing] = useState(false)
   const { data: sessionData } = useSession()
   const [search, setSearch] = useState('')
+  const [status, setStatus] = useState<ListingStatus>()
   const [drawer, setDrawer] = useState<{
     open: boolean
     listing: Listing | null
@@ -46,6 +49,7 @@ export const ListingsTable = () => {
         page: pagination.pageIndex + 1,
         includes: 'broker',
         search,
+        status,
       }),
     { keepPreviousData: true }
   )
@@ -157,6 +161,17 @@ export const ListingsTable = () => {
         onPaginationChange={setPagination}
         loading={isLoading}
         onSearchChange={handleSearch}
+        filters={
+          <>
+            <div>
+              <Select
+                options={listingStatusOptions}
+                label="Status"
+                onChange={setStatus as (v: string) => void}
+              />
+            </div>
+          </>
+        }
       />
       <Drawer
         opened={drawer.open}

@@ -221,6 +221,7 @@ enum ListingStatus {
   PENDING
   PUBLISHED
   UNAVAILABLE
+  DRAFT
 }
 
 enum PropertyType {
