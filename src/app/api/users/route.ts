@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/core/auth'
 import { db } from '@/core/db'
 import { createUserSchema } from '@/core/validations/user'
+import { verifyCaptcha } from '@/lib/firebase-admin'
 
 const allowedRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN]
 const exceptUser: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
@@ -13,7 +14,14 @@ export async function POST(req: NextRequest) {
   const data = createUserSchema.parse(body)
 
   try {
-    // TODO - validate captcha
+    const captcha = req.cookies.get('captcha')
+
+    const { token } = await verifyCaptcha(captcha?.value ?? '')
+
+    if (!token) {
+      return NextResponse.json({ message: 'Failed captcha validation' }, { status: 400 })
+    }
+
     const session = await getSession()
 
     if (!session) {

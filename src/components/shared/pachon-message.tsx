@@ -1,20 +1,22 @@
 type Props = {
   message: string
   variant?: 'light' | 'dark'
+  pachon?: 'card' | 'default'
 }
 
 import Image from 'next/image'
 
 import { cn } from '@/utils'
 
-export const PachonMessage = ({ message, variant = 'dark' }: Props) => {
-  const src = variant === 'dark' ? '/pachon.png' : '/pachon_light.png'
+export const PachonMessage = ({ message, variant = 'dark', pachon = 'default' }: Props) => {
+  const src =
+    variant === 'dark' ? (pachon === 'card' ? '/pachon-card.png' : '/pachon.png') : '/pachon_light.png'
 
   return (
     <div className="m-auto flex w-full max-w-[max-content] flex-col pr-[140px]">
       <MessageBubble
         message={message}
-        className={cn('w-64 translate-x-[140px]', {
+        className={cn('translate-x-[140px]', {
           'bg-blue text-white': variant === 'dark',
           'bg-white text-blue before:border-white before:border-b-transparent before:border-r-transparent':
             variant === 'light',

@@ -1,10 +1,9 @@
 import { Role } from '@prisma/client'
-import { NextApiRequest } from 'next'
 import { type NextAuthOptions, getServerSession } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
 
 import { db, dbAuthAdapter } from '@/core/db'
-import { sendLoginEmail, sendWelcomeEmail } from '@/email/utils/send'
+import { sendLoginEmail, sendCreateAccountEmail } from '@/email/utils/send'
 
 import { env } from './env'
 
@@ -35,7 +34,7 @@ export const authOptions: NextAuthOptions = {
 
         if (!user?.emailVerified) {
           if (user?.role !== Role.USER) {
-            await sendWelcomeEmail({ registerUrl: url, to: identifier })
+            await sendCreateAccountEmail({ registerUrl: url, to: identifier })
           }
         }
       },

@@ -27,6 +27,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { cn } from '@/utils'
 
 import { Input } from './input'
+import { Label } from './label'
 
 type PaginationProps =
   | {
@@ -46,6 +47,7 @@ type DataTableProps<T, V> = {
   loading?: boolean
   hideColumns?: boolean
   onSearchChange?: React.ChangeEventHandler<HTMLInputElement>
+  filters?: React.ReactNode
 } & PaginationProps
 
 const pageSizeOptions = [5, 10, 20, 50, 100, 200]
@@ -59,6 +61,7 @@ export function DataTable<T, V>({
   hideColumns,
   onSearchChange,
   loading,
+  filters,
 }: DataTableProps<T, V>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -82,8 +85,17 @@ export function DataTable<T, V>({
     <div className="p-3">
       <div className="flex items-center justify-end gap-2 py-4">
         {onSearchChange ? (
-          <div className="mr-auto">
-            <Input type="text" placeholder="Buscar" onChange={onSearchChange} />
+          <div className="mr-auto flex items-center gap-5">
+            <div>
+              <Label>Buscar</Label>
+              <Input
+                type="text"
+                placeholder="Nombre, Broker (nombre y/o correo)"
+                className="w-96"
+                onChange={onSearchChange}
+              />
+            </div>
+            {filters}
           </div>
         ) : null}
         {pagination ? (

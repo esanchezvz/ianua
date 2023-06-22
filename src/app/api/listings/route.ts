@@ -4,11 +4,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/core/auth'
 import { db } from '@/core/db'
 import { createListingSchema } from '@/core/validations/listing'
+import { verifyCaptcha } from '@/lib/firebase-admin'
 
 const allowedRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
 
 export async function POST(req: NextRequest) {
-  // TODO - validate captcha
+  const captcha = req.cookies.get('captcha')
+
+  const { token } = await verifyCaptcha(captcha?.value ?? '')
+
+  if (!token) {
+    return NextResponse.json({ message: 'Failed captcha validation' }, { status: 400 })
+  }
+
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -58,7 +66,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const params = new URLSearchParams(req.url.split('?')[1])
 
-  const where = Object.fromEntries(params.entries())
+  let where = Object.fromEntries(params.entries())
   const includes = where.includes?.split(',')
   const search = where.search
 
@@ -77,6 +85,15 @@ export async function GET(req: NextRequest) {
   delete where.page
   delete where.includes
   delete where.search
+
+  const parsedEntries = Object.entries(where).map(([key, value]) => {
+    if (value === 'true') return [key, true]
+    if (value === 'false') return [key, false]
+
+    return [key, value]
+  })
+
+  where = Object.fromEntries(parsedEntries)
 
   let listings: Listing[] = []
 

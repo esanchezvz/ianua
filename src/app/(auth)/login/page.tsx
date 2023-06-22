@@ -32,11 +32,11 @@ export default function LoginPage() {
 
         <AuthForm />
 
-        <p className="px-8 text-center text-sm ">
+        {/* <p className="px-8 text-center text-sm ">
           <Link href="/registro" className="hover:text-brand underline underline-offset-4">
             ¿No tienes cuenta todavía? Crea una
           </Link>
-        </p>
+        </p> */}
       </div>
     </div>
   )

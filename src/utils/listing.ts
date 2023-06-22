@@ -89,6 +89,7 @@ export const listingStatusMap: Record<ListingStatus, string> = {
   [ListingStatus.PENDING]: 'Pendiente',
   [ListingStatus.PUBLISHED]: 'Publicada',
   [ListingStatus.UNAVAILABLE]: 'No Disponible',
+  [ListingStatus.DRAFT]: 'Draft',
 }
 
 export const listingStatusOptions = getOptionsFromMap(listingStatusMap)

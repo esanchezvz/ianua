@@ -2,11 +2,11 @@ import { Listing as PrismaListing } from '@prisma/client'
 
 export type ListingAddress = {
   street_1: string
-  street_2?: string
   number: string
-  int_number?: string
-  city: string
+  int_number: string
+  locality: string
   neighborhood: string
+  city: string
   state: string
   zip_code: string
 }

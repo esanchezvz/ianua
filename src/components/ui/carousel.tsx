@@ -6,15 +6,22 @@ import { Transition } from '@headlessui/react'
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import ClassNames from 'embla-carousel-class-names'
-import useEmblaCarousel, { type EmblaOptionsType } from 'embla-carousel-react'
+import useEmblaCarousel, { EmblaCarouselType, type EmblaOptionsType } from 'embla-carousel-react'
 
 type Props = PropsWithChildren &
   EmblaOptionsType & {
     dots?: boolean
     controls?: boolean
+    getCarouselApi?(embla: EmblaCarouselType | undefined): void
   }
 
-export default function Carousel({ controls = true, dots = true, children, ...options }: Props) {
+export default function Carousel({
+  controls = true,
+  dots = true,
+  children,
+  getCarouselApi,
+  ...options
+}: Props) {
   const [emblaRef, emblaApi] = useEmblaCarousel(options, [
     ClassNames({
       draggable: 'cursor-grab',
@@ -30,7 +37,8 @@ export default function Carousel({ controls = true, dots = true, children, ...op
   const selectHandler = useCallback(() => {
     const index = emblaApi?.selectedScrollSnap()
     setSelectedIndex(index || 0)
-  }, [emblaApi])
+    getCarouselApi?.(emblaApi)
+  }, [emblaApi, getCarouselApi])
 
   useEffect(() => {
     emblaApi?.on('select', selectHandler)

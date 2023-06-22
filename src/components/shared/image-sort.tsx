@@ -36,7 +36,7 @@ export const ImageSort = ({ images, onChange }: Props) => {
   }, [cards])
 
   return (
-    <div className="mt-5 flex gap-5">
+    <div className="mt-5 flex gap-5 overflow-hidden overflow-x-auto">
       {cards.map((card, i) => {
         return <ImageCard key={card.key} id={card.key} previewUrl={card.url} moveCard={moveCard} index={i} />
       })}
@@ -118,8 +118,13 @@ const ImageCard = ({
   drag(drop(ref))
 
   return (
-    <div ref={ref} className="h-16 w-16 cursor-move" style={{ opacity }} data-handler-id={handlerId}>
-      <Image src={previewUrl} alt="" className="object-contain" width={64} height={64} />
+    <div
+      ref={ref}
+      className="relative h-28 w-28 min-w-max cursor-move"
+      style={{ opacity }}
+      data-handler-id={handlerId}
+    >
+      <Image src={previewUrl} alt="" className="object-contain" width={112} height={112} />
     </div>
   )
 }

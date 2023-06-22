@@ -4,7 +4,7 @@ import { env } from '@/core/env'
 
 const apiUrl = `https://${env.NEXT_PUBLIC_SUPABASE_PROJECT}.supabase.co`
 
-export const supabase = createClient(apiUrl, env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE)
+export const supabase = createClient(apiUrl, env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
 type UploadListingImageOptions = {
   path: string

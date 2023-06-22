@@ -1,14 +1,45 @@
 'use client'
 
-import { BuildingOffice2Icon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
+import { useState } from 'react'
+
+import { ArrowPathIcon, BuildingOffice2Icon, EnvelopeIcon } from '@heroicons/react/24/outline'
 
 import { Button } from '@/components/ui/button'
 import { Container } from '@/components/ui/container'
+import { toast } from '@/hooks/use-toast'
 
 export default function Contact() {
-  const handleSubmit = (e: React.SyntheticEvent) => {
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    setLoading(true)
+
     e.preventDefault()
-    alert('Enviar a un correo!')
+    const formData = new FormData(e.currentTarget)
+    const data = Object.fromEntries(formData.entries())
+
+    try {
+      const res = await fetch('/api/email/contact', {
+        method: 'post',
+        body: JSON.stringify(data),
+      })
+
+      await res.json()
+
+      e.currentTarget.reset()
+      toast({
+        title: 'Mensaje Enviado',
+        description: 'Muchas gracias por ponerte en contacto. Responderemos tus dudas lo antes posible.',
+      })
+    } catch (error) {
+      toast({
+        title: 'Oooops!',
+        description: 'Ocurrió un error. Intenta nuevamente.',
+        variant: 'destructive',
+      })
+    }
+
+    setLoading(true)
   }
 
   return (
@@ -101,7 +132,9 @@ export default function Contact() {
                 <div className="mt-2.5">
                   <input
                     type="text"
-                    name="first-name"
+                    required
+                    disabled={loading}
+                    name="name"
                     id="first-name"
                     autoComplete="given-name"
                     className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-light-blue sm:text-sm sm:leading-6"
@@ -115,7 +148,9 @@ export default function Contact() {
                 <div className="mt-2.5">
                   <input
                     type="text"
-                    name="last-name"
+                    required
+                    disabled={loading}
+                    name="surnames"
                     id="last-name"
                     autoComplete="family-name"
                     className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-light-blue sm:text-sm sm:leading-6"
@@ -129,6 +164,8 @@ export default function Contact() {
                 <div className="mt-2.5">
                   <input
                     type="email"
+                    required
+                    disabled={loading}
                     name="email"
                     id="email"
                     autoComplete="email"
@@ -143,7 +180,9 @@ export default function Contact() {
                 <div className="mt-2.5">
                   <input
                     type="tel"
-                    name="phone-number"
+                    required
+                    disabled={loading}
+                    name="phone"
                     id="phone-number"
                     autoComplete="tel"
                     className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-light-blue sm:text-sm sm:leading-6"
@@ -157,6 +196,8 @@ export default function Contact() {
                 <div className="mt-2.5">
                   <textarea
                     name="message"
+                    required
+                    disabled={loading}
                     id="message"
                     rows={4}
                     className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-light-blue sm:text-sm sm:leading-6"
@@ -166,7 +207,10 @@ export default function Contact() {
               </div>
             </div>
             <div className="mt-8 flex justify-end">
-              <Button type="submit">Enviar</Button>
+              <Button type="submit" disabled={loading}>
+                {loading && <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />}
+                Enviar
+              </Button>
             </div>
           </div>
         </form>

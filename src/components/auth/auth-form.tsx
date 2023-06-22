@@ -38,8 +38,8 @@ export function AuthForm({ className, register: isRegister, ...props }: AuthForm
     const signInResult = await signIn('email', {
       email: data.email.toLowerCase().trim(),
       redirect: false,
-      callbackUrl: searchParams?.get('from') || '/admin/listings',
-      name: data.name?.trim(),
+      callbackUrl: searchParams?.get('from') || '/',
+      name: data.name?.trim() ?? '',
     })
 
     setIsLoading(false)
@@ -54,7 +54,9 @@ export function AuthForm({ className, register: isRegister, ...props }: AuthForm
 
     return toast({
       title: 'Revisa tu correo',
-      description: 'Te enviamos un link para poder iniciar sesión.',
+      description: isRegister
+        ? 'Te enviamos un link para poder crear tu cuenta.'
+        : 'Te enviamos un link para poder iniciar sesión.',
     })
   }
 
@@ -94,7 +96,7 @@ export function AuthForm({ className, register: isRegister, ...props }: AuthForm
           </Button>
         </div>
       </form>
-      <div className="relative">
+      {/* <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
@@ -110,7 +112,7 @@ export function AuthForm({ className, register: isRegister, ...props }: AuthForm
         disabled={isLoading}
       >
         Google
-      </Button>
+      </Button> */}
     </div>
   )
 }

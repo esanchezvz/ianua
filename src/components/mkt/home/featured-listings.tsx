@@ -1,15 +1,24 @@
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 
 import ListingCard from '@/components/shared/listing-card'
 import { buttonVariants } from '@/components/ui/button'
+import { fetchListings } from '@/services/listing'
 import { cn } from '@/utils'
-import { type Listing } from '@/utils/mock-data'
 
-type FeaturedListingsProps = {
-  listings: Listing[]
-}
+export default function FeaturedListings() {
+  const { data } = useQuery(['featured-listings'], () =>
+    fetchListings({
+      featured: true,
+    })
+  )
 
-export default function FeaturedListings({ listings }: FeaturedListingsProps) {
+  if (!data) return null
+
+  const listings = data.data.slice(0, 4)
+
   return (
     <section className="bg-white py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -22,11 +31,11 @@ export default function FeaturedListings({ listings }: FeaturedListingsProps) {
           ))}
         </div>
 
-        <div className="flex items-center justify-center">
+        {/* <div className="flex items-center justify-center">
           <Link href="/propiedades" className={cn(buttonVariants({ variant: 'link' }), 'mt-10')}>
             Ver Mas
           </Link>
-        </div>
+        </div> */}
       </div>
     </section>
   )
