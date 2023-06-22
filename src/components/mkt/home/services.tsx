@@ -2,8 +2,10 @@
 import { useState } from 'react'
 
 import { CurrencyDollarIcon, LifebuoyIcon, ScaleIcon } from '@heroicons/react/24/outline'
+import Link from 'next/link'
 
-import { Button } from '@/components/ui/button'
+import { PachonMessage } from '@/components/shared/pachon-message'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Container } from '@/components/ui/container'
 import Modal from '@/components/ui/modal'
 const features = [
@@ -64,7 +66,19 @@ export default function Services() {
         title="Créditos Hipotecarios"
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
-      ></Modal>
+      >
+        <PachonMessage
+          pachon="card"
+          message="Un crédito hipotecario puede ser la diferencia para comenzar a vivir tu sueño. Te recomiendo usar la calculadora de créditos antes del perfilador y así darte un mejor estimado en tu búsqueda. ¡Deja que tu hogar te encuentre!"
+        />
+        <Link
+          href="https://crediteka.com/ianua/#conCalculator"
+          target="_blank"
+          className={buttonVariants({ className: 'mt-10 w-full' })}
+        >
+          Calculadora de Créditos
+        </Link>
+      </Modal>
     </section>
   )
 }

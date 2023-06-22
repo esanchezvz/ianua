@@ -77,11 +77,19 @@ export function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Créditos Hipotecarios</DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href="https://crediteka.com/ianua/" target="_blank">
+                      Créditos Hipotecarios
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Asesoría Legal</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Paquete de Asistencias</DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href="https://wa.me/+525537627716" target="_blank">
+                      Asesoría Legal
+                    </Link>
+                  </DropdownMenuItem>
+                  {/* <DropdownMenuSeparator />
+                  <DropdownMenuItem>Paquete de Asistencias</DropdownMenuItem> */}
                 </DropdownMenuContent>
               </DropdownMenuPortal>
             </DropdownMenu>

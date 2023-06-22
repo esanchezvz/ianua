@@ -4,12 +4,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/core/auth'
 import { db } from '@/core/db'
 import { updateListingSchema } from '@/core/validations/listing'
+import { verifyCaptcha } from '@/lib/firebase-admin'
 
 const editAllowed: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN, Role.BROKER]
 const publishRoles: (Role | null)[] = [Role.ADMIN, Role.SUPER_ADMIN]
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  // TODO - validate captcha and validate data correctly
+  const captcha = req.cookies.get('captcha')
+
+  const { token } = await verifyCaptcha(captcha?.value ?? '')
+
+  if (!token) {
+    return NextResponse.json({ message: 'Failed captcha validation' }, { status: 400 })
+  }
+
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

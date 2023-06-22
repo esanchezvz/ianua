@@ -20,13 +20,8 @@ export default function CallToAction() {
             />
           </div>
 
-          <Link
-            className={buttonVariants({ variant: 'secondary', className: 'mt-10' })}
-            href="https://google.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Solicitar Crédito
+          <Link className={buttonVariants({ variant: 'secondary', className: 'mt-10' })} href="/perfilador">
+            Perfilador de Propiedades
           </Link>
         </div>
       </Container>
