@@ -1,7 +1,7 @@
 'use client'
 
 import { EllipsisHorizontalIcon, EyeIcon } from '@heroicons/react/24/outline'
-import { ListingPriceCurrency, Role } from '@prisma/client'
+import { ListingPriceCurrency, ListingStatus, Role } from '@prisma/client'
 import { CellContext, ColumnDef, Row } from '@tanstack/react-table'
 import { useSession } from 'next-auth/react'
 
@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { toast } from '@/hooks/use-toast'
 import { PopulatedListing } from '@/types/listing'
 import { listingStatusMap, propertyTypeMap } from '@/utils/listing'
 
@@ -101,6 +102,31 @@ const MoreOptionsCell = ({
 }: CellContext<PopulatedListing, unknown> & { handlePreview: (row: Row<PopulatedListing>) => void }) => {
   const session = useSession()
 
+  const toggleFeatured = async (id: string, value: boolean) => {
+    const formData = new FormData()
+
+    formData.append('data', JSON.stringify({ featured: value }))
+
+    try {
+      const res = await fetch(`/api/listings/${id}`, {
+        method: 'put',
+        body: formData,
+      })
+      await res.json()
+
+      toast({
+        title: 'Propiedad Actualizada',
+        description: 'Propiedad actualizada correctamente.',
+      })
+    } catch (error) {
+      toast({
+        title: 'Oooops!',
+        description: 'Ocurrió un error. Intenta nuevamente.',
+        variant: 'destructive',
+      })
+    }
+  }
+
   return (
     <div className="flex items-center justify-center">
       <Button variant="ghost" onClick={() => handlePreview(row)}>
@@ -120,8 +146,14 @@ const MoreOptionsCell = ({
               <DropdownMenuItem onClick={() => navigator.clipboard.writeText(row.getValue('address'))}>
                 Copiar Dirección
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>TBD</DropdownMenuItem>
+              {row.original.status === ListingStatus.PUBLISHED ? (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => toggleFeatured(row.original.id, !row.original.featured)}>
+                    {!row.original.featured ? 'Marcar como principal' : 'Quitar de principales'}
+                  </DropdownMenuItem>
+                </>
+              ) : null}
             </DropdownMenuContent>
           </DropdownMenuPortal>
         </DropdownMenu>

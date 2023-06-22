@@ -276,6 +276,7 @@ export const updateListingSchema = createListingSchema
       .nullable(),
     legal_status: z.nativeEnum(ListingLegalStatus, { required_error: 'Campo requerido' }).or(z.null()),
     views: z.nativeEnum(ListingViews, { required_error: 'Campo requerido' }).or(z.null()),
+    featured: z.boolean().optional().nullable(),
     data: z
       .object({
         gallery_keys: z.array(z.string()).optional(),
