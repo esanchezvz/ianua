@@ -72,7 +72,8 @@ export const getOptionsFromMap = <T extends Record<string, string>>(map: T) => {
 export const genderMap: Record<Gender, string> = {
   [Gender.FEMALE]: 'Femenino',
   [Gender.MALE]: 'Masculino',
-  [Gender.OTHER]: 'Prefiero no decir',
+  [Gender.OTHER]: 'Otro',
+  [Gender.RATHER_NOT_SAY]: 'Prefiero no decir',
 }
 
 export const genderOptions = getOptionsFromMap(genderMap)
