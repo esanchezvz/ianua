@@ -81,7 +81,6 @@ export const ListingsTable = () => {
     formData.append(
       'data',
       JSON.stringify({
-        ...drawer.listing,
         status:
           drawer.listing?.status === ListingStatus.PUBLISHED
             ? ListingStatus.PENDING
@@ -118,7 +117,6 @@ export const ListingsTable = () => {
     formData.append(
       'data',
       JSON.stringify({
-        ...drawer.listing,
         status: ListingStatus.DELETED,
       })
     )
