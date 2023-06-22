@@ -10,6 +10,7 @@
     "lint:fix": "eslint --ignore-path .gitignore --ext .js,.ts,.jsx,.tsx src/ --fix",
     "lint": "pnpm lint:check && next lint",
     "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
     "migration": "prisma migrate dev --create-only",
     "postinstall": "prisma generate",
     "prepare": "husky install",
