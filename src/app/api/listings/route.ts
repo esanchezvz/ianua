@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const params = new URLSearchParams(req.url.split('?')[1])
 
-  const where = Object.fromEntries(params.entries())
+  let where = Object.fromEntries(params.entries())
   const includes = where.includes?.split(',')
   const search = where.search
 
@@ -85,6 +85,15 @@ export async function GET(req: NextRequest) {
   delete where.page
   delete where.includes
   delete where.search
+
+  const parsedEntries = Object.entries(where).map(([key, value]) => {
+    if (value === 'true') return [key, true]
+    if (value === 'false') return [key, false]
+
+    return [key, value]
+  })
+
+  where = Object.fromEntries(parsedEntries)
 
   let listings: Listing[] = []
 

@@ -55,7 +55,7 @@ export default withAuth(
     if (isAuthPage) {
       if (isAuth) {
         return NextResponse.redirect(
-          new URL(token.role !== Role.USER ? '/admin/profile' : '/perfil', req.url)
+          new URL(token.role !== Role.USER ? '/admin/profile' : '/perfilador', req.url)
         )
       }
 

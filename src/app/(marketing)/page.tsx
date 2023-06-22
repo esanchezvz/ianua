@@ -4,7 +4,6 @@ import Contact from '@/components/mkt/home/contact'
 import FeaturedListings from '@/components/mkt/home/featured-listings'
 import Hero from '@/components/mkt/home/hero'
 import Services from '@/components/mkt/home/services'
-import { listings } from '@/utils/mock-data'
 
 export default function Home() {
   return (
@@ -14,7 +13,7 @@ export default function Home() {
         <AboutUs />
         <Services />
         <CallToAction />
-        <FeaturedListings listings={listings.slice(0, 4)} />
+        <FeaturedListings />
         <Contact />
       </main>
     </>

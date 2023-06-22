@@ -94,7 +94,9 @@ export function Header() {
             </DropdownMenu>
             <Link href="/perfilador">Perfilador</Link>
             {sessionData?.user ? (
-              <Link href={sessionData.user.role === Role.USER ? '/perfil' : '/admin/profile'}>Perfil</Link>
+              <>
+                <button onClick={() => signOut()}>Cerrar Sesión</button>
+              </>
             ) : (
               <Link href="/login">Iniciar Sesión</Link>
             )}
@@ -135,14 +137,6 @@ export function Header() {
                   {item.name}
                 </Link>
               ))}
-
-              <Link
-                className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50/40"
-                href={sessionData?.user?.role === Role.USER ? '/perfil' : '/admin/profile'}
-                onClick={closeMobileMenu}
-              >
-                Perfil
-              </Link>
 
               {sessionData?.user ? (
                 <Button

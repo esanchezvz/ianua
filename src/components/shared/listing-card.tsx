@@ -11,16 +11,13 @@ import { useLocation } from 'react-use'
 
 import { Button } from '@/components/ui/button'
 import Carousel from '@/components/ui/carousel'
-import { type Listing } from '@/utils/mock-data'
+import { env } from '@/core/env'
+import { Listing } from '@/types/listing'
+import { listingTypeMap } from '@/utils/listing'
 
 type ListingCardProps = {
-  listing: Listing // TODO - update type
+  listing: Listing
   share?: boolean
-}
-
-const categoriesMap: Record<string, string> = {
-  for_sale: 'En Venta',
-  for_rent: 'En Renta',
 }
 
 export default function ListingCard({ listing, share = true }: ListingCardProps) {
@@ -41,8 +38,7 @@ export default function ListingCard({ listing, share = true }: ListingCardProps)
   const handleShare = async () => {
     const url = `${location.origin}/propiedades/${listing.id}`
     const title = 'Checa esta propiedad | IANUA'
-    const text =
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Incidunt sed eligendi reiciendis eos assumenda placeat sunt deserunt aliquid.'
+    const text = listing.description.substring(0, 45) + '...'
 
     try {
       await navigator.share({
@@ -72,30 +68,25 @@ export default function ListingCard({ listing, share = true }: ListingCardProps)
       ) : null}
 
       <Carousel>
-        {listing.images.map((src, i) => (
-          <Slide src={src} key={i} />
+        {listing.data.gallery_keys.map((key) => (
+          <Slide src={`${env.NEXT_PUBLIC_CDN}/listings/${listing.id}/${key}`} key={key} />
         ))}
       </Carousel>
 
       <div className="mb-2 flex flex-wrap items-center justify-between">
-        <b className="text-lg">{listing.title}</b>
+        <b className="text-lg">{listing.name}</b>
 
         <div className="flex items-center gap-2">
-          {listing.categories.map((t) => (
-            <span
-              key={t}
-              className="inline-flex items-center rounded-full bg-light-blue-300 px-3 py-0.5 text-xs font-medium text-gray-800"
-            >
-              {categoriesMap[t]}
-            </span>
-          ))}
+          <span className="inline-flex items-center rounded-full bg-light-blue-300 px-3 py-0.5 text-xs font-medium text-gray-800">
+            {listingTypeMap[listing.type]}
+          </span>
         </div>
       </div>
 
       <div className="mb-2 flex items-center justify-between text-sm">
         <div className="flex items-center gap-2">
           <FontAwesomeIcon className="h-4 w-4 text-gray-400" aria-hidden="true" icon={faExpand} />
-          <span>{listing.sq_m} m2</span>
+          <span>{listing.sq_m_total} m2</span>
         </div>
         <div className="flex items-center gap-2">
           <FontAwesomeIcon className="h-4 w-4 text-gray-400" aria-hidden="true" icon={faBed} />
@@ -103,11 +94,11 @@ export default function ListingCard({ listing, share = true }: ListingCardProps)
         </div>
         <div className="flex items-center gap-2">
           <FontAwesomeIcon className="h-4 w-4 text-gray-400" aria-hidden="true" icon={faBath} />
-          <span>{listing.baths}</span>
+          <span>{listing.full_bathrooms}</span>
         </div>
         <div className="flex items-center gap-2">
           <FontAwesomeIcon className="h-4 w-4 text-gray-400" aria-hidden="true" icon={faCar} />
-          <span>{listing.garage}</span>
+          <span>{listing.parking_spots}</span>
         </div>
       </div>
 

@@ -83,3 +83,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: 'Unexpected error' }, { status: 500 })
   }
 }
+
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const listing = await db.listing.findUnique({ where: { id: params.id } })
+
+  return NextResponse.json({ message: 'Listing fetched successfully.', data: listing }, { status: 200 })
+}
