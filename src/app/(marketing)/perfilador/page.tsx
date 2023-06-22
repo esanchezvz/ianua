@@ -14,7 +14,7 @@ export default function Profiler() {
           />
         </div>
       </div>
-      <div className="flex h-full grow-[6] flex-col items-center justify-center bg-white p-10 md:w-[50%]">
+      <div className="relative flex h-full grow-[6] flex-col items-center justify-center bg-white p-10 md:w-[50%]">
         <ProfilerCarousel />
       </div>
     </main>

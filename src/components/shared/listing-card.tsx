@@ -6,10 +6,11 @@ import { faExpand, faBed, faBath, faCar } from '@fortawesome/free-solid-svg-icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ShareIcon } from '@heroicons/react/24/solid'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useLocation } from 'react-use'
 
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import Carousel from '@/components/ui/carousel'
 import { env } from '@/core/env'
 import { Listing } from '@/types/listing'
@@ -18,9 +19,10 @@ import { listingTypeMap } from '@/utils/listing'
 type ListingCardProps = {
   listing: Listing
   share?: boolean
+  target?: string
 }
 
-export default function ListingCard({ listing, share = true }: ListingCardProps) {
+export default function ListingCard({ listing, share = true, target }: ListingCardProps) {
   const router = useRouter()
   const location = useLocation()
   const [renderShare, setRenderShare] = useState(false)
@@ -102,9 +104,13 @@ export default function ListingCard({ listing, share = true }: ListingCardProps)
         </div>
       </div>
 
-      <Button type="button" onClick={() => router.push(`/propiedades/${listing.id}`)} className="w-full">
+      <Link
+        href={`/propiedades/${listing.id}`}
+        className={buttonVariants({ className: 'w-full' })}
+        target={target}
+      >
         Ver Propiedad
-      </Button>
+      </Link>
     </div>
   )
 }

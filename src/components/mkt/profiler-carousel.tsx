@@ -2,21 +2,30 @@
 
 import { useState } from 'react'
 
+import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { PropertyType } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { useMeasure } from 'react-use'
 
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { NumberField } from '@/components/ui/number-field'
 import { RadioGroupField } from '@/components/ui/radio-group-field'
 import { SelectOption } from '@/components/ui/select'
 import { SelectField } from '@/components/ui/select-field'
 import { TextField } from '@/components/ui/text-field'
 import { usePrevious } from '@/hooks/use-previous'
+import { toast } from '@/hooks/use-toast'
+import { fetchListings } from '@/services/listing'
+import { Listing } from '@/types/listing'
 import { zoneOptions } from '@/utils'
 import { climateOptions, listingTypeOptions, propertyTypeOptions } from '@/utils/listing'
+
+import ListingCard from '../shared/listing-card'
 
 const rangeOptions = [
   { value: '1', label: '1' },
@@ -41,29 +50,80 @@ const getSelectDefaultValue = (options: SelectOption[], multiple: boolean, value
     return booleanOptions.find((o) => o.value === '1')
   }
 
-  console.log(options.find((o) => value?.includes(o.value)) ?? undefined)
-
   return options.find((o) => value?.includes(o.value)) ?? undefined
 }
 
 export const ProfilerCarousel = () => {
   const { control, register, getValues } = useForm()
-  const router = useRouter()
   const [step, setStep] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [listings, setListtings] = useState<Listing[]>([])
   const prev = usePrevious(step)
   const [ref, { width }] = useMeasure<HTMLDivElement>()
 
   const direction = prev && step > prev ? 1 : -1
 
-  const handleNext = () => {
-    if (step < 12) {
+  const handleNext = async () => {
+    if (step < 11) {
       setStep(step + 1)
       return
     }
 
-    console.log(getValues())
+    setLoading(true)
 
-    // router.push('/propiedades')
+    const {
+      natural_lighting,
+      property_type,
+      type,
+      stories,
+      parking_spots,
+      pet_friendly,
+      budget,
+      desired_area,
+    } = getValues()
+
+    try {
+      const formData = new FormData()
+      formData.append(
+        'data',
+        JSON.stringify({
+          profiler: 'true',
+          natural_lighting,
+          property_type,
+          type,
+          stories,
+          parking_spots,
+          pet_friendly: pet_friendly ? pet_friendly : undefined,
+          price: budget,
+          locality: desired_area,
+        })
+      )
+
+      const res = await fetch(`/api/profiler`, {
+        method: 'post',
+        body: formData,
+      })
+      const { data, ...rest } = await res.json()
+
+      console.log({ data, rest })
+
+      setListtings(data)
+
+      toast({
+        title: '¡Encontramos opciones para ti!',
+        description:
+          'Revisa estas opciones que tenemos para ti. Para ver más resultados puedes volver a hacer el proceso del perfilador.',
+      })
+    } catch (error) {
+      toast({
+        title: 'Oooops!',
+        description: 'Ocurrió un error. Intenta nuevamente.',
+        variant: 'destructive',
+      })
+      console.error(error)
+    }
+
+    setTimeout(() => setLoading(false), 3500)
   }
 
   const handlePrev = () => {
@@ -71,6 +131,35 @@ export const ProfilerCarousel = () => {
       setStep(step - 1)
       return
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden bg-white">
+        <h2 className="mb-3 text-center text-3xl">Estamos buscando tu hogar ideal...</h2>
+        <Image src="/pachon-headset.png" width={250} height={250} alt="Pachon" />
+        <FontAwesomeIcon icon={faSpinner} className="mt-5 animate-spin text-blue" size="5x" />
+      </div>
+    )
+  }
+
+  if (listings?.length) {
+    return (
+      <>
+        <div className="relative flex h-full w-full items-center justify-center gap-5">
+          {listings.map((l) => (
+            <ListingCard key={l.id} listing={l} target="_blank" share />
+          ))}
+        </div>
+        <Link
+          href=" https://crediteka.com/ianua/precalificate"
+          target="_blank"
+          className={buttonVariants({ className: 'w-full' })}
+        >
+          Precalifica para un crédito hipotecario
+        </Link>
+      </>
+    )
   }
 
   return (
@@ -81,7 +170,10 @@ export const ProfilerCarousel = () => {
       >
         <h1 className="text-3xl">Perfilador</h1>
         <AnimatePresence custom={{ direction, width }}>
-          <form className="flex h-full w-full flex-col items-center justify-center">
+          <form
+            className="flex h-full w-full flex-col items-center justify-center"
+            onSubmit={(e) => e.preventDefault()}
+          >
             <motion.div
               key={step}
               variants={variants}
@@ -92,8 +184,8 @@ export const ProfilerCarousel = () => {
               transition={{ bounce: 0 }}
               className="absolute flex w-full flex-col items-center justify-center"
             >
-              <div className="w-full px-8">
-                {step === 1 ? (
+              {step === 1 ? (
+                <div className="px-8">
                   <RadioGroupField
                     control={control}
                     className="w-full"
@@ -101,8 +193,10 @@ export const ProfilerCarousel = () => {
                     name="natural_lighting"
                     label="¿Qué tanto valoras la iluminación natural?"
                   />
-                ) : null}
-                {step === 2 ? (
+                </div>
+              ) : null}
+              {step === 2 ? (
+                <div className="w-full px-8">
                   <SelectField
                     fullWidth
                     control={control}
@@ -111,12 +205,15 @@ export const ProfilerCarousel = () => {
                     label="¿Te consideras una persona que le gusta más el calor o el frío o templado?"
                     defaultSelected={getSelectDefaultValue(climateOptions, false, getValues('climate'))}
                   />
-                ) : null}
-                {step === 3 ? (
+                </div>
+              ) : null}
+              {step === 3 ? (
+                <div className="w-full px-8">
                   <SelectField
                     fullWidth
                     control={control}
                     name="property_type"
+                    multiple
                     options={propertyTypeOptions.filter((o) => o.value !== PropertyType.CLOSED_STREET)}
                     label="¿Casa o Depa?"
                     defaultSelected={getSelectDefaultValue(
@@ -125,8 +222,10 @@ export const ProfilerCarousel = () => {
                       getValues('preperty_type')
                     )}
                   />
-                ) : null}
-                {step === 4 ? (
+                </div>
+              ) : null}
+              {step === 4 ? (
+                <div className="w-full px-8">
                   <SelectField
                     fullWidth
                     control={control}
@@ -135,24 +234,30 @@ export const ProfilerCarousel = () => {
                     label="¿Planeas comprar o rentar?"
                     defaultSelected={getSelectDefaultValue(listingTypeOptions, false, getValues('type'))}
                   />
-                ) : null}
-                {step === 5 ? (
+                </div>
+              ) : null}
+              {step === 5 ? (
+                <div className="px-8">
                   <TextField
                     id="stories"
                     type="number"
                     label="¿De cuántos pisos te imaginas?"
                     {...register('stories')}
                   />
-                ) : null}
-                {step === 6 ? (
+                </div>
+              ) : null}
+              {step === 6 ? (
+                <div className="px-8">
                   <TextField
                     id="parkingSpots"
                     type="number"
                     label="¿Cuántos cajones de estacionamiento necesitas?"
                     {...register('parking_spots')}
                   />
-                ) : null}
-                {step === 7 ? (
+                </div>
+              ) : null}
+              {/* {step === 7 ? (
+                <div className="px-8">
                   <SelectField
                     fullWidth
                     control={control}
@@ -161,8 +266,10 @@ export const ProfilerCarousel = () => {
                     label="¿Qué es lo tuyo?"
                     defaultSelected={getSelectDefaultValue(booleanOptions, false, getValues('about'))}
                   />
-                ) : null}
-                {step === 8 ? (
+                </div>
+              ) : null} */}
+              {step === 7 ? (
+                <div className="w-full px-8">
                   <SelectField
                     fullWidth
                     control={control}
@@ -171,17 +278,21 @@ export const ProfilerCarousel = () => {
                     label="¿Tienes mascotas?"
                     defaultSelected={getSelectDefaultValue(booleanOptions, false, getValues('pet_friendly'))}
                   />
-                ) : null}
-                {step === 9 ? (
+                </div>
+              ) : null}
+              {step === 8 ? (
+                <div className="px-8">
                   <RadioGroupField
                     control={control}
                     options={rangeOptions}
                     name="delivery"
                     label="¿Qué tanto pides delivery?"
                   />
-                ) : null}
+                </div>
+              ) : null}
 
-                {step === 10 ? (
+              {step === 9 ? (
+                <div className="w-full px-8">
                   <SelectField
                     fullWidth
                     control={control}
@@ -190,13 +301,17 @@ export const ProfilerCarousel = () => {
                     label="¿Te interesa crédito hipotecario?"
                     defaultSelected={getSelectDefaultValue(booleanOptions, false, getValues('wants_credit'))}
                   />
-                ) : null}
+                </div>
+              ) : null}
 
-                {step === 11 ? (
+              {step === 10 ? (
+                <div className="px-8">
                   <NumberField id="budget" control={control} name="budget" label="¿Cuál es tu presupesto?" />
-                ) : null}
+                </div>
+              ) : null}
 
-                {step === 12 ? (
+              {step === 11 ? (
+                <div className="w-full px-8">
                   <SelectField
                     fullWidth
                     control={control}
@@ -205,18 +320,18 @@ export const ProfilerCarousel = () => {
                     label="Alcaldía"
                     defaultSelected={getSelectDefaultValue(zoneOptions, false, getValues('desired_area'))}
                   />
-                ) : null}
-              </div>
+                </div>
+              ) : null}
             </motion.div>
           </form>
         </AnimatePresence>
       </div>
 
       <div className="flex w-full items-center justify-between">
-        <Button variant="ghost" onClick={handlePrev} disabled={step === 1}>
+        <Button variant="ghost" onClick={handlePrev} disabled={step === 1} type="button">
           Atrás
         </Button>
-        <Button onClick={handleNext}>{step === 12 ? 'Buscar Propiedades' : 'Siguiente'}</Button>
+        <Button onClick={handleNext}>{step === 11 ? 'Buscar Propiedades' : 'Siguiente'}</Button>
       </div>
     </>
   )
