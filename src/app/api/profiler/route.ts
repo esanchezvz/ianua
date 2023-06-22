@@ -1,4 +1,4 @@
-import { ListingType, PropertyType } from '@prisma/client'
+import { ListingStatus, ListingType, PropertyType } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from 'next-auth/react'
 
@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
 
   const listings = await db.listing.findMany({
     where: {
+      status: ListingStatus.PUBLISHED,
       price: { lte: parseInt(parsedData.price as string) },
       property_type: { hasSome: parsedData.property_type as PropertyType[] },
       type: parsedData.type as ListingType,

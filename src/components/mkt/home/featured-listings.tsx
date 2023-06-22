@@ -1,5 +1,6 @@
 'use client'
 
+import { ListingStatus } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 
@@ -12,6 +13,7 @@ export default function FeaturedListings() {
   const { data } = useQuery(['featured-listings'], () =>
     fetchListings({
       featured: true,
+      status: ListingStatus.PUBLISHED,
     })
   )
 
