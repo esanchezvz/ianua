@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 
-import { ArrowPathIcon } from '@heroicons/react/24/outline'
+import { ArrowPathIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { EmblaCarouselType } from 'embla-carousel'
 import update from 'immutability-helper'
 import Image from 'next/image'
 import { useDrag, useDrop } from 'react-dnd'
@@ -10,6 +11,7 @@ import { toast } from '@/hooks/use-toast'
 import { uploadListingImage } from '@/lib/supabase'
 
 import { Button } from '../ui/button'
+import Carousel from '../ui/carousel'
 import type { Identifier, XYCoord } from 'dnd-core'
 
 type PreviewFile = {
@@ -25,6 +27,7 @@ export default function ListingFileUploader({
   listingId: string
   onCreate?: () => void
 }) {
+  const [carousel, setCarousel] = useState<EmblaCarouselType>()
   const [loading, setLoading] = useState(false)
   const [images, setImages] = useState<PreviewFile[]>([])
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -105,9 +108,27 @@ export default function ListingFileUploader({
         onChange={onFileInputChange}
       />
 
-      <div className="mt-5 flex gap-5">
+      <Carousel getCarouselApi={setCarousel}>
+        {images?.map(({ previewUrl, key }) => (
+          <Slide src={previewUrl} key={key} />
+        ))}
+      </Carousel>
+
+      <div className="mt-5 flex gap-5 overflow-hidden overflow-x-auto">
         {images.map((f, i) => {
-          return <ImageCard key={f.key} id={f.key} previewUrl={f.previewUrl} moveCard={moveCard} index={i} />
+          return (
+            <ImageCard
+              key={f.key}
+              id={f.key}
+              previewUrl={f.previewUrl}
+              moveCard={moveCard}
+              index={i}
+              removeImage={() => {
+                const filtered = images.filter((i) => i.key !== f.key)
+                setImages(filtered)
+              }}
+            />
+          )
         })}
       </div>
       <Button disabled={loading} onClick={handleSave} className="mt-5 w-full">
@@ -133,11 +154,13 @@ const ImageCard = ({
   moveCard,
   index,
   id,
+  removeImage,
 }: {
   previewUrl: string
   id: string
   index: number
   moveCard: (dragIndex: number, hoverIndex: number) => void
+  removeImage: () => void
 }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
@@ -192,8 +215,30 @@ const ImageCard = ({
   drag(drop(ref))
 
   return (
-    <div ref={ref} className="h-16 w-16 cursor-move" style={{ opacity }} data-handler-id={handlerId}>
-      <Image src={previewUrl} alt="" className="object-contain" width={64} height={64} />
+    <div
+      ref={ref}
+      className="relative h-28 w-28 min-w-max cursor-move"
+      style={{ opacity }}
+      data-handler-id={handlerId}
+    >
+      <button onClick={removeImage} className="absolute right-0 top-0 rounded-full bg-white p-0">
+        <XMarkIcon className="h-4 w-4 text-blue" />
+      </button>
+      <Image src={previewUrl} alt="" className="object-contain" width={112} height={112} />
+    </div>
+  )
+}
+
+function Slide({ src }: { src: string }) {
+  return (
+    <div className="relative my-4 mr-4 h-96 flex-[0_0_100%] overflow-hidden">
+      <Image
+        src={src}
+        fill
+        className="object-cover object-center"
+        alt=""
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
     </div>
   )
 }

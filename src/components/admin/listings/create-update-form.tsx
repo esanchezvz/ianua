@@ -121,7 +121,7 @@ const getSelectDefaultValue = (options: SelectOption[], multiple: boolean, value
 
 export function CreateListingForm({ onSuccess, defaultValues, editMode }: Props) {
   const session = useSession()
-  const [step, setStep] = useState<'data' | 'media'>('data')
+  const [step, setStep] = useState<'data' | 'media'>('media')
   const [listingId, setListingId] = useState(defaultValues?.['id'] ?? '')
   const [isLoading, setIsLoading] = useState(false)
   const [acceptsTerms, setAcceptTerms] = useState(false)
