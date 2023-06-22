@@ -7,10 +7,10 @@ import { Role } from '@prisma/client'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useWindowScroll, useWindowSize } from 'react-use'
 
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import Drawer from '@/components/ui/drawer'
 import {
   DropdownMenu,
@@ -24,10 +24,9 @@ import Logo from '@/components/ui/logo'
 import { cn } from '@/utils'
 
 const navigation = [
-  { name: 'Product', href: '/admin/users' },
-  { name: 'Features', href: '/admin/users' },
-  { name: 'Marketplace', href: '/admin/users' },
-  { name: 'Company', href: '/admin/users' },
+  { name: 'Creditos Hipotecarios', href: 'https://crediteka.com/ianua/', target: '_blank' },
+  { name: 'Asesoría Legal', href: 'https://wa.me/+525537627716', target: '_blank' },
+  { name: 'Perfilador', href: '/perfilador', target: undefined },
 ]
 
 export function Header() {
@@ -131,14 +130,34 @@ export function Header() {
                   href={item.href}
                   className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50/40"
                   onClick={closeMobileMenu}
+                  target={item.target}
                 >
                   {item.name}
                 </Link>
               ))}
 
-              <Link href="/login" className={cn(buttonVariants())} onClick={closeMobileMenu}>
-                Iniciar sesión
+              <Link
+                className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50/40"
+                href={sessionData?.user?.role === Role.USER ? '/perfil' : '/admin/profile'}
+                onClick={closeMobileMenu}
+              >
+                Perfil
               </Link>
+
+              {sessionData?.user ? (
+                <Button
+                  onClick={async () => {
+                    await signOut()
+                    closeMobileMenu()
+                  }}
+                >
+                  Cerrar Sesión
+                </Button>
+              ) : (
+                <Link href="/login" className={cn(buttonVariants())} onClick={closeMobileMenu}>
+                  Iniciar sesión
+                </Link>
+              )}
             </div>
           </div>
         </div>
