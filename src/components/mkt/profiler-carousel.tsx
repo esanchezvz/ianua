@@ -171,7 +171,7 @@ export const ProfilerCarousel = () => {
     return (
       <>
         <h2 className="text-2xl">
-          No encontramos propiedades que cumplan con tus reqisitos. Intenta cambiando algunos parámetros.
+          No encontramos propiedades que cumplan con tus requisitos. Intenta cambiando algunos parámetros.
         </h2>
 
         <div className="mt-10 flex flex-col gap-5">

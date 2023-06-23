@@ -11,7 +11,7 @@ const faqs = [
   },
   {
     question: '¿Me pueden ayudar a vender mi propiedad?',
-    answer: 'Claro que sí! Contáctanos por medio de nuestro Whatsapp Business para más detalle.',
+    answer: '¡Claro que sí! Contáctanos por medio de nuestro Whatsapp Business para más detalle.',
   },
   {
     question: '¿Las propiedades son de ustedes?',

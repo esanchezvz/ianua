@@ -10,7 +10,7 @@ import { Container } from '@/components/ui/container'
 import Modal from '@/components/ui/modal'
 const features = [
   {
-    name: 'Asosería Legal',
+    name: 'Asesoría Legal',
     description:
       'Deja que nuestro equipo te asesore; aún si quieres comprar con nosotros o no. Todo de la manera más transparente y segura.',
     icon: ScaleIcon,
