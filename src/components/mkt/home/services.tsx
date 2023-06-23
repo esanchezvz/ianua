@@ -24,7 +24,7 @@ const features = [
   },
   {
     name: 'Asistencias',
-    description: 'Comming Soon',
+    description: 'Coming Soon',
     icon: LifebuoyIcon,
   },
 ]
