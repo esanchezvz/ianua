@@ -1,4 +1,4 @@
-import { ListingStatus, ListingType, PropertyType } from '@prisma/client'
+import { Listing, ListingStatus, ListingType, PropertyType } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from 'next-auth/react'
 
@@ -30,23 +30,48 @@ export async function POST(req: NextRequest) {
 
   const parsedData = Object.fromEntries(entries)
 
-  const listings = await db.listing.findMany({
-    where: {
-      status: ListingStatus.PUBLISHED,
-      price: { lte: parseInt(parsedData.price as string) },
-      property_type: { hasSome: parsedData.property_type as PropertyType[] },
-      type: parsedData.type as ListingType,
-      stories: { lte: parseInt(parsedData.stories as string) },
-      parking_spots: { lte: parseInt(parsedData.parking_spots as string) },
-      pet_friendly: parsedData.pet_friendly ? true : undefined,
-      address: {
-        path: ['locality'],
-        equals: parsedData.locality as string,
-      },
-    },
-    take: 6,
-    skip: 0,
-  })
+  parsedData.price = (parsedData.price as string).replaceAll(',', '')
 
-  return listings
+  let listings: Listing[] = []
+
+  try {
+    listings = await db.listing.findMany({
+      where: {
+        status: ListingStatus.PUBLISHED,
+        price: { lte: parseInt(parsedData.price as string) },
+        property_type: { hasSome: parsedData.property_type as PropertyType[] },
+        type: parsedData.type as ListingType,
+        stories: { lte: parseInt(parsedData.stories as string) },
+        parking_spots: { lte: parseInt(parsedData.parking_spots as string) },
+        pet_friendly: parsedData.pet_friendly ? true : undefined,
+        address: {
+          path: ['locality'],
+          equals: parsedData.locality as string,
+        },
+      },
+      take: 6,
+      skip: 0,
+    })
+
+    if (!listings?.length) {
+      listings = await db.listing.findMany({
+        where: {
+          status: ListingStatus.PUBLISHED,
+          price: { lte: parseInt(parsedData.price as string) },
+          property_type: { hasSome: parsedData.property_type as PropertyType[] },
+          type: parsedData.type as ListingType,
+        },
+        take: 6,
+        skip: 0,
+      })
+    }
+
+    return NextResponse.json(
+      { message: 'Profiler results fetched successfully.', data: listings },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ message: 'Unexpected Error' }, { status: 500 })
+  }
 }

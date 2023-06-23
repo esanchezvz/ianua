@@ -55,7 +55,7 @@ export default function ListingCard({ listing, share = true, target }: ListingCa
 
   return (
     <div
-      className="relative overflow-hidden rounded-lg sm:max-w-[330px]"
+      className="relative flex flex-col justify-between overflow-hidden rounded-lg sm:max-w-[330px]"
       onMouseEnter={handleCardHover}
       onMouseLeave={handleCardHover}
     >

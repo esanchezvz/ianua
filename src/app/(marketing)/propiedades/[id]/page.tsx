@@ -119,6 +119,14 @@ export default async function Listing({ params: { id } }: ListingProps) {
       </main>
       <aside className="sticky top-0 w-80 p-3 pt-16 md:h-screen">
         <Link
+          href=" https://crediteka.com/ianua/precalificate"
+          target="_blank"
+          className={buttonVariants({ className: 'mt-20 w-full', variant: 'outline' })}
+        >
+          Precalifica para un crédito hipotecario
+        </Link>
+
+        <Link
           href={`https://wa.me/+525537627716?text=${encodeURIComponent(
             `Hola, me gustaría agendar una cita para ver la propiedad de ${listing.name}`
           )}`}

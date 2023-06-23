@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
+import { FieldValues, useForm } from 'react-hook-form'
 import { useMeasure } from 'react-use'
 
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -54,7 +54,14 @@ const getSelectDefaultValue = (options: SelectOption[], multiple: boolean, value
 }
 
 export const ProfilerCarousel = () => {
-  const { control, register, getValues } = useForm()
+  const {
+    control,
+    register,
+    getValues,
+    formState: { submitCount },
+    reset,
+    handleSubmit,
+  } = useForm()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [listings, setListtings] = useState<Listing[]>([])
@@ -63,14 +70,11 @@ export const ProfilerCarousel = () => {
 
   const direction = prev && step > prev ? 1 : -1
 
-  const handleNext = async () => {
-    if (step < 11) {
-      setStep(step + 1)
-      return
-    }
+  const handleNext = () => {
+    if (step < 11) setStep(step + 1)
+  }
 
-    setLoading(true)
-
+  const onSubmit = async (data: FieldValues) => {
     const {
       natural_lighting,
       property_type,
@@ -80,7 +84,8 @@ export const ProfilerCarousel = () => {
       pet_friendly,
       budget,
       desired_area,
-    } = getValues()
+    } = data
+    setLoading(true)
 
     try {
       const formData = new FormData()
@@ -105,25 +110,25 @@ export const ProfilerCarousel = () => {
       })
       const { data, ...rest } = await res.json()
 
-      console.log({ data, rest })
-
       setListtings(data)
 
-      toast({
-        title: '¡Encontramos opciones para ti!',
-        description:
-          'Revisa estas opciones que tenemos para ti. Para ver más resultados puedes volver a hacer el proceso del perfilador.',
-      })
+      setTimeout(() => {
+        toast({
+          title: '¡Encontramos opciones para ti!',
+          description:
+            'Revisa estas opciones que tenemos para ti. Para ver más resultados puedes volver a hacer el proceso del perfilador.',
+        })
+        setLoading(false)
+      }, 3500)
     } catch (error) {
+      console.log(error)
       toast({
         title: 'Oooops!',
         description: 'Ocurrió un error. Intenta nuevamente.',
         variant: 'destructive',
       })
-      console.error(error)
+      setLoading(false)
     }
-
-    setTimeout(() => setLoading(false), 3500)
   }
 
   const handlePrev = () => {
@@ -143,7 +148,7 @@ export const ProfilerCarousel = () => {
     )
   }
 
-  if (listings?.length) {
+  if (submitCount > 0 && listings?.length) {
     return (
       <>
         <div className="relative flex h-full w-full items-center justify-center gap-5">
@@ -162,6 +167,35 @@ export const ProfilerCarousel = () => {
     )
   }
 
+  if (submitCount > 0 && !listings?.length) {
+    return (
+      <>
+        <h2 className="text-2xl">
+          No encontramos propiedades que cumplan con tus reqisitos. Intenta cambiando algunos parámetros.
+        </h2>
+
+        <div className="mt-10 flex flex-col gap-5">
+          <Button
+            className="w-full"
+            onClick={() => {
+              setStep(1)
+              reset()
+            }}
+          >
+            Intentar nuevamente
+          </Button>
+          <Link
+            href=" https://crediteka.com/ianua/precalificate"
+            target="_blank"
+            className={buttonVariants({ className: 'w-full', variant: 'outline' })}
+          >
+            Precalifica para un crédito hipotecario
+          </Link>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <div
@@ -172,7 +206,8 @@ export const ProfilerCarousel = () => {
         <AnimatePresence custom={{ direction, width }}>
           <form
             className="flex h-full w-full flex-col items-center justify-center"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={step === 11 ? handleSubmit(onSubmit) : (e) => e.preventDefault()}
+            id="profilerForm"
           >
             <motion.div
               key={step}
@@ -331,7 +366,13 @@ export const ProfilerCarousel = () => {
         <Button variant="ghost" onClick={handlePrev} disabled={step === 1} type="button">
           Atrás
         </Button>
-        <Button onClick={handleNext}>{step === 11 ? 'Buscar Propiedades' : 'Siguiente'}</Button>
+        <Button
+          onClick={step === 11 ? undefined : handleNext}
+          type={step === 11 ? 'submit' : 'button'}
+          form={step === 11 ? 'profilerForm' : undefined}
+        >
+          {step === 11 ? 'Buscar Propiedades' : 'Siguiente'}
+        </Button>
       </div>
     </>
   )
