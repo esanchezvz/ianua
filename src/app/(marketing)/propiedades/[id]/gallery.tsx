@@ -122,13 +122,13 @@ function Modal({ onClose, opened, className, initialFocus, closeOnEscape = true,
 
 function Slide({ src }: { src: string }) {
   return (
-    <div className="relative my-4 mr-4 h-[80vh] flex-[0_0_100%] overflow-hidden">
+    <div className="relative my-4 mr-4 h-[80vh] w-full max-w-[1200px] flex-[0_0_100%] overflow-hidden">
       <Image
-        src={`${src}?width=900&resize=contain&quality=60`}
+        src={`${src}?width=1200&resize=contain&quality=60`}
         fill
         className="object-contain object-center"
         alt=""
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        loading="eager"
       />
     </div>
   )

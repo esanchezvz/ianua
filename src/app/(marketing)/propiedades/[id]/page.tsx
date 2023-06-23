@@ -9,6 +9,8 @@ import { env } from '@/core/env'
 import { Listing } from '@/types/listing'
 import {
   ammenitiesMap,
+  legalStatusMap,
+  listingConditionsMap,
   listingPrivateServicesMap,
   listingPublicServicesMap,
   listingTypeMap,
@@ -31,12 +33,12 @@ export default async function Listing({ params: { id } }: ListingProps) {
   )
 
   return (
-    <div className="flex flex-col md:flex-row">
-      <main className="grow">
-        <Container className="w-full p-20">
+    <div className="flex flex-col md:flex-row md:pr-14">
+      <main className="grow md:w-[calc(100%-320px)]">
+        <Container className="w-full pb-10 pt-20">
           <Gallery images={galleryImages} />
 
-          <div className="wrap flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between">
             <div className="my-5 mb-2 flex items-center gap-5">
               <div className="flex items-center gap-2">
                 <FontAwesomeIcon className="h-4 w-4 text-gray-400" aria-hidden="true" icon={faExpand} />
@@ -55,14 +57,19 @@ export default async function Listing({ params: { id } }: ListingProps) {
                 <span>{listing.parking_spots}</span>
               </div>
             </div>
-
-            <div>
-              <h3>{currency.format(listing.price)}</h3>
-            </div>
           </div>
 
           <div className="mb-2 flex flex-wrap items-center justify-between">
-            <h1 className="my-4 text-3xl">{listing.name}</h1>
+            <div className="flex flex-col gap-0">
+              <h1 className="my-4 text-3xl">{listing.name}</h1>
+              <div className="flex gap-3">
+                <p className="text-2xl">{currency.format(listing.price)}</p>
+
+                {listing.maintenance_cost ? (
+                  <p className="text-lg">- {currency.format(listing.maintenance_cost)} Mantenimiento</p>
+                ) : null}
+              </div>
+            </div>
 
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center rounded-full bg-light-blue-300 px-3 py-0.5 font-medium text-gray-800">
@@ -71,30 +78,57 @@ export default async function Listing({ params: { id } }: ListingProps) {
             </div>
           </div>
 
-          <p className="">{listing.description}</p>
+          <p className="my-5">{listing.description}</p>
+
+          {listing.construction_year ? (
+            <>
+              <h3 className="mb-2 mt-5 text-xl">Año de Construcción</h3>
+              <div className="flex flex-wrap gap-5">
+                <p>{listing.construction_year}</p>
+              </div>
+            </>
+          ) : null}
+
+          {listing.condition ? (
+            <>
+              <h3 className="mb-2 mt-5 text-xl">Condición física del inmueble</h3>
+              <div className="flex flex-wrap gap-5">
+                <p>{listingConditionsMap[listing.condition]}</p>
+              </div>
+            </>
+          ) : null}
 
           <h3 className="mb-2 mt-5 text-xl">Amenidades</h3>
-          <div className="flex gap-5">
+          <div className="flex w-full flex-wrap gap-5">
             {listing.ammenities.map((a) => (
-              <span key={a} className="inline-flex items-center rounded-full bg-light-blue px-3 py-0.5 ">
+              <span key={a} className="w-max rounded-full bg-light-blue px-3 py-0.5 ">
                 {ammenitiesMap[a]}
               </span>
             ))}
           </div>
 
           <h3 className="mb-2 mt-5 text-xl">Servicios Cercanos</h3>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap gap-5">
             {listing.public_services.map((a) => (
-              <span key={a} className="inline-flex items-center rounded-full bg-red px-3 py-0.5 text-white ">
+              <span key={a} className="w-max rounded-full bg-red px-3 py-0.5 text-white ">
                 {listingPublicServicesMap[a]}
               </span>
             ))}
             {listing.private_services.map((a) => (
-              <span key={a} className="inline-flex items-center rounded-full bg-red px-3 py-0.5 text-white ">
+              <span key={a} className="w-max rounded-full bg-red px-3 py-0.5 text-white ">
                 {listingPrivateServicesMap[a]}
               </span>
             ))}
           </div>
+
+          {listing.legal_status ? (
+            <>
+              <h3 className="mb-2 mt-5 text-xl">Situación legal</h3>
+              <div className="flex flex-wrap gap-5">
+                <p>{legalStatusMap[listing.legal_status]}</p>
+              </div>
+            </>
+          ) : null}
 
           {listing.type === ListingType.FOR_SALE ? (
             <p className="mt-10 text-xs text-gray-400">
@@ -117,11 +151,11 @@ export default async function Listing({ params: { id } }: ListingProps) {
           ) : null}
         </Container>
       </main>
-      <aside className="sticky top-0 w-80 p-3 pt-16 md:h-screen">
+      <aside className="sticky top-0 w-full p-3 pt-16 md:h-screen md:w-[320px]">
         <Link
           href=" https://crediteka.com/ianua/precalificate"
           target="_blank"
-          className={buttonVariants({ className: 'mt-20 w-full', variant: 'outline' })}
+          className={buttonVariants({ className: 'w-full md:mt-20', variant: 'outline' })}
         >
           Precalifica para un crédito hipotecario
         </Link>
@@ -130,7 +164,7 @@ export default async function Listing({ params: { id } }: ListingProps) {
           href={`https://wa.me/+525537627716?text=${encodeURIComponent(
             `Hola, me gustaría agendar una cita para ver la propiedad de ${listing.name}`
           )}`}
-          className={buttonVariants({ variant: 'default', className: 'mt-20 w-full' })}
+          className={buttonVariants({ variant: 'default', className: 'mt-5 w-full' })}
           target="_blank"
         >
           Agendar Cita

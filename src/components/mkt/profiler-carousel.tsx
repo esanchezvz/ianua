@@ -113,11 +113,13 @@ export const ProfilerCarousel = () => {
       setListtings(data)
 
       setTimeout(() => {
-        toast({
-          title: '¡Encontramos opciones para ti!',
-          description:
-            'Revisa estas opciones que tenemos para ti. Para ver más resultados puedes volver a hacer el proceso del perfilador.',
-        })
+        if (listings.length) {
+          toast({
+            title: '¡Encontramos opciones para ti!',
+            description:
+              'Revisa estas opciones que tenemos para ti. Para ver más resultados puedes volver a hacer el proceso del perfilador.',
+          })
+        }
         setLoading(false)
       }, 3500)
     } catch (error) {
