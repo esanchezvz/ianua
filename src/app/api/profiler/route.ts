@@ -41,10 +41,8 @@ export async function POST(req: NextRequest) {
       where: {
         status: ListingStatus.PUBLISHED,
         price: { lte: parseInt(parsedData.price as string) },
-        property_type: { hasSome: parsedData.property_type as PropertyType[] },
+        property_type: { has: parsedData.property_type as PropertyType },
         type: parsedData.type as ListingType,
-        stories: { lte: parseInt(parsedData.stories as string) },
-        parking_spots: { lte: parseInt(parsedData.parking_spots as string) },
         pet_friendly: parsedData.pet_friendly ? true : undefined,
         address: {
           path: ['locality'],
