@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
         where: {
           status: ListingStatus.PUBLISHED,
           price: { lte: parseInt(parsedData.price as string) },
-          property_type: { hasSome: parsedData.property_type as PropertyType[] },
+          property_type: { has: parsedData.property_type as PropertyType },
           type: parsedData.type as ListingType,
         },
         take: 6,

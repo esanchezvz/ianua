@@ -86,7 +86,7 @@ export default function ListingPreview({ listing, share = true, target }: Listin
           </div>
         </div>
 
-        <p>{listing.description.substring(0, 200)}...</p>
+        <p>{listing.description.substring(0, 300)}...</p>
 
         <div className="mb-2 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
