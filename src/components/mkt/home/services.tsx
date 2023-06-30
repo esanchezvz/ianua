@@ -2,9 +2,9 @@
 import { useState } from 'react'
 
 import { CurrencyDollarIcon, LifebuoyIcon, ScaleIcon } from '@heroicons/react/24/outline'
+import Image from 'next/image'
 import Link from 'next/link'
 
-import { PachonMessage } from '@/components/shared/pachon-message'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Container } from '@/components/ui/container'
 import Modal from '@/components/ui/modal'
@@ -67,10 +67,14 @@ export default function Services() {
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
       >
-        <PachonMessage
-          pachon="card"
-          message="Un crédito hipotecario puede ser la diferencia para comenzar a vivir tu sueño. Te recomiendo usar la calculadora de créditos antes del perfilador y así darte un mejor estimado en tu búsqueda. ¡Deja que tu hogar te encuentre!"
-        />
+        <Image src="/logo-crediteka.png" width={218} height={87} alt="Creditka" />
+
+        <p className="mt-5">
+          Un crédito hipotecario puede ser la diferencia para comenzar a vivir tu sueño. Te recomiendo usar la
+          calculadora de créditos antes del perfilador y así darte un mejor estimado en tu búsqueda. ¡Deja que
+          tu hogar te encuentre!
+        </p>
+
         <Link
           href="https://crediteka.com/ianua/#conCalculator"
           target="_blank"

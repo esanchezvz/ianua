@@ -4,8 +4,7 @@ import { useState } from 'react'
 
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { PropertyType } from '@prisma/client'
-import { useQuery } from '@tanstack/react-query'
+import { ListingViews, PropertyType } from '@prisma/client'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -20,10 +19,9 @@ import { SelectField } from '@/components/ui/select-field'
 import { TextField } from '@/components/ui/text-field'
 import { usePrevious } from '@/hooks/use-previous'
 import { toast } from '@/hooks/use-toast'
-import { fetchListings } from '@/services/listing'
 import { Listing } from '@/types/listing'
 import { zoneOptions } from '@/utils'
-import { climateOptions, listingTypeOptions, propertyTypeOptions } from '@/utils/listing'
+import { climateOptions, listingTypeAltOptions, propertyTypeOptions } from '@/utils/listing'
 
 import ListingCard from '../shared/listing-card'
 
@@ -35,9 +33,31 @@ const rangeOptions = [
   { value: '5', label: '5' },
 ]
 
+const viewsOptions = [
+  { value: ListingViews.OPEN, label: 'Clara' },
+  { value: ListingViews.CLOSED, label: 'Me da igual' },
+]
+
+const appartmentTypeOptions = [
+  { value: 'appartment', label: 'Departamento' },
+  { value: 'ph', label: 'PH' },
+]
+
 const booleanOptions = [
   { value: '0', label: 'No' },
   { value: '1', label: 'Sí' },
+]
+
+const lookingForOptions = [
+  { value: 'me', label: 'Para mi' },
+  { value: 'family', label: 'Para un familiar' },
+  { value: 'co-own', label: 'Copropiedad (Comprar entre 2 o más personas)' },
+]
+
+const hobbiesOptions = [
+  { value: 'sports', label: '⚽️🏀🏸🏈🏃‍♀️' },
+  { value: 'chill', label: '🛋️' },
+  { value: 'idgaf', label: 'Me da igual' },
 ]
 
 const getSelectDefaultValue = (options: SelectOption[], multiple: boolean, value?: string | string[]) => {
@@ -61,6 +81,7 @@ export const ProfilerCarousel = () => {
     formState: { submitCount },
     reset,
     handleSubmit,
+    watch,
   } = useForm()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -71,7 +92,7 @@ export const ProfilerCarousel = () => {
   const direction = prev && step > prev ? 1 : -1
 
   const handleNext = () => {
-    if (step < 11) setStep(step + 1)
+    if (step < 16) setStep(step + 1)
   }
 
   const onSubmit = async (data: FieldValues) => {
@@ -153,7 +174,7 @@ export const ProfilerCarousel = () => {
   if (submitCount > 0 && listings?.length) {
     return (
       <>
-        <div className="relative flex h-full w-full items-center justify-center gap-5">
+        <div className="relative flex h-full w-full items-center justify-center gap-5 overflow-auto">
           {listings.map((l) => (
             <ListingCard key={l.id} listing={l} target="_blank" share />
           ))}
@@ -208,7 +229,7 @@ export const ProfilerCarousel = () => {
         <AnimatePresence custom={{ direction, width }}>
           <form
             className="flex h-full w-full flex-col items-center justify-center"
-            onSubmit={step === 11 ? handleSubmit(onSubmit) : (e) => e.preventDefault()}
+            onSubmit={step === 16 ? handleSubmit(onSubmit) : (e) => e.preventDefault()}
             id="profilerForm"
           >
             <motion.div
@@ -222,6 +243,37 @@ export const ProfilerCarousel = () => {
               className="absolute flex w-full flex-col items-center justify-center"
             >
               {step === 1 ? (
+                <div className="w-full px-8">
+                  <SelectField
+                    fullWidth
+                    control={control}
+                    name="interested"
+                    options={booleanOptions}
+                    label="¿Realmente estás interesado en comprar o rentar?"
+                    hint="Se acepta sólo venir a explorar, esto no afecta tu resultado. Es información valiosa para nosotros 😉"
+                    defaultSelected={getSelectDefaultValue(booleanOptions, false, getValues('interested'))}
+                  />
+                </div>
+              ) : null}
+
+              {step === 2 ? (
+                <div className="w-full px-8">
+                  <SelectField
+                    fullWidth
+                    control={control}
+                    name="looking_for"
+                    options={lookingForOptions}
+                    label="¿Estás buscando para ti o para alguien más?"
+                    defaultSelected={getSelectDefaultValue(
+                      lookingForOptions,
+                      false,
+                      getValues('looking_for')
+                    )}
+                  />
+                </div>
+              ) : null}
+
+              {step === 3 ? (
                 <div className="px-8">
                   <RadioGroupField
                     control={control}
@@ -232,25 +284,24 @@ export const ProfilerCarousel = () => {
                   />
                 </div>
               ) : null}
-              {step === 2 ? (
+              {step === 4 ? (
                 <div className="w-full px-8">
                   <SelectField
                     fullWidth
                     control={control}
                     name="climate"
                     options={climateOptions}
-                    label="¿Te consideras una persona que le gusta más el calor o el frío o templado?"
+                    label="¿Te consideras una persona que le gusta más el calor, el frío o templado?"
                     defaultSelected={getSelectDefaultValue(climateOptions, false, getValues('climate'))}
                   />
                 </div>
               ) : null}
-              {step === 3 ? (
+              {step === 5 ? (
                 <div className="w-full px-8">
                   <SelectField
                     fullWidth
                     control={control}
                     name="property_type"
-                    multiple
                     options={propertyTypeOptions.filter((o) => o.value !== PropertyType.CLOSED_STREET)}
                     label="¿Casa o Depa?"
                     defaultSelected={getSelectDefaultValue(
@@ -259,21 +310,41 @@ export const ProfilerCarousel = () => {
                       getValues('preperty_type')
                     )}
                   />
+                  {watch('property_type')?.includes(PropertyType.APPARTMENT) ? (
+                    <div className="mt-3 w-full px-8">
+                      <RadioGroupField
+                        control={control}
+                        options={appartmentTypeOptions}
+                        name="appartment_type"
+                        label="¿Departamento o PH?"
+                      />
+                    </div>
+                  ) : null}
+                  {watch('property_type')?.includes(PropertyType.APPARTMENT) ? (
+                    <div className="mt-3 w-full px-8">
+                      <RadioGroupField
+                        control={control}
+                        options={viewsOptions}
+                        name="views"
+                        label="¿Cómo te gustan la vista desde tu departamento?"
+                      />
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
-              {step === 4 ? (
+              {step === 6 ? (
                 <div className="w-full px-8">
                   <SelectField
                     fullWidth
                     control={control}
                     name="type"
-                    options={listingTypeOptions}
+                    options={listingTypeAltOptions}
                     label="¿Planeas comprar o rentar?"
-                    defaultSelected={getSelectDefaultValue(listingTypeOptions, false, getValues('type'))}
+                    defaultSelected={getSelectDefaultValue(listingTypeAltOptions, false, getValues('type'))}
                   />
                 </div>
               ) : null}
-              {step === 5 ? (
+              {step === 7 ? (
                 <div className="px-8">
                   <TextField
                     id="stories"
@@ -283,7 +354,7 @@ export const ProfilerCarousel = () => {
                   />
                 </div>
               ) : null}
-              {step === 6 ? (
+              {step === 8 ? (
                 <div className="px-8">
                   <TextField
                     id="parkingSpots"
@@ -293,19 +364,19 @@ export const ProfilerCarousel = () => {
                   />
                 </div>
               ) : null}
-              {/* {step === 7 ? (
+              {step === 9 ? (
                 <div className="px-8">
                   <SelectField
                     fullWidth
                     control={control}
-                    name="about"
-                    options={booleanOptions}
+                    name="hobbies"
+                    options={hobbiesOptions}
                     label="¿Qué es lo tuyo?"
-                    defaultSelected={getSelectDefaultValue(booleanOptions, false, getValues('about'))}
+                    defaultSelected={getSelectDefaultValue(hobbiesOptions, false, getValues('hobbies'))}
                   />
                 </div>
-              ) : null} */}
-              {step === 7 ? (
+              ) : null}
+              {step === 10 ? (
                 <div className="w-full px-8">
                   <SelectField
                     fullWidth
@@ -317,7 +388,8 @@ export const ProfilerCarousel = () => {
                   />
                 </div>
               ) : null}
-              {step === 8 ? (
+
+              {step === 11 ? (
                 <div className="px-8">
                   <RadioGroupField
                     control={control}
@@ -328,7 +400,37 @@ export const ProfilerCarousel = () => {
                 </div>
               ) : null}
 
-              {step === 9 ? (
+              {step === 12 ? (
+                <div className="px-8">
+                  <NumberField id="budget" control={control} name="budget" label="¿Cuál es tu presupesto?" />
+                </div>
+              ) : null}
+
+              {step === 13 ? (
+                <div className="w-full px-8">
+                  <SelectField
+                    fullWidth
+                    control={control}
+                    options={booleanOptions}
+                    name="furnished"
+                    label="¿Amueblado?"
+                    defaultSelected={getSelectDefaultValue(booleanOptions, false, getValues('furnished'))}
+                  />
+                </div>
+              ) : null}
+
+              {step === 14 ? (
+                <div className="px-8">
+                  <RadioGroupField
+                    control={control}
+                    options={rangeOptions}
+                    name="event_policy_strictness"
+                    label="¿Qué tanto toleras las fiestas de los demás?"
+                  />
+                </div>
+              ) : null}
+
+              {step === 15 ? (
                 <div className="w-full px-8">
                   <SelectField
                     fullWidth
@@ -341,13 +443,7 @@ export const ProfilerCarousel = () => {
                 </div>
               ) : null}
 
-              {step === 10 ? (
-                <div className="px-8">
-                  <NumberField id="budget" control={control} name="budget" label="¿Cuál es tu presupesto?" />
-                </div>
-              ) : null}
-
-              {step === 11 ? (
+              {step === 16 ? (
                 <div className="w-full px-8">
                   <SelectField
                     fullWidth
@@ -369,11 +465,11 @@ export const ProfilerCarousel = () => {
           Atrás
         </Button>
         <Button
-          onClick={step === 11 ? undefined : handleNext}
-          type={step === 11 ? 'submit' : 'button'}
-          form={step === 11 ? 'profilerForm' : undefined}
+          onClick={step === 16 ? undefined : handleNext}
+          type={step === 16 ? 'submit' : 'button'}
+          form={step === 16 ? 'profilerForm' : undefined}
         >
-          {step === 11 ? 'Buscar Propiedades' : 'Siguiente'}
+          {step === 16 ? 'Buscar Propiedades' : 'Siguiente'}
         </Button>
       </div>
     </>

@@ -1,4 +1,4 @@
-import { Listing, Role } from '@prisma/client'
+import { Listing, ListingStatus, ListingType, PropertyType, Role } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 import { getSession } from '@/core/auth'
@@ -69,6 +69,7 @@ export async function GET(req: NextRequest) {
   let where = Object.fromEntries(params.entries())
   const includes = where.includes?.split(',')
   const search = where.search
+  const filtered = where.filtered
 
   const take = !where.limit ? 20 : parseInt(where.limit) > 500 ? 500 : parseInt(where.limit)
   const page = parseInt(where.page ?? 1)
@@ -85,6 +86,7 @@ export async function GET(req: NextRequest) {
   delete where.page
   delete where.includes
   delete where.search
+  delete where.filtered
 
   const parsedEntries = Object.entries(where).map(([key, value]) => {
     if (value === 'true') return [key, true]
@@ -126,6 +128,25 @@ export async function GET(req: NextRequest) {
             }
           : undefined,
       },
+    })
+  } else if (filtered) {
+    listings = await db.listing.findMany({
+      where: {
+        status: ListingStatus.PUBLISHED,
+        price: where.price ? { lte: parseInt(where.price) } : undefined,
+        address: where.locality
+          ? {
+              path: ['locality'],
+              equals: where.locality as string,
+            }
+          : undefined,
+        property_type: where.property_type_filter
+          ? { has: where.property_type_filter as PropertyType }
+          : undefined,
+        type: where.type ? (where.type as ListingType) : undefined,
+      },
+      take,
+      skip: (page - 1) * take,
     })
   } else {
     listings = await db.listing.findMany({

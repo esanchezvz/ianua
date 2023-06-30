@@ -1,5 +1,7 @@
 'use client'
 
+import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ListingStatus } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
@@ -17,9 +19,7 @@ export default function FeaturedListings() {
     })
   )
 
-  if (!data) return null
-
-  const listings = data.data.slice(0, 4)
+  const listings = data?.data.slice(0, 4) || []
 
   return (
     <section className="bg-white py-24 sm:py-32">
@@ -27,17 +27,30 @@ export default function FeaturedListings() {
         <div className="mx-auto max-w-2xl lg:mx-0">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Propiedades</h2>
         </div>
-        <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 border-t border-red-300 pt-10 sm:mt-16 sm:grid-cols-2 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
-          {listings.map((t) => (
-            <ListingCard listing={t} key={t.id} />
-          ))}
-        </div>
 
-        {/* <div className="flex items-center justify-center">
-          <Link href="/propiedades" className={cn(buttonVariants({ variant: 'link' }), 'mt-10')}>
-            Ver Mas
-          </Link>
-        </div> */}
+        {listings.length ? (
+          <>
+            <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 border-t border-red-300 pt-10 sm:mt-16 sm:grid-cols-2 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
+              {listings.map((t) => (
+                <ListingCard listing={t} key={t.id} />
+              ))}
+            </div>
+            <div className="flex items-center justify-center">
+              <Link href="/propiedades" className={cn(buttonVariants({ variant: 'link' }), 'mt-10')}>
+                Ver Mas
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div className="flex justify-center p-5">
+            <FontAwesomeIcon
+              className="animate-spin  text-light-blue"
+              aria-hidden="true"
+              size="5x"
+              icon={faSpinner}
+            />
+          </div>
+        )}
       </div>
     </section>
   )
