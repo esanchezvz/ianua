@@ -34,6 +34,8 @@ export async function POST(req: NextRequest) {
 
   let listings: Listing[] = []
 
+  // TODO - include rest of profiler properties when more listings are available
+
   try {
     listings = await db.listing.findMany({
       where: {

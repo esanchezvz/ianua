@@ -48,6 +48,8 @@ export function Header() {
     setMobileMenuOpen(true)
   }
 
+  const isAdminUser = sessionData?.user ? sessionData.user.role !== Role.USER : false
+
   return (
     <>
       <header
@@ -63,6 +65,13 @@ export function Header() {
               <span className="sr-only">IANUA</span>
               <Logo letters variant={isLightBg ? 'default' : 'light'} />
             </Link>
+            <p
+              className={cn('ml-3', {
+                'text-white': !isLightBg,
+              })}
+            >
+              (BETA)
+            </p>
           </div>
 
           <nav
@@ -93,6 +102,7 @@ export function Header() {
               </DropdownMenuPortal>
             </DropdownMenu>
             <Link href="/perfilador">Perfilador</Link>
+            {isAdminUser ? <Link href="/admin/profile">Dashboard</Link> : null}
             {sessionData?.user ? (
               <>
                 <button onClick={() => signOut()}>Cerrar Sesión</button>
