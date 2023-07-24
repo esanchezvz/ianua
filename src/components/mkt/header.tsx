@@ -92,7 +92,7 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link href="https://wa.me/+525537627716" target="_blank">
+                    <Link href="https://wa.me/+525549363397" target="_blank">
                       Asesoría Legal
                     </Link>
                   </DropdownMenuItem>
