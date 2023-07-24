@@ -25,7 +25,7 @@ import { cn } from '@/utils'
 
 const navigation = [
   { name: 'Creditos Hipotecarios', href: 'https://crediteka.com/ianua/', target: '_blank' },
-  { name: 'Asesoría Legal', href: 'https://wa.me/+525537627716', target: '_blank' },
+  { name: 'Asesoría Legal', href: 'https://wa.me/+525549363397', target: '_blank' },
   { name: 'Perfilador', href: '/perfilador', target: undefined },
 ]
 
